@@ -1,0 +1,33 @@
+services:
+  main:
+    build:
+      args:
+        SKILLSBENCH_LOCAL_MIRROR_BASE: ${SKILLSBENCH_LOCAL_MIRROR_BASE:-}
+        SKILLSBENCH_NODESOURCE_BASE: ${SKILLSBENCH_NODESOURCE_BASE:-https://deb.nodesource.com}
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        set -e
+        mkdir -p /root/verifier-skills
+        rm -rf /root/verifier-skills/gmail-skill
+        ln -s /opt/goskills/skills/gmail-skill /root/verifier-skills/gmail-skill
+        exec sleep infinity
+    volumes:
+      - ../../../all_skills:/opt/goskills/skills:ro
+    environment:
+      - GOS_SKILLS_DIR=/opt/goskills/skills
+      - GOSKILLS_SKILLS_DIR=/opt/goskills/skills
+      - GOSKILLS_SEED_MODE
+      - GOSKILLS_PROPAGATION_MODE
+      - PYTHONHASHSEED=0
+      - OPENAI_API_KEY
+      - OPENAI_BASE_URL
+      - OPENROUTER_API_KEY
+      - GEMINI_API_KEY
+      - SKILLSBENCH_LOCAL_MIRROR_BASE
+      - SKILLSBENCH_NODESOURCE_BASE
