@@ -32,6 +32,10 @@ scan_common_args=(
   --glob '!scripts/check_release.sh'
   --glob '!.git/**'
   --glob '!*.zip'
+  --glob '!*.png'
+  --glob '!*.jpg'
+  --glob '!*.jpeg'
+  --glob '!*.pdf'
   --glob '!*.pyc'
   --glob '!__pycache__/**'
   --glob '!.pytest_cache/**'
@@ -43,7 +47,6 @@ stale_patterns=(
   "group""graph"
   "GROUP""GRAPH"
   "go""sg"
-  "group-""graph"
   "group""graph-query"
   "Skill""Coalition"
   "skill""coalition"
