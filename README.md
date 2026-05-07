@@ -14,7 +14,7 @@
 
 ## Updates
 
-- **[2026-05-07]** Released the GoSkills code package with SkillsBench generation helpers, an ALFWorld selector hook, and release checks.
+- **[2026-05-07]** Released the GoSkills code package with SkillsBench generation helpers and an ALFWorld selector hook.
 - **[2026-05-07]** Added GoS-compatible data download scripts for public skill libraries and SkillsBench tasks.
 
 ---
@@ -229,4 +229,3 @@ Group-of-Skills/
 |----------|----------------|
 | [DATA.md](DATA.md) | Downloading GoS skill libraries and SkillsBench task assets |
 | [evaluation/alfworld/README.md](evaluation/alfworld/README.md) | ALFWorld selector interface |
-| [scripts/check_release.sh](scripts/check_release.sh) | Unit tests, bytecode checks, shell syntax checks, and basic leak scans |
