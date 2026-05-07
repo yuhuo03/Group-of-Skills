@@ -61,8 +61,8 @@ done
 
 echo "[check] local paths and common secret formats"
 secret_patterns=(
-  "/home/""lthpc"
-  "/nvme-""data"
+  "/home/[A-Za-z0-9._-]+"
+  "/nvme-[A-Za-z0-9._/-]*"
   "38""\\.147"
   "G-""Designer"
   "G""Designer"

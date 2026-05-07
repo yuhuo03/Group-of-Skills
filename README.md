@@ -82,7 +82,7 @@ GoSkills is evaluated on **SkillsBench** and **ALFWorld**. **R** = average rewar
 ### Setup
 
 ```bash
-git clone https://github.com/yuhuo03/Group-of-Skills.git
+git clone <anonymous-repo-url>
 cd Group-of-Skills
 python -m venv .venv
 . .venv/bin/activate
