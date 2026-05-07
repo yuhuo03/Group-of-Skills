@@ -4,20 +4,7 @@
   <strong>Group-Structured Skill Retrieval for Agent Skill Libraries</strong>
 </p>
 
-<p align="center">
-  <a href="https://github.com/davidliuk/graph-of-skills"><img src="https://img.shields.io/badge/Built%20on-Graph%20of%20Skills-2f80ed" alt="Built on GoS"></a>
-  <a href="https://huggingface.co/datasets/DLPenn/graph-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Data-yellow" alt="Data"></a>
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10--3.12-3776ab?logo=python&logoColor=white" alt="Python"></a>
-</p>
 
----
-
-## Updates
-
-- **[2026-05-07]** Released the GoSkills code package with SkillsBench generation helpers and an ALFWorld selector hook.
-- **[2026-05-07]** Added GoS-compatible data download scripts for public skill libraries and SkillsBench tasks.
-
----
 
 ## Overview
 
@@ -82,7 +69,7 @@ GoSkills is evaluated on **SkillsBench** and **ALFWorld**. **R** = average rewar
 ### Setup
 
 ```bash
-git clone <anonymous-repo-url>
+git clone https://anonymous.4open.science/r/Group-of-Skills-E861.git
 cd Group-of-Skills
 python -m venv .venv
 . .venv/bin/activate
@@ -223,9 +210,3 @@ Group-of-Skills/
 └── pyproject.toml               # Package definition
 ```
 
-## Documentation
-
-| Document | What it covers |
-|----------|----------------|
-| [DATA.md](DATA.md) | Downloading GoS skill libraries and SkillsBench task assets |
-| [evaluation/alfworld/README.md](evaluation/alfworld/README.md) | ALFWorld selector interface |
