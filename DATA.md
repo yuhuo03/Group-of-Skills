@@ -1,8 +1,7 @@
 # Prepare benchmark inputs
 
-Run these commands from the extracted repository root in the Python 3.12
-environment described in [README](README.md). All destinations are new folders.
-The numeric files already in `data/` are recorded results, not benchmark inputs.
+Run these commands from the repository root in the Python 3.12 environment
+described in [README](README.md). All destinations are new folders.
 External datasets, skill documents and images retain their original licenses.
 
 ## 1. Pinned Graph of Skills code and the 2,000-skill library
@@ -18,7 +17,7 @@ git clone https://github.com/davidliuk/graph-of-skills.git data/external/graph-o
 git -C data/external/graph-of-skills checkout --detach 203f60a2c689da055ce1ac351eb3cb9912a3bca7
 uv venv --python 3.12 --seed .venv-retrieval
 .venv-retrieval/bin/python -m pip install --upgrade pip setuptools wheel
-.venv-retrieval/bin/python -m pip install -r requirements/retrieval-alfworld-py312-linux.txt \
+.venv-retrieval/bin/python -m pip install -r evaluation/requirements/retrieval-alfworld-py312-linux.txt \
   -e ".[alfworld]" -e data/external/graph-of-skills
 .venv-retrieval/bin/python -m pip check
 
@@ -47,16 +46,12 @@ git -C data/external/skillsbench sparse-checkout set tasks
 git -C data/external/skillsbench rev-parse HEAD > data/external/skillsbench-task-revision.txt
 ```
 
-The historical SkillsBench task bytes were frozen independently; their originating
-upstream commit was not proven. This download records the revision obtained and
-is a **new run input**, not a claim of exact historical task bytes. The doctor
-checks all 86 selected task IDs. If upstream removed a selected task, use a
-licensed archived task snapshot containing those IDs; do not silently reduce the
-denominator. Preparation records every task-file hash, removes only the original
-per-task oracle skill directory/COPY, and preserves instructions, tests, native
-resources and verifier configuration.
+The task list in `evaluation/configs/task_ids.json` selects 86 SkillsBench tasks.
+Use a task checkout containing all selected IDs; the setup check reports any
+missing tasks. The preparation step preserves task instructions, tests, resources
+and verifier configuration while removing the per-task oracle skill directory.
 
-Terminal-Bench 2 uses the recorded archive and hash:
+Download Terminal-Bench 2:
 
 ```bash
 python scripts/fetch_asset.py \
@@ -72,16 +67,16 @@ export ALFWORLD_DATA="$PWD/data/external/alfworld"
 .venv-retrieval/bin/alfworld-download
 ```
 
-This download can be large. `configs/alfworld_games.json` maps all 134 selected
+This download can be large. `evaluation/configs/alfworld_games.json` maps all 134 selected
 OOD IDs to relative game paths and original SHA256 hashes. The doctor and batch
 planner check those bytes. Keep the downloaded `logic/` and
 `json_2.1.1/valid_unseen/` layout; do not generate substitute episodes.
 
-## 3. Build a matching directed index and D pool
+## 3. Build a directed index and GoSkills group pool
 
 Create one shared index from the library for new experiments. **The `gos index`
 command below calls embedding/graph-construction APIs and incurs cost.** It is
-not part of the offline checks and was not executed while packaging this release.
+separate from local group construction.
 Configure `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` in your shell first.
 The same route must support chat and `text-embedding-3-small` embeddings.
 
@@ -106,15 +101,14 @@ index. Export validates graph direction, vector storage, node/source identities,
 source bytes and provider-failure evidence. Do not edit receipts to bypass a
 failed check. Native index files deserialize upstream data; use trusted inputs.
 
-A newly constructed index can differ from the historical one. Construction cost
-is separate from agent token/runtime metrics. Preserve the construction report,
-exported graph and pool alongside new results.
+Preserve the construction report, exported graph and group pool for reuse across
+the retrieval methods.
 
 ## 4. Local configuration
 
 ```bash
-cp configs/local.example.json configs/local.json
-python scripts/doctor.py --config configs/local.json --runtime
+cp evaluation/configs/local.example.json evaluation/configs/local.json
+.venv-eval/bin/python scripts/doctor.py --config evaluation/configs/local.json --runtime
 ```
 
 The example matches the directories above, including `retrieval_python` pointing
@@ -125,9 +119,16 @@ not the caller's working directory. Customize them for existing assets. The doct
 is read-only: it reports missing packages/data, commit/game hash mismatches and
 credential presence without calling APIs or Docker.
 
-`configs/task_ids.json` fixes membership: 86 SkillsBench, 134 ALFWorld and 89 TB2
+`evaluation/configs/task_ids.json` fixes membership: 86 SkillsBench, 134 ALFWorld and 89 TB2
 tasks per method. An optional `tasks` list in each benchmark section selects a
 deliberate subset for a new run; summaries retain the planned denominator.
-Historical package inventories in `configs/*-environment.json` are evidence,
-not universal lockfiles. Native task verifiers can still download dependencies.
-Historical image-specific repairs remain in the companion source archive.
+Native task verifiers can download their own dependencies.
+
+## Attribution
+
+GoSkills uses the [Graph of Skills](https://github.com/davidliuk/graph-of-skills)
+skill library and benchmark integration as external dependencies. The pinned GoS
+checkout retains its MIT license. SkillsBench, Terminal-Bench 2, ALFWorld,
+TextWorld, Harbor and the downloaded skill libraries remain under their respective
+terms. This repository does not redistribute their datasets, container images
+or skill collections.

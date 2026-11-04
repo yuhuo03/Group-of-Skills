@@ -17,8 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://huggingface.co/datasets/DLPenn/graph-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Data-yellow" alt="Data"></a>
-  <a href="LICENSE_STATUS.md"><img src="https://img.shields.io/badge/License-Pending-lightgrey" alt="License status"></a>
+  <a href="https://huggingface.co/datasets/DLPenn/graph-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Skill_Library-yellow" alt="Skill library"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10--3.12-3776ab?logo=python&logoColor=white" alt="Python"></a>
 </p>
 
@@ -26,8 +25,7 @@
 
 ## 🔥 Updates
 
-- **[2026-11-04]** Added **GPT-5.4 results on SkillsBench, ALFWorld, and Terminal-Bench 2**, with five-method evaluation scripts — see [Results](#results) and [Evaluation](#evaluation).
-- **[2026-11-04]** Prepared the [camera-ready artifacts](docs/ARTIFACTS.md), including **1,545 selected trial traces**, per-task metrics, and checksums. Public download pending.
+- **[2026-11-04]** Released the **GPT-5.4 implementation** and five-method evaluation scripts for SkillsBench, ALFWorld, and Terminal-Bench 2 — see [Evaluation](#evaluation).
 - **[2026-09-25]** Paper available on [OpenReview](https://openreview.net/forum?id=MmJBYf16Bn).
 - **[2026-09-24]** 🎉 **Group of Skills is accepted to NeurIPS 2026 (Poster)!**
 - **[2026-05-06]** Initial code release on [GitHub](https://github.com/yuhuo03/Group-of-Skills).
@@ -60,27 +58,9 @@ benchmark stack.
 3. **Prune** -- remove incompatible or low-gain choices under group and context budgets.
 4. **Return** -- emit a bounded execution contract and source-preserving skill payloads.
 
-The figures illustrate the method. The GPT-5.4 implementation uses the candidate-D
-policy and the `START`, `SUPPORT`, `CHECK`, `AVOID`, `SKILLS`, and `DEBT` fields
-specified in [Method](docs/METHOD.md).
-
-## Results
-
-GoSkills is evaluated on **SkillsBench** (86 tasks), **ALFWorld** (134 episodes),
-and **Terminal-Bench 2** (89 tasks) with **GPT-5.4**. **R** = reward/success/accuracy
-(%), **T** = average input tokens (including cached input), **S** = agent-only
-runtime (s). ↑ higher is better, ↓ lower is better. Setup and cleanup are excluded.
-
-### Main results (end-to-end)
-
-| Model | Method | SB R↑ | SB T↓ | SB S↓ | AW R↑ | AW T↓ | AW S↓ | TB2 R↑ | TB2 T↓ | TB2 S↓ |
-|-------|--------|------:|------:|------:|------:|------:|------:|-------:|-------:|-------:|
-| GPT-5.4 | No Skills | 25.3 | **116,107** | 188.6 | 83.6 | **18,521** | 35.3 | 52.8 | **164,039** | **301.1** |
-| | Vanilla Skills | 28.9 | 121,275 | **159.2** | 92.5 | 2,953,003 | 74.4 | 44.9 | 2,071,755 | 445.7 |
-| | Vector Skills | 34.0 | 144,827 | 185.8 | 92.5 | 38,263 | 38.5 | 48.3 | 177,525 | 357.7 |
-| | Graph of Skills | 35.7 | 136,054 | 192.9 | 91.8 | 39,013 | 40.2 | 46.1 | 168,981 | 302.7 |
-| | **GoSkills (ours)** | **39.4** | 156,696 | 187.3 | **95.5** | 35,042 | **34.5** | **60.7** | 173,228 | 427.6 |
-
+The returned plan identifies where to start, which support and checking skills to
+use, and visible requirement cues not covered by the presented skill text. See
+[the method guide](goskills/README.md) for the graph schema and retrieval settings.
 
 ## Citation
 
@@ -98,7 +78,6 @@ If you find this work useful, please cite:
 ```
 
 <sup>*</sup> Equal contribution. <sup>†</sup> Corresponding author.
-Publication identifiers will be added to [CITATION.cff](CITATION.cff) when available.
 
 ## Installation
 
@@ -121,13 +100,9 @@ python -m pip install -e ".[dev]"
 python -m pip check
 ```
 
-Core build/query and table reproduction need no API key. Configure credentials
-with the shell exports below only for API-backed evaluation; copying `.env.example`
-does not load them. Full evaluation uses
-separate terminal and retrieval Python environments; follow
-[the evaluation setup](docs/GETTING_STARTED.md) before installing optional dependencies.
-Use the selected-extra installation above: `uv sync` also resolves optional
-benchmark extras across the supported Python range, but Harbor requires Python 3.12+.
+Core build/query needs no API key. For benchmark runs, configure the shell
+variables below and follow [the evaluation setup](evaluation/SETUP.md) to install
+the separate terminal and retrieval environments.
 
 <details>
 <summary><strong>Provider: OpenAI (direct)</strong></summary>
@@ -140,7 +115,7 @@ export GOS_EMBEDDING_DIM=1536
 ```
 
 These are shell variables. The launchers do not automatically load `.env`.
-The GoSkills D retrieval core itself uses lexical seeds and makes no embedding calls.
+GoSkills retrieval uses lexical seeds and makes no embedding calls.
 
 </details>
 
@@ -172,7 +147,7 @@ use [evaluation/README.md](evaluation/README.md) for the benchmark runners.
 
 Complete [Installation](#installation) above. No provider is needed for the small
 included example. For real benchmark assets, set up the two Python environments
-as described in [the evaluation setup](docs/GETTING_STARTED.md) and [DATA.md](DATA.md).
+as described in [the evaluation setup](evaluation/SETUP.md) and [DATA.md](DATA.md).
 
 ### Step 1: Download skill libraries
 
@@ -187,7 +162,7 @@ python scripts/fetch_asset.py \
   --output data/external/skills_2000 --execute
 ```
 
-**Tiny smoke test without a download:** use `examples/minimal_graph.json`, a
+**Tiny smoke test without a download:** use `assets/examples/minimal_graph.json`, a
 synthetic graph included with the repository.
 
 ### Step 2: Workspace directory layout (recommended for benchmarks)
@@ -220,7 +195,7 @@ python -m goskills build \
 ```bash
 DEMO_DIR=$(mktemp -d)
 python -m goskills build \
-  --graph examples/minimal_graph.json --output "$DEMO_DIR/pool.json"
+  --graph assets/examples/minimal_graph.json --output "$DEMO_DIR/pool.json"
 ```
 
 > **Compatibility note:** use a typed directed source graph from the pinned GoS
@@ -251,13 +226,12 @@ python -m goskills query --pool "$DEMO_DIR/pool.json" \
 The JSON bundle contains selected groups, skill payloads, source spans, selection
 traces, and coverage debt. To extend the source graph, build a new pool at a new
 output path. Pools and saved bundles are not overwritten. See
-[examples/README.md](examples/README.md) for the Python API.
+[Agent Integration](#agent-integration) for the Python API.
 
 ### Step 6: What to run next
 
 - **End-to-end sanity check** (one task): see the **Minimal Verification** collapsible in [Evaluation](#evaluation).
 - **Paper benchmarks** (all three benchmarks and five methods): [evaluation/README.md](evaluation/README.md).
-- **Recorded results and traces:** [Artifacts](docs/ARTIFACTS.md).
 
 ## Agent Integration
 
@@ -272,7 +246,7 @@ from goskills.io import read_json
 from goskills.retrieval import Retriever
 from goskills.validation import validate_bundle
 
-pool = build_pool(read_json("examples/minimal_graph.json"), validate_config())
+pool = build_pool(read_json("assets/examples/minimal_graph.json"), validate_config())
 bundle = Retriever(pool).query("Parse STL and produce JSON with unit tests.")
 validate_bundle(bundle)
 print(bundle["rendered_context"])
@@ -311,14 +285,14 @@ for task preparation and container integration.
 | `goskills query` | Retrieve a bounded skill bundle and execution contract |
 | `goskills validate-bundle` | Validate bundle integrity, context budgets, and coverage debt |
 | `goskills-query` | Agent-facing retrieval inside the SkillsBench bash adapter |
-| `python scripts/run_benchmark.py` | Plan or execute benchmark/method combinations |
-| `python scripts/summarize_runs.py` | Aggregate per-trial scores, tokens, and runtime |
+| `.venv-eval/bin/python scripts/run_benchmark.py` | Plan or execute benchmark/method combinations |
+| `.venv-eval/bin/python scripts/summarize_runs.py` | Aggregate per-trial scores, tokens, and runtime |
 
 ## Configuration
 
 Provider variables are documented in [`.env.example`](.env.example). Evaluation
-asset paths are set in [configs/local.example.json](configs/local.example.json).
-The recorded GoSkills D retrieval policy uses:
+asset paths are set in [evaluation/configs/local.example.json](evaluation/configs/local.example.json).
+GoSkills uses the following default settings:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -330,7 +304,7 @@ The recorded GoSkills D retrieval policy uses:
 | Members per group | `3` | Offline group-size cap |
 | Selected groups | `3` | Online group-selection cap |
 
-See [Method](docs/METHOD.md) for exact policy fields and validation rules.
+See [Method](goskills/README.md) for exact policy fields and validation rules.
 
 > **Note:** Vector and Graph of Skills must use the same embedding model and
 > dimension at retrieval time as at index construction.
@@ -339,7 +313,7 @@ See [Method](docs/METHOD.md) for exact policy fields and validation rules.
 
 **Docs:** Start with [evaluation/README.md](evaluation/README.md) for the five
 methods and benchmark entrypoints. The complete environment setup is in
-[the evaluation setup guide](docs/GETTING_STARTED.md); task and index preparation
+[the evaluation setup guide](evaluation/SETUP.md); task and index preparation
 are in [DATA.md](DATA.md).
 
 We evaluate GoSkills on three benchmarks:
@@ -354,18 +328,18 @@ All support `noskills`, `vanilla`, `vector`, `native-gos`, and `goskills-d`.
 After preparing the inputs, configure and run the shared launcher:
 
 ```bash
-cp configs/local.example.json configs/local.json
-python scripts/doctor.py --config configs/local.json --runtime
+cp evaluation/configs/local.example.json evaluation/configs/local.json
+.venv-eval/bin/python scripts/doctor.py --config evaluation/configs/local.json --runtime
 
 # Plan all 15 combinations without calling a provider.
-python scripts/run_benchmark.py --config configs/local.json \
+.venv-eval/bin/python scripts/run_benchmark.py --config evaluation/configs/local.json \
   --benchmark all --methods all --output runs/gpt54-all
 
 # Execute the plan as a new run (billable API calls and benchmark environments).
-python scripts/run_benchmark.py --config configs/local.json \
+.venv-eval/bin/python scripts/run_benchmark.py --config evaluation/configs/local.json \
   --benchmark all --methods all --output runs/gpt54-all --execute
 
-python scripts/summarize_runs.py runs/gpt54-all --output outputs/gpt54-all-table
+.venv-eval/bin/python scripts/summarize_runs.py runs/gpt54-all --output outputs/gpt54-all-table
 ```
 
 Use a fresh output directory for each run. The launcher preserves completed
@@ -383,18 +357,18 @@ benchmark sweep. The commands below invoke APIs only when `--execute` is added.
 - Both Python environments and the original datasets from [DATA.md](DATA.md).
 - A compatible full-library workspace and GoSkills group pool.
 - Docker running and `OPENAI_API_KEY` exported in the shell.
-- `configs/local.json` populated with the local asset paths.
+- `evaluation/configs/local.json` populated with the local asset paths.
 
 **1. Validate local inputs**
 
 ```bash
-python scripts/doctor.py --config configs/local.json --runtime
+.venv-eval/bin/python scripts/doctor.py --config evaluation/configs/local.json --runtime
 ```
 
 **2. Preview one task**
 
 ```bash
-python scripts/run_benchmark.py --config configs/local.json \
+.venv-eval/bin/python scripts/run_benchmark.py --config evaluation/configs/local.json \
   --benchmark tb2 --methods goskills-d --tasks adaptive-rejection-sampler \
   --output runs/tb2-one
 ```
@@ -402,10 +376,10 @@ python scripts/run_benchmark.py --config configs/local.json \
 **3. Run and summarize the task**
 
 ```bash
-python scripts/run_benchmark.py --config configs/local.json \
+.venv-eval/bin/python scripts/run_benchmark.py --config evaluation/configs/local.json \
   --benchmark tb2 --methods goskills-d --tasks adaptive-rejection-sampler \
   --output runs/tb2-one --execute
-python scripts/summarize_runs.py runs/tb2-one --output outputs/tb2-one
+.venv-eval/bin/python scripts/summarize_runs.py runs/tb2-one --output outputs/tb2-one
 ```
 
 **4. What "success" looks like**
@@ -415,56 +389,43 @@ python scripts/summarize_runs.py runs/tb2-one --output outputs/tb2-one
 - A complete verifier result may legitimately score zero. A transport or
   environment failure is recorded separately and is not converted to zero.
 
-The release passed 71 offline tests and all 15 planning paths. This portable
-package has not been checked through a new paid end-to-end benchmark run.
-
 </details>
 
 ## Repository Layout
 
 ```
 Group-of-Skills/
-├── goskills/                     # Core GoSkills package
-│   ├── groups.py                #   Offline skill-group construction
-│   ├── retrieval.py             #   Online group retrieval
-│   ├── presentation.py          #   Source-preserving skill presentation
-│   └── __main__.py              #   CLI entry points
-├── data/                        # Selected numeric results; external inputs gitignored
-├── evaluation/                  # See evaluation/README.md
-│   ├── alfworld/                #   ALFWorld benchmark runner
+├── assets/                      # Method figures and a small tutorial graph
+├── evaluation/                  # Three benchmarks and five methods
+│   ├── alfworld/                #   ALFWorld runner
 │   ├── skillsbench/             #   SkillsBench / Harbor integration
 │   ├── terminalbench2/          #   Terminal-Bench 2 / Harbor integration
-│   └── goskills_eval/           #   Shared evaluation adapters
-├── scripts/                     # Data, evaluation, and result-table utilities
-├── tests/                       # Offline test suite
-├── assets/                      # README figures
-├── configs/                     # Benchmark task sets and local configuration
-├── requirements/                # Pinned evaluation environments
-├── examples/                    # Small offline example graph
-├── tables/                      # CSV, Markdown, and LaTeX tables
-├── docs/                        # Method and artifact documentation
-├── provenance/                  # Source hashes and validation records
-├── pyproject.toml               # Package definition & CLI entry points
-├── .env.example                 # Environment variable template
-└── DATA.md                      # Data & downloads
+│   ├── goskills_eval/           #   Shared evaluation adapters
+│   ├── configs/                 #   Task manifests and local configuration
+│   └── requirements/            #   Separate evaluation dependency sets
+├── goskills/                    # Group construction, retrieval and CLI
+├── scripts/                     # Asset preparation and evaluation utilities
+├── tests/                       # Offline tests
+├── .env.example                 # Provider configuration template
+├── pyproject.toml               # Package definition
+├── CONTRIBUTING.md              # Development guide
+└── DATA.md                      # External data and workspace setup
 ```
 
 ## Documentation
 
 | Document | What it covers |
 |----------|----------------|
-| [DATA.md](DATA.md) | Skill library, benchmark datasets, directed workspace, and group-pool preparation |
-| [evaluation/README.md](evaluation/README.md) | **Evaluation overview**: three benchmarks, five methods, entrypoints |
-| [evaluation/skillsbench/README.md](evaluation/skillsbench/README.md) | **SkillsBench detail**: task packaging, Harbor, retrieval, and scoring |
-| [evaluation/alfworld/README.md](evaluation/alfworld/README.md) | **ALFWorld detail**: simulator, task manifest, and five-method episode runner |
-| [evaluation/terminalbench2/README.md](evaluation/terminalbench2/README.md) | **Terminal-Bench 2 detail**: task configuration, runtime, and evidence |
-| [docs/METHOD.md](docs/METHOD.md) | Group construction, retrieval policy, and execution-contract schema |
-| [docs/ARTIFACTS.md](docs/ARTIFACTS.md) | Recorded results, reproduction commands, trace archive and checksums |
-| [docs/SELECTION_AND_LIMITATIONS.md](docs/SELECTION_AND_LIMITATIONS.md) | Result selection, original results and rerun provenance |
-| [`.env.example`](.env.example) | Provider and embedding configuration |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Development setup and offline tests |
+| [DATA.md](DATA.md) | Skill library, benchmark inputs and workspace preparation |
+| [goskills/README.md](goskills/README.md) | Group construction, retrieval and graph schema |
+| [evaluation/SETUP.md](evaluation/SETUP.md) | Evaluation dependencies and configuration |
+| [evaluation/README.md](evaluation/README.md) | Three benchmarks and five methods |
+| [evaluation/skillsbench/README.md](evaluation/skillsbench/README.md) | SkillsBench |
+| [evaluation/alfworld/README.md](evaluation/alfworld/README.md) | ALFWorld |
+| [evaluation/terminalbench2/README.md](evaluation/terminalbench2/README.md) | Terminal-Bench 2 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Development setup and tests |
 
 ## License
 
-The project license is pending author confirmation. See [LICENSE_STATUS.md](LICENSE_STATUS.md).
-Third-party components retain their own terms, listed in [THIRD_PARTY.md](THIRD_PARTY.md).
+A project license has not yet been specified. Third-party components and datasets
+retain their own licenses; see [DATA.md](DATA.md#attribution).

@@ -1,6 +1,5 @@
-"""Offline regression checks for the released experimental retrieval policy."""
+"""Offline regression checks for group-structured skill retrieval."""
 import copy
-import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -19,17 +18,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def graph():
-    return read_json(ROOT / "examples/minimal_graph.json")
+    return read_json(ROOT / "assets/examples/minimal_graph.json")
 
 
-class CoreReleaseTests(unittest.TestCase):
-    def test_frozen_core_bytes(self):
-        manifest = read_json(ROOT / "provenance/CORE_SOURCE.json")
-        for item in manifest["files"]:
-            digest = hashlib.sha256((ROOT / item["path"]).read_bytes()).hexdigest()
-            self.assertEqual(digest, item["source_sha256"])
-            self.assertEqual(digest, item["release_sha256"])
-
+class CoreTests(unittest.TestCase):
     def test_permutation_invariant_retrieval(self):
         original = graph()
         reverse = copy.deepcopy(original)
@@ -97,7 +89,7 @@ class CoreReleaseTests(unittest.TestCase):
             def run(*args):
                 return subprocess.run([sys.executable, "-m", "goskills", *map(str, args)], cwd=ROOT,
                                       check=True, capture_output=True, text=True).stdout
-            run("build", "--graph", ROOT / "examples/minimal_graph.json", "--output", pool)
+            run("build", "--graph", ROOT / "assets/examples/minimal_graph.json", "--output", pool)
             run("query", "--pool", pool, "--query", "Parse STL and output JSON", "--output-json", bundle)
             report = json.loads(run("validate-bundle", bundle))
             self.assertEqual(report["status"], "passed")

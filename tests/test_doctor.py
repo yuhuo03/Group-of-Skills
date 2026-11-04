@@ -20,9 +20,9 @@ def metadata(openai='1.109.1',python=(3,12,12)):
 class DoctorTests(unittest.TestCase):
     def test_relative_interpreter_keeps_venv_symlink(self):
         with tempfile.TemporaryDirectory() as d:
-            root=Path(d);(root/'configs').mkdir();(root/'.venv-retrieval/bin').mkdir(parents=True)
+            root=Path(d);(root/'evaluation/configs').mkdir(parents=True);(root/'.venv-retrieval/bin').mkdir(parents=True)
             link=root/'.venv-retrieval/bin/python';link.symlink_to(sys.executable)
-            result=doctor.retrieval_interpreter('../.venv-retrieval/bin/python',root/'configs')
+            result=doctor.retrieval_interpreter('../../.venv-retrieval/bin/python',root/'evaluation/configs')
             self.assertEqual(str(result),os.path.abspath(link))
             self.assertTrue(result.is_symlink())
             self.assertNotEqual(str(result),str(link.resolve()))

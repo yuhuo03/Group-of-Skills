@@ -232,7 +232,7 @@ class BackendTests(unittest.TestCase):
     def test_shipped_game_manifest_and_root_containment(self):
         spec = importlib.util.spec_from_file_location('alfworld_shipped_manifest_test', ROOT/'evaluation/alfworld/run.py')
         module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-        manifest = ROOT/'configs/alfworld_games.json'
+        manifest = ROOT/'evaluation/configs/alfworld_games.json'
         data = json.loads(manifest.read_text())
         with tempfile.TemporaryDirectory() as d:
             root = Path(d).resolve()

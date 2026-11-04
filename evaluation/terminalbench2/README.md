@@ -1,115 +1,88 @@
-# Terminal-Bench 2: all five methods
+# Terminal-Bench 2
 
-The single-trial entrypoint accepts `noskills`, `vanilla`, `vector`, `native-gos`
-and `goskills-d`. Every arm uses the same recorded GPT-5.4 terminal prompt, `low`
-reasoning, 4,096 completion-token limit and original task deadline. The five
-method differences are:
+The runner supports all five methods with the GPT-5.4 terminal prompt, low
+reasoning, a 4,096-token completion limit, and each task's original deadline.
 
-| Method | Skill access |
-|---|---|
-| `noskills` | Bash only; no skill library, retrieval or embedding calls |
-| `vanilla` | The complete official GoS `all_full` exposure catalog once at startup, with read-only source access; no dynamic retrieval tool |
-| `vector` | Official vector retrieval, `text-embedding-3-small`, 1,536 dimensions |
-| `native-gos` | Official graph retrieval with the same embedding route, five seeds |
-| `goskills-d` | The frozen D group retriever; lexical seeds, no embedding service |
+## Setup and inputs
 
-Vector, graph and D expose a `retrieve_skills` tool and an initial retrieval.
-Each retrieved context is capped at four skills / 1,800 body characters per skill /
-9,000 context characters. The vanilla full catalog intentionally has no top-k
-cap. Original skill files are mounted read-only at `/opt/graphskills/skills`.
+Complete [environment setup](../SETUP.md) and [input preparation](../../DATA.md).
+Run the entrypoint with `.venv-eval/bin/python`. Vanilla, Vector, and Graph of
+Skills also use the separate `.venv-retrieval/bin/python` environment.
+GoSkills and No Skills can use the terminal environment alone.
 
-## Install and prepare inputs
+Supply raw Terminal-Bench 2 task definitions and their images. Task CPU, memory,
+verifier settings, and timeout multipliers are retained.
 
-Use two Python 3.12 environments. Harbor 0.20 requires an OpenAI SDK version that
-conflicts with pinned GoS's `fast-graphrag` dependency. The Harbor agent therefore
-launches official retrieval in the separately selected interpreter. The recorded
-TB2 host used Python 3.13.14; the portable dependency snapshots below were resolved
-for Python 3.12 on Linux x86_64.
+| Method | Additional inputs | Skill access |
+|---|---|---|
+| `noskills` | None | Bash only |
+| `vanilla` | Skills root, upstream, retrieval Python | Full metadata catalog and read-only source access |
+| `vector` | Skills root, workspace, upstream, retrieval Python | Upstream vector retrieval |
+| `native-gos` | Skills root, workspace, upstream, retrieval Python | Upstream graph retrieval |
+| `goskills-d` | Skills root, pool | GoSkills group retrieval |
 
-After obtaining the pinned upstream checkout in `data/external/graph-of-skills`
-as described in the root DATA guide, run from the release root. Reuse either
-environment if the full setup guide already installed it; do not recreate it:
+Vector and Graph of Skills use `text-embedding-3-small` with 1,536 dimensions;
+Graph of Skills uses five seeds. GoSkills uses lexical seeds. These three methods
+receive initial retrieval and a `retrieve_skills` tool, with at most four skills,
+1,800 characters per skill, and 9,000 context characters. Vanilla receives the
+full catalog without a top-k cap. Source files are mounted read-only at
+`/opt/graphskills/skills`.
+
+## Plan and execute
+
+From the repository root, set paths to your installed assets:
 
 ```bash
-uv venv --python 3.12 --seed .venv-eval
-.venv-eval/bin/python -m pip install \
-  -r requirements/terminal-py312-linux.txt -e '.[terminal]'
-.venv-eval/bin/python -m pip check
-
-uv venv --python 3.12 --seed .venv-retrieval
-.venv-retrieval/bin/python -m pip install \
-  -r requirements/retrieval-alfworld-py312-linux.txt \
-  -e '.[alfworld]' -e data/external/graph-of-skills
-.venv-retrieval/bin/python -m pip check
+TASK=data/external/terminal-bench-2/TASK
+SKILLS=data/external/skills_2000
+UPSTREAM=data/external/graph-of-skills
+WORKSPACE=data/external/workspace
+POOL=data/external/pool.json
 RETRIEVAL_PYTHON="$PWD/.venv-retrieval/bin/python"
-```
 
-The second environment is required by `vanilla`, `vector` and `native-gos`, and
-can also run ALFWorld. No Skills and D can use the Harbor interpreter alone.
-Keep the venv interpreter path itself; do not resolve its symlink to a base Python.
-Obtain the raw
-TB2 task definitions/images and skill library under their own terms. Vector and
-graph require the matching official workspace; D requires a built JSON or exact
-compiled group pool. None of those assets is silently downloaded during planning.
+.venv-eval/bin/python evaluation/terminalbench2/run.py \
+  --task "$TASK" --method noskills --output runs/tb2-noskills
 
-Set these paths to your installed assets:
+.venv-eval/bin/python evaluation/terminalbench2/run.py \
+  --task "$TASK" --method vanilla --skills-root "$SKILLS" \
+  --upstream "$UPSTREAM" --retrieval-python "$RETRIEVAL_PYTHON" \
+  --output runs/tb2-vanilla
 
-```bash
-TASK=/path/to/terminal-bench-2/task-name
-SKILLS=/path/to/skills_2000
-UPSTREAM=/path/to/graph-of-skills
-WORKSPACE=/path/to/matching-gos-workspace
-POOL=/path/to/groups.json
-```
-
-Plan any of the five methods without API credentials, Docker calls or output
-creation; supply only the resources needed for that method:
-
-```bash
-.venv-eval/bin/python evaluation/terminalbench2/run.py --task "$TASK" --method noskills --output runs/tb2-none
-.venv-eval/bin/python evaluation/terminalbench2/run.py --task "$TASK" --method vanilla \
-  --skills-root "$SKILLS" --upstream "$UPSTREAM" --retrieval-python "$RETRIEVAL_PYTHON" --output runs/tb2-vanilla
-.venv-eval/bin/python evaluation/terminalbench2/run.py --task "$TASK" --method vector \
-  --skills-root "$SKILLS" --upstream "$UPSTREAM" --workspace "$WORKSPACE" \
+.venv-eval/bin/python evaluation/terminalbench2/run.py \
+  --task "$TASK" --method vector --skills-root "$SKILLS" \
+  --upstream "$UPSTREAM" --workspace "$WORKSPACE" \
   --retrieval-python "$RETRIEVAL_PYTHON" --output runs/tb2-vector
-.venv-eval/bin/python evaluation/terminalbench2/run.py --task "$TASK" --method native-gos \
-  --skills-root "$SKILLS" --upstream "$UPSTREAM" --workspace "$WORKSPACE" \
+
+.venv-eval/bin/python evaluation/terminalbench2/run.py \
+  --task "$TASK" --method native-gos --skills-root "$SKILLS" \
+  --upstream "$UPSTREAM" --workspace "$WORKSPACE" \
   --retrieval-python "$RETRIEVAL_PYTHON" --output runs/tb2-graph
-.venv-eval/bin/python evaluation/terminalbench2/run.py --task "$TASK" --method goskills-d \
-  --skills-root "$SKILLS" --pool "$POOL" --output runs/tb2-d
+
+.venv-eval/bin/python evaluation/terminalbench2/run.py \
+  --task "$TASK" --method goskills-d --skills-root "$SKILLS" \
+  --pool "$POOL" --output runs/tb2-goskills
 ```
 
-The planning step validates local paths and prints the generated Harbor trial
-configuration. It preserves the raw task's CPU, memory, verifier and timeout
-multiplier; no global timeout is substituted for task-defined limits. For a
-real trial, configure the chat credentials (`OPENAI_API_KEY`, optional
-`OPENAI_BASE_URL`) and official embedding credentials for vector/graph, then add
-`--execute` to the chosen command. **Execution makes billable API calls and starts
-Docker.** Existing output folders are refused; use one fresh folder per trial.
+Commands validate local inputs and print the trial configuration by default.
+After configuring providers in [SETUP.md](../SETUP.md), add `--execute` to run
+one trial. Execution starts Docker and makes API requests. Use a new output
+directory for every trial; there is no automatic resume or score-based retry.
 
-## Outputs and acceptance
+For multiple tasks or methods, use the [batch runner](../README.md).
 
-The root output contains `trial_config.json` and `receipt.json`; the Harbor trial
-subdirectory contains `result.json`, `agent/trajectory.json`, request usage,
-retrieval evidence and canonical verifier output. Root `receipt.json` is `VALID`
-only after the exact model/usage/transport, retrieval, score, trace and
-owned-container cleanup checks pass. It records reward, input/output/cache tokens,
-agent runtime seconds and result/trace hashes. Other outcomes are
-`PROCESS_FAILED`; missing/null reward or missing canonical tests never becomes0.
-A real verified0 remains0, with its recorded costs. There is no score-based retry.
+## Outputs
 
-Retrieval occurs in an isolated host subprocess with a 180-second deadline using
-`--retrieval-python` (D defaults to the Harbor interpreter). Resource
-paths are passed in its structured request rather than shared pool environment
-state. Only that owned helper is terminated if its deadline expires. API credentials
-are not written into task packs or mounted into benchmark containers.
+The output contains `trial_config.json` and `receipt.json`. The Harbor trial
+directory contains `result.json`, `agent/trajectory.json`, request usage,
+retrieval records, and verifier outputs. A valid receipt requires confirmed
+model/usage records, method retrieval evidence, a finite reward and canonical
+test report, a trajectory, and completed cleanup.
 
-## Historical environment repairs
+Receipts record reward, input/output/cache tokens, agent runtime in seconds,
+and result/trace hashes. Missing or null results and environment failures remain
+failed trials; a verified zero remains zero. Agent runtime excludes environment
+setup, verification, and cleanup.
 
-The historical campaign used SHA-bound dependency transport and cleanup repairs
-for particular images. Those snapshots remain in the companion artifacts. This
-entrypoint uses the task's native verifier and does not automatically apply
-historical repairs to arbitrary images. Bootstrap failures must be investigated;
-they are not legitimate agent zeros. The portable five-arm entrypoints have
-synthetic offline coverage; no new paid experiment was run to certify score
-replication while preparing this release.
+Retrieval uses an isolated host process with a 180-second deadline. Keep the
+virtual environment executable path in `--retrieval-python`; provider
+credentials are not written into task packs or mounted into task containers.

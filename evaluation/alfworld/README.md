@@ -1,42 +1,35 @@
-# ALFWorld — all five methods
+# ALFWorld
 
-This entrypoint supports `noskills`, `vanilla`, `vector`, `native-gos`, and
-`goskills-d`. It uses the recorded GPT-5.4 protocol: ALFWorld 0.4.2 / TextWorld
-1.7.0, the out-of-distribution split, seed 42, 30 interaction steps, low reasoning,
-and 4,096 maximum completion tokens. Responses must report the recorded model
-`gpt-5.4-2026-03-05`; model/usage errors fail the trial instead of becoming zero.
+The runner supports all five methods with ALFWorld 0.4.2 and TextWorld 1.7.0.
+It uses the out-of-distribution split, seed 42, GPT-5.4 with low reasoning,
+30 interaction steps, and a 4,096-token completion limit.
 
-Use the separate Python 3.12 `.venv-retrieval` environment described in the root
-README/DATA guide. Its pinned requirements include ALFWorld and the official GoS
-checkout. Harbor uses a different environment because its OpenAI SDK dependency
-is incompatible with the fixed GoS dependency. Set
-`ALFWORLD_DATA` to a licensed, unpacked ALFWorld data directory. Dataset downloads
-are a separate setup step; this runner never generates episodes or answers.
+## Setup and inputs
 
-## Method inputs and behavior
+Complete [environment setup](../SETUP.md) and [input preparation](../../DATA.md).
+Run ALFWorld with `.venv-retrieval/bin/python` and set `ALFWORLD_DATA` to the
+unpacked ALFWorld dataset.
 
-| Method | Required additional inputs | Skill behavior |
+Every method requires the clean Graph of Skills checkout at commit
+`203f60a2c689da055ce1ac351eb3cb9912a3bca7` for the ALFWorld runner, prompts,
+and skill interface, plus its `base_config.yaml` and an OOD game file.
+
+| Method | Additional inputs | Skill access |
 |---|---|---|
-| `noskills` | None | No skill adapter |
-| `vanilla` | `--skills-root` | Upstream `all_full` metadata catalog and named skill reads |
-| `vector` | `--skills-root`, `--workspace` | Official vector-only retrieval; real embeddings |
-| `native-gos` | `--skills-root`, `--workspace` | Official graph retrieval; real embeddings |
-| `goskills-d` | `--skills-root`, `--pool` | Frozen D group retriever and source-fidelity checks |
+| `noskills` | None | No skills |
+| `vanilla` | Skills root | Full metadata catalog and named skill reads |
+| `vector` | Skills root, workspace | Upstream vector retrieval |
+| `native-gos` | Skills root, workspace | Upstream graph retrieval |
+| `goskills-d` | Skills root, pool | GoSkills group retrieval |
 
-All methods require `--upstream` for the original ALFWorld runner, prompts,
-`SkillModule`, and token tracker. The checkout must be clean at commit
-`203f60a2c689da055ce1ac351eb3cb9912a3bca7`. The current D adapter is the shared
-D core used on SkillsBench/TB2, not the obsolete task-name-based ALF selector.
+Vector and Graph of Skills use `text-embedding-3-small` with 1,536 dimensions,
+at most four skills, 1,800 characters per skill, and 9,000 context characters.
+Graph retrieval uses five seeds; query rewriting is disabled. Each explicit
+skill request consumes an interaction step.
 
-Vector and graph use `text-embedding-3-small`, 1,536 dimensions, top 4 skills,
-1,800 characters per skill, 9,000 characters of context, no LLM query rewrite,
-and graph seed top-k 5. The upstream ALFWorld query shaping and explicit runtime
-skill requests are retained. Each skill request consumes an interaction step.
-Vanilla exposes the full metadata catalog; it does not silently become retrieval.
+## Plan and execute
 
-## Plan one task
-
-From the repository root, after obtaining assets (replace the example paths):
+From the repository root, replace the example game path:
 
 ```bash
 .venv-retrieval/bin/python evaluation/alfworld/run.py \
@@ -46,50 +39,33 @@ From the repository root, after obtaining assets (replace the example paths):
   --skills-root data/external/skills_2000 \
   --pool data/external/pool.json \
   --workspace data/external/workspace \
-  --method goskills-d --output runs/alfworld-goskills-d-new
+  --method goskills-d --output runs/alfworld-goskills-new
 ```
 
-The default only prints a plan and does not import a simulator or API client.
-Change `--method` to any of the five IDs. Inputs unused by that method may be
-omitted. No Skills does not require a skill library, pool, or index.
+Change `--method` to any identifier in the table. Inputs unused by that method
+may be omitted. The default prints a plan without importing the simulator or
+calling an API. Add `--execute` to run one episode using the provider variables
+in [SETUP.md](../SETUP.md). Use a fresh output directory.
 
-To select by the packaged historical game mapping instead, replace `--game-file`
-with:
+To select a task by the supplied game mapping, replace `--game-file` with:
 
 ```bash
---game-index 0 --games-manifest configs/alfworld_games.json \
+--game-index 0 --games-manifest evaluation/configs/alfworld_games.json \
   --data-root data/external/alfworld
 ```
 
-Relative manifest paths resolve under `--data-root`. On execution, a supplied
-manifest game hash must match the file, and the game must belong to the actual
-simulator's OOD split. The batch runner in the root README uses explicit game
-paths and a fresh subprocess/output directory for each method/task.
+Manifest paths resolve under `--data-root`. The runner checks the game hash and
+OOD membership before execution. Use the [batch runner](../README.md) for
+multiple tasks or methods.
 
-## Execute after setup
+## Outputs
 
-Set `OPENAI_API_KEY`, and optionally `OPENAI_BASE_URL`, locally. For graph/vector,
-the official embedding service uses these same upstream credential/endpoint
-variables. The runner pins `GOS_EMBEDDING_MODEL` and `GOS_EMBEDDING_DIM` before
-import, and rejects incompatible already-loaded settings. Add `--execute` to the
-plan command to run exactly one new episode, including billable model requests.
-There is no whole-task retry loop and existing output directories are refused.
+Each run writes `result.json` with the conversation and reward, API usage and
+transport records, retrieval records, and a normalized `receipt.json`.
+The receipt contains reward, input/output tokens, and agent runtime only after
+result validation. Missing scores, model/usage errors, embedding failures, or
+cleanup failures produce an invalid trial rather than a zero score. The runner
+does not retry episodes automatically.
 
-The supplied source index is never used as a writable working directory. Each
-worker copies it to its own output/index before constructing the official engine.
-A missing, failed, non-finite, or wrong-dimension embedding cannot fall back to a
-lexical/zero-vector result. These are recorded failures, not valid agent zero scores.
-
-## Outputs and verification
-
-`result.json` contains the original conversation, reward, recorded agent runtime
-and token tracker; `api_calls.json` and `transport.json` retain model/usage evidence.
-Retrieval/embedding receipts are saved per query. `receipt.json` has normalized
-`reward`, `input_tokens`, `output_tokens`, `runtime_seconds`, and source hashes
-only after result validation. Environment cleanup failure makes the receipt fail
-and exits nonzero. Raw outputs remain private until reviewed for publication.
-
-Tests use injected fake providers/engines and synthetic resources. They exercise
-all five plans, graph-versus-vector dispatch, full-library vanilla behavior,
-source-index isolation, embedding failure/dimension rejection, and relocation.
-They do not call the real API or simulator and do not claim new benchmark scores.
+Upstream workspaces are copied into the run directory before retrieval so the
+source index remains unchanged.

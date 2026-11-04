@@ -1,28 +1,60 @@
-# Three benchmarks, five methods
+# Evaluation
 
-| Benchmark | No Skills | Vanilla | Vector | Graph of Skills | GoSkills D | Entry |
-|---|---|---|---|---|---|---|
-| SkillsBench | supported | supported | supported | supported | supported | [raw task runner](skillsbench/README.md) |
-| ALFWorld | supported | supported | supported | supported | supported | [episode runner](alfworld/README.md) |
-| Terminal-Bench 2 | supported | supported | supported | supported | supported | [task runner](terminalbench2/README.md) |
+GoSkills provides runners for three benchmarks and five methods.
 
-Method IDs are `noskills`, `vanilla`, `vector`, `native-gos`, `goskills-d`.
-Each benchmark keeps its own prompt and skill-access protocol. Vector and Graph
-use the real pinned upstream engines and checked 1,536-dimensional embeddings;
-GoSkills D uses the frozen group-retrieval core. They are distinct methods.
-SkillsBench builds a fresh method pack directly from a raw task.
+| Benchmark | Runner | Environment |
+|---|---|---|
+| SkillsBench | [SkillsBench guide](skillsbench/README.md) | `.venv-eval` |
+| ALFWorld | [ALFWorld guide](alfworld/README.md) | `.venv-retrieval` |
+| Terminal-Bench 2 | [Terminal-Bench 2 guide](terminalbench2/README.md) | `.venv-eval` |
 
-Start with [installation and batch commands](../README.md) and
-[asset preparation](../DATA.md). Single-trial and batch entrypoints default to
-planning. Explicit `--execute` creates fresh outputs and makes paid requests.
-The batch runner launches one independent process per trial and stops on an
-invalid trial. A valid zero is recorded normally; it is not retried.
+| Method | CLI identifier |
+|---|---|
+| No Skills | `noskills` |
+| Vanilla Skills | `vanilla` |
+| Vector Skills | `vector` |
+| Graph of Skills | `native-gos` |
+| GoSkills | `goskills-d` |
 
-Outputs include normalized receipts, traces, retrieval evidence and verifier
-results. `scripts/summarize_runs.py` produces trial and method tables. A
-missing/null/environment-failed result is never substituted with zero.
+Start with [environment setup](SETUP.md) and [input preparation](../DATA.md).
+The methods share the same model settings within each benchmark; each benchmark
+retains its own prompts, task interface, and skill-access protocol.
 
-See [protocol and portability](../docs/EVALUATION.md). These are newly portable
-evaluation entrypoints, not copies of the historical multi-server controllers.
-Offline tests cover all 15 combinations; no live benchmark replication was run
-while packaging this version.
+## Run a benchmark
+
+From the repository root, configure `evaluation/configs/local.json`, then print
+a run plan:
+
+```bash
+.venv-eval/bin/python scripts/run_benchmark.py \
+  --config evaluation/configs/local.json \
+  --benchmark all --methods all --output runs/gpt54-all
+```
+
+Add `--execute` to run the plan. Execution uses model APIs and, for SkillsBench
+and Terminal-Bench 2, Docker. The batch runner selects the appropriate Python
+environment and launches a separate process for each trial.
+
+For one benchmark and method:
+
+```bash
+.venv-eval/bin/python scripts/run_benchmark.py \
+  --config evaluation/configs/local.json \
+  --benchmark tb2 --methods goskills-d \
+  --tasks adaptive-rejection-sampler --output runs/tb2-one
+```
+
+Use a new output directory for each run. The runner stops dispatching on an
+invalid trial; it does not automatically retry completed tasks or zero scores.
+
+## Summarize your runs
+
+```bash
+.venv-eval/bin/python scripts/summarize_runs.py runs/gpt54-all \
+  --output outputs/gpt54-all-table
+```
+
+The summarizer writes `TRIALS.csv`, `SUMMARY.csv`, and `SUMMARY.json` with reward,
+input/output tokens, and agent runtime. Incomplete groups retain their missing
+count instead of treating missing results as zero. Per-trial outputs include
+trajectories, retrieval records, verifier results, and normalized receipts.

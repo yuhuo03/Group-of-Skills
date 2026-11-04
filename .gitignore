@@ -13,8 +13,10 @@ venv/
 build/
 dist/
 *.egg-info/
-# External assets and paid execution output (selected numeric data IS versioned)
-data/external/
+# External inputs and generated output
+data/
+tables/
+artifacts/
 outputs/
 runs/
 logs/
@@ -24,9 +26,8 @@ traces/
 *.zip
 .DS_Store
 
-# Local evaluation assets and private outputs
-data/external/
-configs/local.json
+# Local evaluation configuration and environments
+evaluation/configs/local.json
 .venv-eval/
 
 .venv-retrieval/

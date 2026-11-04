@@ -1,19 +1,19 @@
 # Contributing
 
-Use Python 3.10+ for core retrieval and offline table reproduction.
+Use Python 3.10 or later for core retrieval development. Full benchmark evaluation
+uses Python 3.12 and the separate environments described in the README.
 
 ```bash
-python -m venv .venv
+uv venv --python 3.12 --seed .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]"
 python -m pytest -q
-python scripts/reproduce_table.py --check
-python scripts/check_release.py
 ```
 
-Keep core algorithm changes distinct from evaluation transport changes. Preserve
-source provenance; never edit a historical result to match a new implementation.
-New live runs need new output directories and an explicit experiment protocol.
-Do not commit API keys, .env files, raw traces, downloaded task assets or caches.
-Test with synthetic fixtures before running optional paid benchmarks. CI only
-runs offline checks. See LICENSE_STATUS.md before distributing modifications.
+The tests use local synthetic fixtures and do not call model APIs or run benchmarks.
+Add a behavioral test when changing retrieval or evaluation behavior. Keep method
+logic separate from benchmark environment adapters.
+
+Do not commit API keys, local configuration, downloaded inputs, generated outputs,
+or virtual environments. Live evaluation is separate from development tests and
+requires configured credentials and benchmark resources.

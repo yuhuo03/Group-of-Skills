@@ -41,7 +41,7 @@ def build_plan(config_path, benchmark, methods, output, tasks=None):
     value=cfg.get('retrieval_python')
     retrieval_python=str((base/Path(value).expanduser()).absolute()) if value else sys.executable
     if not Path(retrieval_python).is_file() or not os.access(retrieval_python,os.X_OK):raise ValueError('retrieval_python must be an executable Python path')
-    members=json.loads((ROOT/'configs/task_ids.json').read_text())
+    members=json.loads((ROOT/'evaluation/configs/task_ids.json').read_text())
     jobs=[]
     for track in tracks:
         spec=cfg.get(track)

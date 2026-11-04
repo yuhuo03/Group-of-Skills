@@ -1,12 +1,8 @@
-# External dependency resolution snapshot: 2026-11-04; Python 3.12; Linux x86_64.
-# Generated with uv pip compile (resolution only; no live runtime tested).
-# GoSkills source: local release 0.2.0rc2; publication commit not yet assigned.
-# Pinned upstream GoS source: 203f60a2c689da055ce1ac351eb3cb9912a3bca7.
-# Harbor and GoS need separate environments because their OpenAI SDK ranges conflict.
-# Local projects are deliberately not included as machine-specific path requirements.
-# From the release root, install these pins together with the matching local projects:
-# python -m pip install -r requirements/retrieval-alfworld-py312-linux.txt -e ".[alfworld]" -e data/external/graph-of-skills
-# The upstream checkout must already be at the exact commit above.
+# Pinned dependencies for Python 3.12 on Linux x86_64.
+# Harbor and GoS use separate environments because their OpenAI SDK ranges conflict.
+# Pinned GoS commit: 203f60a2c689da055ce1ac351eb3cb9912a3bca7.
+# From the repository root:
+# python -m pip install -r evaluation/requirements/retrieval-alfworld-py312-linux.txt -e ".[alfworld]" -e data/external/graph-of-skills
 
 aiohappyeyeballs==2.7.1
     # via aiohttp

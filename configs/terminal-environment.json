@@ -1,6 +1,0 @@
-{
-  "python": "3.13.14",
-  "harbor": "0.20.0",
-  "httpx": "0.28.1",
-  "skill_uv_lock_sha256": "f76fb65dfadf118834dd18d3e676475c0570f3f7d313059d7897caeff24b66c0"
-}
