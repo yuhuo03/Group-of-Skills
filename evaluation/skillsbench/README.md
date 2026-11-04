@@ -9,13 +9,16 @@ system prompt.
 
 ## Install and obtain inputs
 
-From this repository's root, install the terminal extra in a compatible Python
-runtime and follow the root README's pinned upstream/assets instructions. Keep
+From this repository's root on Linux, install the terminal extra with the Python
+3.12 requirement snapshot and follow the root README's pinned upstream/assets instructions. Keep
 the Harbor environment separate from the GoS retrieval environment:
 
 ```bash
-# Run in the Harbor virtual environment.
-python -m pip install -e '.[terminal]'
+# Skip environment creation if the full setup guide already created it.
+uv venv --python 3.12 --seed .venv-eval
+. .venv-eval/bin/activate
+python -m pip install -r requirements/terminal-py312-linux.txt -e '.[terminal]'
+python -m pip check
 ```
 
 Harbor 0.20 requires a newer OpenAI SDK through LiteLLM, while the pinned GoS

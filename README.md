@@ -104,8 +104,9 @@ Publication identifiers will be added to [CITATION.cff](CITATION.cff) when avail
 
 ### Requirements
 
-- Python 3.10 -- 3.12 for core retrieval
-- `pip`
+- Python 3.10 -- 3.12 for core retrieval (Python 3.12 recommended)
+- Git
+- [`uv`](https://docs.astral.sh/uv/) for virtual environments; `pip` for package installation
 - Linux, Python 3.12, Docker Engine and Docker Compose v2 for full benchmark runs
 - An OpenAI-compatible API key for benchmark agents and embedding-backed baselines
 
@@ -114,15 +115,19 @@ Publication identifiers will be added to [CITATION.cff](CITATION.cff) when avail
 ```bash
 git clone https://github.com/yuhuo03/Group-of-Skills.git
 cd Group-of-Skills
-python3 -m venv .venv
+uv venv --python 3.12 --seed .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]"
-cp .env.example .env   # fill in credentials only for API-backed evaluation
+python -m pip check
 ```
 
-Core build/query and table reproduction need no API key. Full evaluation uses
+Core build/query and table reproduction need no API key. Configure credentials
+with the shell exports below only for API-backed evaluation; copying `.env.example`
+does not load them. Full evaluation uses
 separate terminal and retrieval Python environments; follow
 [the evaluation setup](docs/GETTING_STARTED.md) before installing optional dependencies.
+Use the selected-extra installation above: `uv sync` also resolves optional
+benchmark extras across the supported Python range, but Harbor requires Python 3.12+.
 
 <details>
 <summary><strong>Provider: OpenAI (direct)</strong></summary>

@@ -27,17 +27,20 @@ TB2 host used Python 3.13.14; the portable dependency snapshots below were resol
 for Python 3.12 on Linux x86_64.
 
 After obtaining the pinned upstream checkout in `data/external/graph-of-skills`
-as described in the root DATA guide, run from the release root:
+as described in the root DATA guide, run from the release root. Reuse either
+environment if the full setup guide already installed it; do not recreate it:
 
 ```bash
-python3.12 -m venv .venv-eval
+uv venv --python 3.12 --seed .venv-eval
 .venv-eval/bin/python -m pip install \
   -r requirements/terminal-py312-linux.txt -e '.[terminal]'
+.venv-eval/bin/python -m pip check
 
-python3.12 -m venv .venv-retrieval
+uv venv --python 3.12 --seed .venv-retrieval
 .venv-retrieval/bin/python -m pip install \
   -r requirements/retrieval-alfworld-py312-linux.txt \
   -e '.[alfworld]' -e data/external/graph-of-skills
+.venv-retrieval/bin/python -m pip check
 RETRIEVAL_PYTHON="$PWD/.venv-retrieval/bin/python"
 ```
 

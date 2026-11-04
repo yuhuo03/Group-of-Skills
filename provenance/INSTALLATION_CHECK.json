@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-04",
+  "status": "PASSED_WITH_SCOPE_LIMITS",
+  "source_repository": "https://github.com/yuhuo03/Group-of-Skills",
+  "source_commit": "18082e983a45cefbd927717ee3ec7cd397bd4ab0",
+  "source_snapshot": {
+    "files_verified_against_git_blobs": 99,
+    "code_and_requirements_changed_by_this_documentation_update": false
+  },
+  "environment": {
+    "platform": "macOS arm64",
+    "python": "3.12.12",
+    "environment_creation": "uv venv --python 3.12 --seed",
+    "fresh_editable_and_wheel_environments": true
+  },
+  "checks": {
+    "editable_install_with_dev_extra": "PASSED",
+    "editable_pip_check": "PASSED",
+    "wheel_build": "PASSED",
+    "wheel_install_in_separate_environment": "PASSED",
+    "wheel_imports_from_site_packages_outside_source_directory": "PASSED",
+    "wheel_console_entrypoint": "PASSED",
+    "wheel_pip_check": "PASSED",
+    "offline_example_build_query_validate": "PASSED",
+    "three_benchmark_entrypoint_help_commands": "PASSED",
+    "included_table_reproduction": {
+      "status": "PASSED",
+      "per_task_rows": 1545,
+      "metric_cells": 45
+    },
+    "pytest": {
+      "passed": 70,
+      "skipped": 1,
+      "skip_reason": "Optional pinned upstream import requires GOS_UPSTREAM."
+    }
+  },
+  "installation_notes": [
+    "Install the selected extra with pip inside the uv-created environment. Universal uv sync resolution includes optional Harbor dependencies for Python 3.10/3.11, which Harbor 0.20 does not support.",
+    "An initial stdlib venv attempt through the local Python shim failed to locate encodings; uv venv resolved the interpreter and completed successfully.",
+    "An initial wheel import probe ran before installation completed. The completed installation was subsequently checked successfully."
+  ],
+  "validation_limits": {
+    "model_or_embedding_api_calls": 0,
+    "benchmark_trials_executed": 0,
+    "fresh_full_linux_runtime_stacks_installed": false,
+    "linux_dependency_snapshots": "Prior resolution checks only; see ENVIRONMENT_SOURCE.json.",
+    "live_docker_or_simulator_execution": false,
+    "new_benchmark_scores_or_exact_score_reproduction_certified": false
+  }
+}

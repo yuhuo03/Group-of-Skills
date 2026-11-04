@@ -44,8 +44,8 @@ From the repository root, after obtaining assets (replace the example paths):
   --config data/external/graph-of-skills/evaluation/alfworld/base_config.yaml \
   --game-file data/external/alfworld/json_2.1.1/valid_unseen/EXAMPLE/TRIAL/game.tw-pddl \
   --skills-root data/external/skills_2000 \
-  --pool data/external/groups.json \
-  --workspace data/external/gos_workspace \
+  --pool data/external/pool.json \
+  --workspace data/external/workspace \
   --method goskills-d --output runs/alfworld-goskills-d-new
 ```
 

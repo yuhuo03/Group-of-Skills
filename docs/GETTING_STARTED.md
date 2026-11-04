@@ -1,24 +1,32 @@
 # Full evaluation setup
 
 
-Use **Linux, Python 3.12, Git, Docker Engine and Docker Compose v2** for the full
+Use **Linux, Python 3.12, uv, Git, Docker Engine and Docker Compose v2** for the full
 stack. Docker must be usable by your account. Native build tools may be required
 by TextWorld and hnswlib; on Debian/Ubuntu install `build-essential`,
 `python3.12-dev`, `libffi-dev`, `libssl-dev`, `pkg-config`, and `cmake` if needed.
 Core-only use remains Python 3.10+. For a fresh evaluation environment:
 
 ```bash
-python3.12 -m venv .venv-eval
+uv venv --python 3.12 --seed .venv-eval
 . .venv-eval/bin/activate
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install -r requirements/terminal-py312-linux.txt -e ".[terminal]"
+python -m pip check
 ```
 
 The release uses two Python environments: `.venv-eval` for Harbor/SB/TB2 and
-`.venv-retrieval` for the pinned GoS retrievers and ALFWorld. Harbor's dependency
-requires OpenAI SDK2, while the fixed GoS dependency requires SDK1. Do not install
-both stacks in the same environment. The checked Linux/Python3.12 requirement
+`.venv-retrieval` for the pinned GoS retrievers and ALFWorld. The Harbor/LiteLLM
+and pinned GoS dependency ranges conflict: the terminal snapshot pins OpenAI
+3.45.0, while retrieval/ALFWorld pins 1.109.1. Do not install both stacks in the
+same environment. The checked Linux/Python3.12 requirement
 files keep them separate; the batch configuration selects the right interpreter.
+
+Core installation, wheel packaging, and the included offline example were tested
+in fresh Python 3.12 environments. The two Linux dependency snapshots were checked
+by resolution; a fresh full Linux simulator/container installation and live benchmark
+run have not been validated as part of this release. See
+[installation checks](../provenance/INSTALLATION_CHECK.json) for the exact scope.
 
 Follow [DATA.md](../DATA.md) in order: obtain the pinned upstream code, skill
 library and task datasets; build or supply a compatible directed index and D

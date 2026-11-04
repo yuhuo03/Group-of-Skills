@@ -79,8 +79,9 @@ Core/offline tools support Python3.10+. Historical ALFWorld ran Python3.12.14;
 TB2 host runtime ran Python3.13.14 with Harbor0.20.0. Use a separate compatible
 evaluation environment; the core Python minimum does not guarantee every simulator
 or Harbor dependency supports that same minimum. Version inventories are in configs/.
-Install the relevant extra (`pip install -e ".[alfworld]"` or `pip install -e ".[terminal]"`)
-plus upstream dependencies and assets; these are not fully resolved campaign locks.
+Use the separate Python 3.12 environments and matching requirement snapshots in
+[the setup guide](GETTING_STARTED.md), plus the upstream code and assets in
+[DATA.md](../DATA.md). Historical inventories are evidence, not installation locks.
 
 ## Portable five-method orchestration
 
@@ -105,8 +106,9 @@ receipt hashes. Collection rejects changed or misplaced receipts and uses paths
 relative to the archived campaign root. It produces no final mean for incomplete
 method groups. See the root README for planning, execution and summary commands.
 
-Use two Python3.12 environments: Harbor0.20's LiteLLM requires OpenAI SDK2,
-while the pinned GoS fast-graphrag requires SDK1. The retrieval/ALFWorld stack
+Use two Python3.12 environments: Harbor/LiteLLM and the pinned GoS fast-graphrag
+have incompatible OpenAI SDK ranges (3.45.0 and 1.109.1 in the respective snapshots).
+The retrieval/ALFWorld stack
 and Harbor stack have separately resolved Linux requirement files. The batch
 configuration's retrieval_python controls ALFWorld and isolated retrieval helpers.
 Do not dereference a venv Python symlink to its base interpreter. Linux is the

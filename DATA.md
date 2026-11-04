@@ -7,11 +7,16 @@ External datasets, skill documents and images retain their original licenses.
 
 ## 1. Pinned Graph of Skills code and the 2,000-skill library
 
+Create each checkout/environment once. If you already downloaded the skill library
+in README Step 1, reuse `data/external/skills_2000` and skip the final download command
+below. Its `DOWNLOAD_RECEIPT.json` must record the same `archive_sha256` shown here;
+the downloader deliberately refuses to overwrite an existing directory.
+
 ```bash
 mkdir -p data/external
 git clone https://github.com/davidliuk/graph-of-skills.git data/external/graph-of-skills
 git -C data/external/graph-of-skills checkout --detach 203f60a2c689da055ce1ac351eb3cb9912a3bca7
-python3.12 -m venv .venv-retrieval
+uv venv --python 3.12 --seed .venv-retrieval
 .venv-retrieval/bin/python -m pip install --upgrade pip setuptools wheel
 .venv-retrieval/bin/python -m pip install -r requirements/retrieval-alfworld-py312-linux.txt \
   -e ".[alfworld]" -e data/external/graph-of-skills
