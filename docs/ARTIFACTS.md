@@ -19,3 +19,17 @@ including cached input, not input+output and not total campaign expenditure.
 The full container filesystem is not available for411 migrated TB2 records.
 Their action traces and result records exist; most native artifacts directories
 only contain manifests. See the companion detailed report for these limits.
+
+## Results and table reproduction
+
+TB2 GoSkills uses the zero-score rerun replacement cohort; other methods did not
+receive that additional rerun budget. [Result-selection details](SELECTION_AND_LIMITATIONS.md).
+
+Reproduce the table from the included per-task data:
+
+```bash
+python scripts/reproduce_table.py --check
+python scripts/reproduce_table.py --output /tmp/gpt54-table.csv
+```
+
+[CSV](../tables/TABLE.csv) · [LaTeX](../tables/TABLE.tex) · [Metric definitions](DATA_DICTIONARY.md)

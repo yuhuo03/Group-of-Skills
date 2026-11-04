@@ -71,27 +71,16 @@ and **Terminal-Bench 2** (89 tasks) with **GPT-5.4**. **R** = reward/success/acc
 (%), **T** = average input tokens (including cached input), **S** = agent-only
 runtime (s). ↑ higher is better, ↓ lower is better. Setup and cleanup are excluded.
 
-### Recorded results (end-to-end)
+### Main results (end-to-end)
 
-| Method | SB R↑ | SB T↓ | SB S↓ | AW R↑ | AW T↓ | AW S↓ | TB2 R↑ | TB2 T↓ | TB2 S↓ |
-|--------|------:|------:|------:|------:|------:|------:|-------:|-------:|-------:|
-| No Skills | 25.3 | **116,107** | 188.6 | 83.6 | **18,521** | 35.3 | 52.8 | **164,039** | **301.1** |
-| Vanilla Skills | 28.9 | 121,275 | **159.2** | 92.5 | 2,953,003 | 74.4 | 44.9 | 2,071,755 | 445.7 |
-| Vector Skills | 34.0 | 144,827 | 185.8 | 92.5 | 38,263 | 38.5 | 48.3 | 177,525 | 357.7 |
-| Graph of Skills | 35.7 | 136,054 | 192.9 | 91.8 | 39,013 | 40.2 | 46.1 | 168,981 | 302.7 |
-| **GoSkills (ours)** | **39.4** | 156,696 | 187.3 | **95.5** | 35,042 | **34.5** | **60.7** | 173,228 | 427.6 |
+| Model | Method | SB R↑ | SB T↓ | SB S↓ | AW R↑ | AW T↓ | AW S↓ | TB2 R↑ | TB2 T↓ | TB2 S↓ |
+|-------|--------|------:|------:|------:|------:|------:|------:|-------:|-------:|-------:|
+| GPT-5.4 | No Skills | 25.3 | **116,107** | 188.6 | 83.6 | **18,521** | 35.3 | 52.8 | **164,039** | **301.1** |
+| | Vanilla Skills | 28.9 | 121,275 | **159.2** | 92.5 | 2,953,003 | 74.4 | 44.9 | 2,071,755 | 445.7 |
+| | Vector Skills | 34.0 | 144,827 | 185.8 | 92.5 | 38,263 | 38.5 | 48.3 | 177,525 | 357.7 |
+| | Graph of Skills | 35.7 | 136,054 | 192.9 | 91.8 | 39,013 | 40.2 | 46.1 | 168,981 | 302.7 |
+| | **GoSkills (ours)** | **39.4** | 156,696 | 187.3 | **95.5** | 35,042 | **34.5** | **60.7** | 173,228 | 427.6 |
 
-TB2 GoSkills uses the zero-score rerun replacement cohort; other methods did not
-receive that additional rerun budget. [Result-selection details](docs/SELECTION_AND_LIMITATIONS.md).
-
-Reproduce the table from the included per-task data:
-
-```bash
-python scripts/reproduce_table.py --check
-python scripts/reproduce_table.py --output /tmp/gpt54-table.csv
-```
-
-[CSV](tables/TABLE.csv) · [LaTeX](tables/TABLE.tex) · [Metric definitions](docs/DATA_DICTIONARY.md)
 
 ## Citation
 
@@ -465,7 +454,8 @@ Group-of-Skills/
 | [evaluation/alfworld/README.md](evaluation/alfworld/README.md) | **ALFWorld detail**: simulator, task manifest, and five-method episode runner |
 | [evaluation/terminalbench2/README.md](evaluation/terminalbench2/README.md) | **Terminal-Bench 2 detail**: task configuration, runtime, and evidence |
 | [docs/METHOD.md](docs/METHOD.md) | Group construction, retrieval policy, and execution-contract schema |
-| [docs/ARTIFACTS.md](docs/ARTIFACTS.md) | Experiment trace archive and checksums |
+| [docs/ARTIFACTS.md](docs/ARTIFACTS.md) | Recorded results, reproduction commands, trace archive and checksums |
+| [docs/SELECTION_AND_LIMITATIONS.md](docs/SELECTION_AND_LIMITATIONS.md) | Result selection, original results and rerun provenance |
 | [`.env.example`](.env.example) | Provider and embedding configuration |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Development setup and offline tests |
 
