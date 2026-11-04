@@ -1,0 +1,25 @@
+{
+  "purpose": "GPT-5.4 repository presentation update",
+  "reference_format": "https://github.com/davidliuk/graph-of-skills",
+  "repository": "https://github.com/yuhuo03/Group-of-Skills",
+  "base_commit": "73752cda581c3feaa495103c3fc28f3b6e0c8756",
+  "visibility_preserved": "private",
+  "date": "2026-11-04",
+  "changes": [
+    "README structure, navigation, own method figure, GPT-5.4 table and all15 evaluation links",
+    "Detailed setup moved into docs/GETTING_STARTED.md",
+    "Citation version and repository URL corrected"
+  ],
+  "core_changed": false,
+  "numeric_data_changed": false,
+  "model_calls": 0,
+  "embedding_calls": 0,
+  "benchmark_reruns": 0,
+  "figure": {
+    "path": "assets/framework.png",
+    "source": "Project manuscript and previous repository asset",
+    "sha256": "1299029c2efabe303836fb74ed72e84e035da1bd7128ceac0fb400f1a7334f46",
+    "git_blob": "7c44aba60e30331d7f2626fb73b38b68fc72f332",
+    "scope": "Conceptual overview; exact implementation documented in docs/METHOD.md"
+  }
+}

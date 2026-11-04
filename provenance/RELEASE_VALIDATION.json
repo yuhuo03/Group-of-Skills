@@ -1,0 +1,37 @@
+{
+  "status": "PASSED_OFFLINE_RELEASE_CHECKS",
+  "release_version": "0.2.0rc2",
+  "python_tested": "3.12.12",
+  "tests_passed": 71,
+  "actual_cli_plans_outside_checkout_with_network_blocked": 15,
+  "harbor_0_20_schema_validations": 10,
+  "historical_skillsbench_raw_task_preflights": 87,
+  "table_cells_checked": 45,
+  "selected_trials": 1545,
+  "core_modules_byte_identical": 10,
+  "editable_install": "PASSED",
+  "wheel_build": "PASSED",
+  "wheel_import_outside_checkout": "PASSED",
+  "wheel_cli_build_query_validate": "PASSED",
+  "wheel_sha256": "9478b82909cbc5621bb214b3f8164c497129f432ef1aa18e712e46fff4ffebfe",
+  "dependency_resolution": {
+    "target": "Linux x86_64 / Python 3.12",
+    "combined": "incompatible OpenAI SDK requirements; not used",
+    "terminal_stack": "PASSED;91 pinned distributions",
+    "retrieval_alfworld_stack": "PASSED;134 pinned distributions",
+    "full_runtime_stacks_installed": false
+  },
+  "code_review": "Separate subagents reviewed pinned source/API contracts; findings addressed. This is not paid experiment acceptance.",
+  "model_calls": 0,
+  "embedding_calls": 0,
+  "docker_runs": 0,
+  "simulator_episodes": 0,
+  "published": false,
+  "license_approved": false,
+  "live_end_to_end_validation": false,
+  "limitations": [
+    "External licensed assets and compatible endpoints are required.",
+    "New task/index downloads do not prove identical historical task/index bytes.",
+    "Historical per-image verifier/cache/cleanup repairs are archived rather than globally applied."
+  ]
+}

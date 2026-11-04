@@ -1,54 +1,32 @@
-# Python
+# Local secrets; only the empty example belongs in git
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Python build/test output
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
 .venv/
 venv/
 build/
 dist/
 *.egg-info/
-
-# Secrets and local configuration
-.env
-.env.*
-!.env.example
-*.key
-*.pem
-
-# Downloaded or generated data
-data/
-datasets/
-generated*/
-evaluation/skillsbench/generated*/
-evaluation/skillsbench/tasks/
-*.jsonl
-
-# Benchmark outputs
-jobs/
-logs/
-scripts/jobs/
-scripts/logs/
-scripts/configs/
-scripts/generated*/
-.docker/
-.skillbench-runtime/
-
-# Model and cache artifacts
-checkpoints/
+# External assets and paid execution output (selected numeric data IS versioned)
+data/external/
+outputs/
 runs/
-wandb/
-cache/
-*.pkl
-*.pt
-*.pth
-*.ckpt
-*.bin
-vectors.pkl
-
-# Local/editor files
+logs/
+traces/
+*.tar.gz
+*.tar.xz
+*.zip
 .DS_Store
-*.swp
-*.swo
-*~
+
+# Local evaluation assets and private outputs
+data/external/
+configs/local.json
+.venv-eval/
+
+.venv-retrieval/

@@ -1,0 +1,447 @@
+# External dependency resolution snapshot: 2026-11-04; Python 3.12; Linux x86_64.
+# Generated with uv pip compile (resolution only; no live runtime tested).
+# GoSkills source: local release 0.2.0rc2; publication commit not yet assigned.
+# Pinned upstream GoS source: 203f60a2c689da055ce1ac351eb3cb9912a3bca7.
+# Harbor and GoS need separate environments because their OpenAI SDK ranges conflict.
+# Local projects are deliberately not included as machine-specific path requirements.
+# From the release root, install these pins together with the matching local projects:
+# python -m pip install -r requirements/retrieval-alfworld-py312-linux.txt -e ".[alfworld]" -e data/external/graph-of-skills
+# The upstream checkout must already be at the exact commit above.
+
+aiohappyeyeballs==2.7.1
+    # via aiohttp
+aiohttp==3.14.5
+    # via
+    #   instructor
+    #   litellm
+aiosignal==1.4.0
+    # via aiohttp
+alfworld==0.4.2
+    # via goskills
+annotated-doc==0.0.5
+    # via typer
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.16.0
+    # via
+    #   httpx
+    #   httpx2
+    #   mcp
+    #   openai
+    #   sse-starlette
+    #   starlette
+attrs==26.1.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
+blis==1.3.4
+    # via thinc
+catalogue==2.0.10
+    # via
+    #   spacy
+    #   srsly
+    #   thinc
+certifi==2026.10.23
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
+cffi==2.1.1
+    # via cryptography
+cfgv==3.5.0
+    # via pre-commit
+charset-normalizer==3.5.2
+    # via requests
+click==8.5.0
+    # via
+    #   huggingface-hub
+    #   litellm
+    #   spacy
+    #   uvicorn
+    #   weasel
+cloudpathlib==0.26.0
+    # via weasel
+cloudpickle==3.1.2
+    # via joblib
+confection==1.3.4
+    # via
+    #   spacy
+    #   thinc
+    #   weasel
+cryptography==50.0.2
+    # via pyjwt
+cymem==2.0.16
+    # via
+    #   preshed
+    #   spacy
+    #   thinc
+decorator==5.3.1
+    # via retry
+diskcache==5.6.3
+    # via instructor
+distlib==0.4.4
+    # via virtualenv
+distro==1.9.0
+    # via openai
+docstring-parser==0.18.0
+    # via instructor
+fast-downward-textworld==20.6.4
+    # via textworld
+fast-graphrag==0.0.4
+    # via graph-skills
+fastmcp==0.4.1
+    # via graph-skills
+fastuuid==0.14.0
+    # via litellm
+filelock==4.2.7
+    # via
+    #   huggingface-hub
+    #   python-discovery
+    #   virtualenv
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec==2026.9.0
+    # via huggingface-hub
+h11==0.16.0
+    # via
+    #   httpcore
+    #   httpcore2
+    #   uvicorn
+hashids==1.3.1
+    # via textworld
+hf-xet==1.8.0
+    # via huggingface-hub
+hnswlib==0.8.0
+    # via fast-graphrag
+httpcore==1.0.9
+    # via httpx
+httpcore2==2.16.0
+    # via httpx2
+httpx==0.28.1
+    # via
+    #   fastmcp
+    #   litellm
+    #   mcp
+    #   openai
+    #   weasel
+httpx-sse==0.4.3
+    # via mcp
+httpx2==2.16.0
+    # via huggingface-hub
+huggingface-hub==2.4.0
+    # via tokenizers
+identify==2.6.20
+    # via pre-commit
+idna==3.20
+    # via
+    #   anyio
+    #   httpx
+    #   httpx2
+    #   requests
+    #   yarl
+igraph==0.11.9
+    # via fast-graphrag
+importlib-metadata==10.1.0
+    # via litellm
+instructor==1.12.0
+    # via fast-graphrag
+jericho==3.3.1
+    # via textworld
+jinja2==3.1.6
+    # via
+    #   instructor
+    #   litellm
+    #   spacy
+jiter==0.10.0
+    # via
+    #   instructor
+    #   openai
+joblib==1.6.0
+    # via scikit-learn
+json-repair==0.64.4
+    # via graph-skills
+jsonschema==4.26.0
+    # via
+    #   litellm
+    #   mcp
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+litellm==1.80.0
+    # via graph-skills
+loguru==0.7.3
+    # via graph-skills
+markdown-it-py==4.2.0
+    # via rich
+markupsafe==3.0.4
+    # via jinja2
+mcp==1.30.0
+    # via fastmcp
+mdurl==0.1.2
+    # via markdown-it-py
+mementos==1.3.1
+    # via textworld
+more-itertools==11.2.1
+    # via textworld
+multidict==7.2.1
+    # via
+    #   aiohttp
+    #   yarl
+murmurhash==1.0.16
+    # via
+    #   preshed
+    #   spacy
+    #   thinc
+narwhals==2.28.0
+    # via scikit-learn
+networkx==3.7
+    # via textworld
+nodeenv==1.12.0
+    # via pre-commit
+numpy==2.5.4
+    # via
+    #   blis
+    #   graph-skills
+    #   hnswlib
+    #   jericho
+    #   numpy-typing-compat
+    #   optype
+    #   scikit-learn
+    #   scipy
+    #   spacy
+    #   textworld
+    #   thinc
+numpy-typing-compat==20260602.2.5
+    # via optype
+openai==1.109.1
+    # via
+    #   fast-graphrag
+    #   goskills
+    #   instructor
+    #   litellm
+optype==0.19.0
+    # via scipy-stubs
+packaging==26.3
+    # via
+    #   huggingface-hub
+    #   spacy
+    #   thinc
+    #   virtualenv
+    #   weasel
+platformdirs==4.14.3
+    # via virtualenv
+pre-commit==4.7.0
+    # via instructor
+preshed==3.0.15
+    # via
+    #   spacy
+    #   thinc
+prompt-toolkit==3.0.53
+    # via textworld
+propcache==0.5.4
+    # via
+    #   aiohttp
+    #   yarl
+py==1.11.0
+    # via retry
+pycparser==3.12
+    # via cffi
+pydantic==2.14.2
+    # via
+    #   fast-graphrag
+    #   fastmcp
+    #   graph-skills
+    #   instructor
+    #   litellm
+    #   mcp
+    #   openai
+    #   pydantic-settings
+    #   spacy
+    #   thinc
+    #   weasel
+pydantic-core==2.50.2
+    # via
+    #   instructor
+    #   pydantic
+pydantic-settings==2.16.2
+    # via
+    #   fastmcp
+    #   graph-skills
+    #   mcp
+pygments==2.21.0
+    # via rich
+pyjwt==2.15.1
+    # via mcp
+python-dateutil==4.0.0
+    # via strictyaml
+python-discovery==1.9.4
+    # via virtualenv
+python-dotenv==1.2.4
+    # via
+    #   fast-graphrag
+    #   fastmcp
+    #   graph-skills
+    #   litellm
+    #   pydantic-settings
+python-multipart==0.0.33
+    # via mcp
+pyyaml==6.0.3
+    # via
+    #   goskills
+    #   graph-skills
+    #   huggingface-hub
+    #   pre-commit
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+regex==2026.9.29
+    # via tiktoken
+requests==2.34.2
+    # via
+    #   fast-graphrag
+    #   instructor
+    #   smart-open
+    #   spacy
+    #   tiktoken
+retry==0.9.2
+    # via
+    #   goskills
+    #   graph-skills
+rich==14.3.4
+    # via
+    #   graph-skills
+    #   instructor
+    #   typer
+rpds-py==2026.9.1
+    # via
+    #   jsonschema
+    #   referencing
+scikit-learn==1.9.1
+    # via fast-graphrag
+scipy==1.18.1
+    # via
+    #   fast-graphrag
+    #   scikit-learn
+scipy-stubs==1.18.1.1
+    # via fast-graphrag
+setuptools==84.2.1
+    # via
+    #   spacy
+    #   thinc
+shellingham==1.5.4
+    # via typer
+smart-open==9.0.2
+    # via weasel
+sniffio==1.3.1
+    # via openai
+spacy==3.8.18
+    # via jericho
+spacy-legacy==3.0.12
+    # via spacy
+spacy-loggers==1.0.5
+    # via spacy
+srsly==2.5.6
+    # via
+    #   spacy
+    #   thinc
+    #   weasel
+sse-starlette==3.6.0
+    # via mcp
+starlette==1.10.0
+    # via
+    #   mcp
+    #   sse-starlette
+strictyaml==1.7.3
+    # via graph-skills
+tatsu==5.8.3
+    # via textworld
+tenacity==9.2.1
+    # via
+    #   fast-graphrag
+    #   instructor
+termcolor==3.3.0
+    # via
+    #   jericho
+    #   textworld
+texttable==1.7.2
+    # via igraph
+textworld==1.7.0
+    # via
+    #   alfworld
+    #   goskills
+thinc==8.3.14
+    # via spacy
+threadpoolctl==3.7.0
+    # via scikit-learn
+tiktoken==0.14.0
+    # via litellm
+tokenizers==0.23.3
+    # via litellm
+tqdm==4.70.1
+    # via
+    #   goskills
+    #   huggingface-hub
+    #   openai
+    #   spacy
+    #   textworld
+truststore==0.10.5
+    # via
+    #   graph-skills
+    #   httpcore2
+    #   httpx2
+typer==0.27.3
+    # via
+    #   fastmcp
+    #   graph-skills
+    #   instructor
+    #   spacy
+    #   weasel
+typing-extensions==4.16.0
+    # via
+    #   aiohttp
+    #   aiosignal
+    #   anyio
+    #   httpx2
+    #   huggingface-hub
+    #   mcp
+    #   openai
+    #   optype
+    #   pydantic
+    #   pydantic-core
+    #   pydantic-settings
+    #   referencing
+    #   starlette
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   mcp
+    #   pydantic
+    #   pydantic-settings
+tzdata==2026.6
+    # via python-dateutil
+urllib3==2.8.0
+    # via requests
+uvicorn==0.54.0
+    # via mcp
+virtualenv==21.15.5
+    # via pre-commit
+wasabi==1.1.3
+    # via
+    #   spacy
+    #   thinc
+    #   weasel
+wcwidth==0.9.4
+    # via prompt-toolkit
+weasel==1.0.1
+    # via spacy
+wrapt==2.5.2
+    # via smart-open
+xxhash==3.8.2
+    # via fast-graphrag
+yarl==1.25.1
+    # via aiohttp
+zipp==4.1.2
+    # via importlib-metadata

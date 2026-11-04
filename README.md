@@ -4,209 +4,273 @@
   <strong>Group-Structured Skill Retrieval for Agent Skill Libraries</strong>
 </p>
 
+<p align="center">
+  Kun Zeng<sup>*</sup> · <a href="https://github.com/yuhuo03">Yu Huo</a><sup>*</sup> · Siyu Zhang · Zi Ye · Yuecheng Zhuo<br>
+  Haoyue Liu · Yuquan Lu · Junhao Wen · Xiaoying Tang<sup>†</sup>
+  <br><sub><sup>*</sup> Equal contribution &nbsp; <sup>†</sup> Corresponding author</sub>
+</p>
 
+<p align="center">
+  <a href="#results"><img src="https://img.shields.io/badge/Experiments-GPT--5.4-111827" alt="GPT-5.4 experiments"></a>
+  <a href="#evaluation"><img src="https://img.shields.io/badge/Evaluation-3%20benchmarks%20%C3%97%205%20methods-2563eb" alt="3 benchmarks × 5 methods"></a>
+  <a href="#installation"><img src="https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white" alt="Python 3.10+"></a>
+  <a href="DATA.md"><img src="https://img.shields.io/badge/Data-Setup%20guide-eab308" alt="Data setup guide"></a>
+</p>
+
+<p align="center">
+  <a href="#overview">Overview</a> ·
+  <a href="#results">Results</a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#evaluation">Evaluation</a> ·
+  <a href="docs/ARTIFACTS.md">Artifacts</a> ·
+  <a href="#citation">Citation</a>
+</p>
+
+---
+
+## Updates
+
+- **[2026-11-04]** Added the GPT-5.4 implementation, all **15 benchmark/method entrypoints**, and the per-task data behind the three-benchmark table. The package includes offline tests, pinned evaluation environments, and trace provenance.
 
 ## Overview
 
-GoSkills is an inference-time retrieval method for agent skill libraries. It builds on the public [Graph of Skills](https://github.com/davidliuk/graph-of-skills) benchmark/data stack, but changes the retrieval unit from a flat list of atomic skills to an anchor-centered **group plan**.
+**GoSkills retrieves a group plan for the task, with the skills needed to carry it out.**
+It builds reusable, anchor-centered groups from a typed skill graph and selects
+supporting groups under a context budget. The agent receives source skill
+instructions together with an execution contract: **START, SUPPORT, CHECK,
+AVOID, SKILLS, and DEBT**.
 
-<p align="center">
-  <img src="assets/comparison.png" alt="Comparison between flat retrieval and GoSkills group-structured retrieval" width="850">
-</p>
-
-Instead of flooding the agent context with a whole skill library or a loosely ranked top-k list, GoSkills returns a compact execution context with:
-
-- an anchor skill group for the task core
-- support, artifact, verifier, and fallback relations
-- conflict pruning between incompatible groups
-- a bounded set of presented `SKILL.md` payloads
-- an execution contract with `Start`, `Support`, `Check`, `Avoid`, `Debt`, and `Skills`
-
-The downstream agent, task environment, and skill payload format stay unchanged.
+This repository contains the GPT-5.4 **candidate-D implementation** and evaluation
+entrypoints for **SkillsBench, ALFWorld, and Terminal-Bench 2**. It builds on the
+[Graph of Skills](https://github.com/davidliuk/graph-of-skills) data and benchmark
+stack, while using group-structured retrieval and source-preserving presentation.
 
 ## How It Works
 
 <p align="center">
-  <img src="assets/framework.png" alt="GoSkills framework: offline group construction and online group-structured retrieval" width="850">
+  <img src="assets/framework.png" alt="GoSkills overview: offline skill-group construction and online group selection, pruning, and execution contracts" width="100%">
+  <br><sub>Conceptual overview from our manuscript. The precise candidate-D policy and output fields are documented in <a href="docs/METHOD.md">Method</a>.</sub>
 </p>
 
-**Retrieval pipeline:**
+1. **Build** — construct anchor-centered groups from typed skill relations and source payloads.
+2. **Seed** — find lexical matches for the visible task query.
+3. **Select** — activate supporting groups and prune incompatible or low-gain choices.
+4. **Present** — return bounded source excerpts and an execution contract, keeping unmet requirements visible as coverage debt.
 
-1. **Seed** -- retrieve lexical seed skills from the task query.
-2. **Group** -- activate anchor-centered skill groups built offline from skill relations and shared artifacts.
-3. **Expand** -- traverse the group graph over support, artifact, verifier, and fallback relations.
-4. **Prune** -- remove conflicting or low-gain groups under a fixed group budget.
-5. **Return** -- emit a capped, agent-readable execution contract and the selected skill payloads.
+The core build/query path runs locally without an API key. Vector Skills and
+Graph of Skills use a separate embedding-backed integration.
 
 ## Results
 
-GoSkills is evaluated on **SkillsBench** and **ALFWorld**. **R** = average reward (%), **T** = input tokens, **S** = agent-only runtime (s). Higher reward is better; lower tokens and runtime are better.
+**GPT-5.4 · five methods · three benchmarks.** SkillsBench (SB): 86 tasks;
+ALFWorld (AW): 134 tasks; Terminal-Bench 2 (TB2): 89 tasks per method.
+**R** = reward/success/accuracy (%), **T** = mean input tokens (including cached
+input), **S** = mean agent runtime (seconds). Setup and cleanup time are excluded.
 
-| Model | Method | SB R↑ | SB T↓ | SB S↓ | AW R↑ | AW T↓ | AW S↓ |
-|-------|--------|------:|------:|------:|------:|------:|------:|
-| Gemini 3 Pro | Graph of Skills | 31.0 | 864,577 | 366.2 | 95.0 | 29,846 | 42.6 |
-| | **GoSkills** | **38.6** | 881,492 | **327.9** | **97.9** | **27,215** | 49.2 |
-| MiniMax M2.7 | Graph of Skills | 19.9 | **560,442** | 518.4 | 52.1 | 67,884 | 71.5 |
-| | **GoSkills** | **24.3** | 867,452 | **402.5** | **54.3** | **65,227** | **68.8** |
-| GPT-5.4 | Graph of Skills | 36.4 | **380,199** | 603.7 | 93.6 | **47,851** | 65.0 |
-| | **GoSkills** | **48.9** | 694,825 | **352.9** | **95.3** | 63,319 | **38.2** |
-| Claude Sonnet 4.5 | Graph of Skills | 38.7 | **421,884** | 571.9 | 94.6 | **49,120** | 62.7 |
-| | **GoSkills** | **46.8** | 714,360 | **347.6** | **96.4** | 58,904 | **39.5** |
-| Qwen 3.5 | Graph of Skills | 27.6 | **505,220** | 589.3 | 76.4 | **69,778** | 70.6 |
-| | **GoSkills** | **33.5** | 756,930 | **421.7** | **80.7** | 74,502 | **55.3** |
-| Kimi K2.5 | Graph of Skills | 33.8 | **455,906** | 545.1 | 90.7 | **54,336** | 63.1 |
-| | **GoSkills** | **41.7** | 705,812 | **338.4** | **92.1** | 60,755 | **40.8** |
+| Method | SB R↑ | SB T↓ | SB S↓ | AW R↑ | AW T↓ | AW S↓ | TB2 R↑ | TB2 T↓ | TB2 S↓ |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| No Skills | 25.3 | **116,107** | 188.6 | 83.6 | **18,521** | 35.3 | 52.8 | **164,039** | **301.1** |
+| Vanilla Skills | 28.9 | 121,275 | **159.2** | 92.5 | 2,953,003 | 74.4 | 44.9 | 2,071,755 | 445.7 |
+| Vector Skills | 34.0 | 144,827 | 185.8 | 92.5 | 38,263 | 38.5 | 48.3 | 177,525 | 357.7 |
+| Graph of Skills | 35.7 | 136,054 | 192.9 | 91.8 | 39,013 | 40.2 | 46.1 | 168,981 | 302.7 |
+| **GoSkills (D)** | **39.4** | 156,696 | 187.3 | **95.5** | 35,042 | **34.5** | **60.7†** | 173,228† | 427.6† |
+
+† **TB2 GoSkills uses a conditional replacement set:** 44 retained positive
+results plus all 45 reruns of originally-zero tasks (10 positive, 35 zero).
+Its original result was **49.4%**; other methods did not receive the same rerun
+budget. The updated score, tokens, and runtime describe that selected set,
+not an untouched single-pass comparison. [Original table and selection details](docs/SELECTION_AND_LIMITATIONS.md).
+
+[CSV](tables/TABLE.csv) · [LaTeX](tables/TABLE.tex) · [Per-task data](data/) · [Metric definitions](docs/DATA_DICTIONARY.md)
+
+Recompute all 45 metrics from the 1,545 included trial rows, with no network or model calls:
+
+```bash
+python scripts/reproduce_table.py --check
+python scripts/reproduce_table.py --output /tmp/gpt54-table.csv
+```
 
 ## Installation
 
-### Requirements
-
-- Python 3.10 -- 3.12
-- `pip` or [`uv`](https://docs.astral.sh/uv/)
-- Docker and Harbor for full SkillsBench runs
-- an OpenAI-compatible chat endpoint for benchmark agents
-
-### Setup
+**Core retrieval:** Python 3.10+; no third-party runtime dependencies.
+**Full evaluation:** Linux, Python 3.12, Docker Engine and Docker Compose v2.
 
 ```bash
-git clone https://anonymous.4open.science/r/Group-of-Skills-E861.git
+git clone https://github.com/yuhuo03/Group-of-Skills.git
 cd Group-of-Skills
-python -m venv .venv
+python3 -m venv .venv
 . .venv/bin/activate
-pip install -e ".[dev]"
-cp .env.example .env
-```
-
-Fill `.env` with the API endpoint used by your benchmark agent:
-
-```bash
-OPENAI_API_KEY=<api-key>
-OPENAI_BASE_URL=https://api.openai.com/v1
+python -m pip install -e ".[dev]"
 ```
 
 ## Quick Start
 
-Run the unit-level smoke tests:
+Build and query the included small example graph. Build and query write fresh
+records; existing outputs are never overwritten.
 
 ```bash
-pytest -q
+DEMO_DIR=$(mktemp -d)
+
+# 1. Build reusable skill groups.
+python -m goskills build \
+  --graph examples/minimal_graph.json --output "$DEMO_DIR/pool.json"
+
+# 2. Retrieve a task-specific execution contract.
+python -m goskills query --pool "$DEMO_DIR/pool.json" \
+  --query "Parse STL and produce JSON with unit tests." \
+  --output-json "$DEMO_DIR/answer.json"
+
+# 3. Validate the returned bundle.
+python -m goskills validate-bundle "$DEMO_DIR/answer.json"
 ```
 
-Build and query a minimal GoSkills bundle:
+This tutorial uses synthetic example data. See [examples](examples/README.md)
+for the Python API and [DATA.md](DATA.md) for the full skill library and index setup.
+
+## Evaluation
+
+Every benchmark supports **No Skills, Vanilla Skills, Vector Skills, Graph of
+Skills, and GoSkills (D)** through one shared launcher.
+
+| Benchmark | Tasks / method | Runtime | Guide |
+|:--|--:|:--|:--|
+| SkillsBench | 86 | Harbor / Docker | [Setup and single-trial commands](evaluation/skillsbench/README.md) |
+| ALFWorld | 134 | TextWorld simulator | [Setup and single-trial commands](evaluation/alfworld/README.md) |
+| Terminal-Bench 2 | 89 | Harbor / Docker | [Setup and single-trial commands](evaluation/terminalbench2/README.md) |
+
+**Setup:** follow [Full evaluation setup](docs/GETTING_STARTED.md), then
+[DATA.md](DATA.md) to obtain the pinned upstream code, datasets, and retrieval
+assets. Copy `configs/local.example.json` to `configs/local.json` and fill in
+local paths. The terminal and retrieval stacks use **separate Python
+environments** because their pinned OpenAI SDK requirements differ.
+
+Export `OPENAI_API_KEY` (and optionally `OPENAI_BASE_URL`) in your shell.
+The launchers do not automatically source `.env`.
 
 ```bash
-python - <<'PY'
-from goskills.group_graph import build_group_graph
-from goskills.retrieval import retrieve
+# Check local inputs and dependencies; no provider or Docker calls.
+python scripts/doctor.py --config configs/local.json --runtime
 
-bundle = {
-    "metadata": {"name": "minimal"},
-    "skills": [
-        {"name": "csv-cleaner", "description": "Clean and normalize CSV tables.", "inputs": ["csv"], "outputs": ["csv"]},
-        {"name": "schema-verifier", "description": "Validate output schema and row counts.", "inputs": ["csv"], "outputs": ["test report"]},
-        {"name": "xlsx-export", "description": "Export CSV tables to Excel workbooks.", "inputs": ["csv"], "outputs": ["xlsx"]},
-    ],
-    "edges": [
-        {"source": "csv-cleaner", "target": "schema-verifier", "type": "workflow", "weight": 0.9}
-    ],
-}
+# Preview all 15 combinations. Planning is the default.
+python scripts/run_benchmark.py --config configs/local.json \
+  --benchmark all --methods all --output runs/gpt54-all
 
-bundle = build_group_graph(bundle)
-result = retrieve(bundle, "clean csv data and verify output schema", top_n=4)
-print(result["summary"])
-PY
+# Run after setup. This command invokes APIs and benchmark environments.
+python scripts/run_benchmark.py --config configs/local.json \
+  --benchmark all --methods all --output runs/gpt54-all --execute
+
+# Aggregate scores, token usage, and agent runtime.
+python scripts/summarize_runs.py runs/gpt54-all --output outputs/gpt54-all-table
 ```
 
-## CLI
-
-The input bundle format is a JSON object with `metadata`, `skills`, and `edges`. The output bundle adds GoSkills group metadata under `group_graph`.
+<details>
+<summary><strong>Run one method or a task subset</strong></summary>
 
 ```bash
-python -m goskills.cli build \
-  --bundle path/to/source_bundle.json \
-  --output path/to/goskills_bundle.json
-
-python -m goskills.cli query \
-  "recover xlsx cells and verify schema" \
-  --bundle path/to/goskills_bundle.json \
-  --top-n 4
+python scripts/run_benchmark.py --config configs/local.json \
+  --benchmark tb2 --methods goskills-d --tasks adaptive-rejection-sampler \
+  --output runs/tb2-one
 ```
 
-After installation:
+Add `--execute` to run. Method IDs are `noskills`, `vanilla`, `vector`,
+`native-gos`, and `goskills-d`. Use a new output directory for each run;
+`--tasks` applies to one benchmark at a time.
 
-```bash
-goskills-query "recover xlsx cells and verify schema" --bundle path/to/goskills_bundle.json
-```
+</details>
 
-## Data
+Each run saves its plan, per-trial trajectory, retrieval records, token usage,
+runtime, and score evidence. The sequential launcher stops dispatch on an
+infrastructure or incomplete-verifier failure; it does not retry scores.
+Missing results remain missing. [Protocol and output schema](docs/EVALUATION.md).
 
-GoSkills reuses the public GoS data assets:
+**Validation:** 71 offline tests and all 15 planning paths passed. The portable
+release has not been validated by a new paid end-to-end benchmark run; the
+included table is reproduced from the archived experiments.
 
-- skill libraries from [DLPenn/graph-of-skills-data](https://huggingface.co/datasets/DLPenn/graph-of-skills-data)
-- SkillsBench tasks from [benchflow-ai/skillsbench](https://github.com/benchflow-ai/skillsbench)
-- optional GoS-generated source bundles such as `graphskills_bundle.json`
+## CLI Reference
 
-Download assets with:
+| Command | Purpose |
+|:--|:--|
+| `goskills build` | Construct a group pool from a typed graph |
+| `goskills query` | Retrieve a bounded execution contract and skill payloads |
+| `goskills validate-bundle` | Check bundle integrity, budgets, and coverage debt |
+| `goskills export-native` | Export the pinned, compatible GoS workspace |
+| `python scripts/run_benchmark.py` | Plan or execute any of the 15 evaluation combinations |
+| `python scripts/summarize_runs.py` | Aggregate completed trials with receipt checks |
+| `python scripts/reproduce_table.py` | Reproduce the included result tables offline |
 
-```bash
-./scripts/download_data.sh --all
-```
+Run `goskills --help` or a command's `--help` for options.
 
-See [DATA.md](DATA.md) for download flags and expected directory layout.
+## Configuration
 
-## SkillsBench Evaluation
+The recorded D policy uses these defaults; the full policy is in [Method](docs/METHOD.md).
 
-The SkillsBench path follows the GoS benchmark structure. Set `GRAPH_OF_SKILLS_ROOT` to a local checkout of the upstream GoS repository so GoSkills can reuse its task packaging and Harbor runtime utilities:
+| Setting | Default |
+|:--|:--|
+| Seed mode | Lexical |
+| Seed candidates / presented skills | 4 / 4 |
+| Members per group / selected groups | 3 / 3 |
+| Skill body cap | 1,800 characters |
+| Rendered context cap | 9,000 characters |
 
-```bash
-export GRAPH_OF_SKILLS_ROOT=/path/to/graph-of-skills
-export OPENAI_API_KEY=<api-key>
-export OPENAI_BASE_URL=https://api.openai.com/v1
-
-./scripts/run_eval.sh
-```
-
-Useful overrides:
-
-```bash
-COMPARE_TASKS=task_a,task_b                 # run a subset
-COMPARE_MODEL=gpt-5.4                       # model name passed to the API
-COMPARE_REASONING_EFFORT=low                # reasoning effort when supported
-COMPARE_GRAPH_ROOT=/path/to/graph-of-skills # same as GRAPH_OF_SKILLS_ROOT
-COMPARE_GOSKILLS_ROOT=/path/to/this/repo    # GoSkills checkout
-COMPARE_OUTPUT_ROOT=/path/to/generated      # generated task directory
-COMPARE_DIRECT_BASE_URL=https://.../v1      # OpenAI-compatible endpoint
-```
-
-## ALFWorld Hook
-
-The ALFWorld hook in `evaluation/alfworld/goskills_selector.py` maps a visible ALFWorld goal to a captain/support skill plan. It is dependency-free and can be called from an external ALFWorld runner.
-
-```bash
-pytest tests/test_alfworld_selector.py -q
-```
-
-Full ALFWorld execution requires the external ALFWorld simulator and task assets.
+Evaluation paths belong in `configs/local.json`; credentials belong in the
+shell environment. [Example configuration](configs/local.example.json).
 
 ## Repository Layout
 
 ```text
 Group-of-Skills/
-├── goskills/                    # Core GoSkills implementation
-│   ├── group_graph.py           # Offline anchor-group and retrieval graph construction
-│   ├── retrieval.py             # Query-time group activation, expansion, pruning, rendering
-│   ├── text.py                  # Tokenization, weighting, query decomposition
-│   └── cli.py                   # Build/query CLI
-├── gos/core/parsing.py          # Minimal SKILL.md parser for benchmark builders
-├── data/                        # Downloaded data; gitignored
-├── evaluation/
-│   ├── alfworld/                # ALFWorld selector hook
-│   └── skillsbench/             # SkillsBench generation and direct-API runner
-├── skills/goskills-retriever/   # Container bootstrap skill
-├── scripts/                     # Data download, benchmark, and release-check scripts
-├── tests/                       # Smoke tests
-├── assets/                      # README figures
-├── DATA.md                      # Data and download guide
-└── pyproject.toml               # Package definition
+├── assets/          # Method illustration
+├── goskills/        # GPT-5.4 candidate-D retrieval core
+├── evaluation/      # Three benchmarks × five methods
+├── configs/         # Task sets, protocol, and local-path template
+├── examples/        # Offline graph and retrieval examples
+├── data/            # Per-trial metrics and TB2 replacement mapping
+├── tables/          # CSV, Markdown, and LaTeX result tables
+├── scripts/         # Evaluation, aggregation, and release checks
+├── tests/           # Offline method and integration tests
+├── requirements/    # Separate pinned evaluation environments
+├── provenance/      # Source commitments and validation evidence
+├── docs/            # Setup, method, protocol, and artifact guides
+└── DATA.md          # Dataset and index preparation
 ```
 
+## Documentation
+
+| Document | What it covers |
+|:--|:--|
+| [Full evaluation setup](docs/GETTING_STARTED.md) | Environments, credentials, planning, and execution |
+| [Data preparation](DATA.md) | Pinned upstream code, skill library, datasets, and index |
+| [Method](docs/METHOD.md) | Candidate-D policy, schemas, and source-preserving presentation |
+| [Evaluation protocol](docs/EVALUATION.md) | Five methods, runtime behavior, and reproducibility limits |
+| [Artifacts](docs/ARTIFACTS.md) | Companion trace archive, checksum, and available evidence |
+| [Selection and limitations](docs/SELECTION_AND_LIMITATIONS.md) | Original TB2 scores and conditional replacements |
+| [Contributing](CONTRIBUTING.md) | Offline tests and contribution workflow |
+
+The companion trace archive is separate from this lightweight code repository.
+Its checksum is recorded in [Artifacts](docs/ARTIFACTS.md); a public download
+link has not yet been assigned.
+
+## Citation
+
+```bibtex
+@software{zeng2026goskills,
+  title   = {Group of Skills: Group-Structured Skill Retrieval for Agent Skill Libraries},
+  author  = {Zeng, Kun and Huo, Yu and Zhang, Siyu and Ye, Zi and Zhuo, Yuecheng and
+             Liu, Haoyue and Lu, Yuquan and Wen, Junhao and Tang, Xiaoying},
+  year    = {2026},
+  version = {0.2.0rc2},
+  url     = {https://github.com/yuhuo03/Group-of-Skills}
+}
+```
+
+See [CITATION.cff](CITATION.cff) for machine-readable metadata.
+
+## Acknowledgments and License
+
+We build on [Graph of Skills](https://github.com/davidliuk/graph-of-skills),
+[SkillsBench](https://github.com/benchflow-ai/skillsbench),
+[ALFWorld](https://github.com/alfworld/alfworld), and
+[Terminal-Bench](https://github.com/laude-institute/terminal-bench).
+Third-party components retain their own licenses; see [THIRD_PARTY.md](THIRD_PARTY.md).
+The project license is pending author confirmation ([status](LICENSE_STATUS.md)).

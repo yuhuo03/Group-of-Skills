@@ -1,0 +1,85 @@
+{
+  "description": "Byte-identical GoSkills D core used by SkillsBench v3 and TB2 GPT-5.4 sources. No release portability edits to these modules. ALFWorld method adapter has separate provenance.",
+  "source_freezes": [
+    {
+      "path": "baseline/goskills_group_eval_v3/FREEZE.json",
+      "sha256": "b2be3f5e715302a2d8708792f1d8c0a2d3e05c1dd9c6f64cda7099bdfaf14eb8"
+    },
+    {
+      "path": "baseline/terminalbench2_gpt54_recovery_v5/FREEZE.json",
+      "sha256": "b38d1ebe4af5fd5488ba5f5551c09c1fdc3f2fc0d497a049c745b4c9a71f8d4c"
+    }
+  ],
+  "files": [
+    {
+      "path": "goskills/__init__.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/__init__.py",
+      "source_sha256": "cf0a51d7b147dcc5048743f076f0ed8e56ca0516e4b27700c1d087e9bb359f87",
+      "release_sha256": "cf0a51d7b147dcc5048743f076f0ed8e56ca0516e4b27700c1d087e9bb359f87",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/__main__.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/__main__.py",
+      "source_sha256": "7a0ce558ea44940a90474d0c23068892bb7b1f593b12250708d92aa24424e33a",
+      "release_sha256": "7a0ce558ea44940a90474d0c23068892bb7b1f593b12250708d92aa24424e33a",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/config.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/config.py",
+      "source_sha256": "e16a0040d6ea494dc2d8e7c1bb60f8314243f378f801efa8d7cbbebcdb198959",
+      "release_sha256": "e16a0040d6ea494dc2d8e7c1bb60f8314243f378f801efa8d7cbbebcdb198959",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/facets.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/facets.py",
+      "source_sha256": "2e49e75c66b9c81308bf59583cab9cab89057ba625eb9fa4ff4b5af29d641143",
+      "release_sha256": "2e49e75c66b9c81308bf59583cab9cab89057ba625eb9fa4ff4b5af29d641143",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/groups.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/groups.py",
+      "source_sha256": "7e6b2d760ff8710354fabd167a31052f525a8ae7f721539f8e683097b02b5e12",
+      "release_sha256": "7e6b2d760ff8710354fabd167a31052f525a8ae7f721539f8e683097b02b5e12",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/io.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/io.py",
+      "source_sha256": "c421a1f12a6428fa48a8cd5b8c97e67f98c0f59df1550c67ea307a4f54a3fb54",
+      "release_sha256": "c421a1f12a6428fa48a8cd5b8c97e67f98c0f59df1550c67ea307a4f54a3fb54",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/native.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/native.py",
+      "source_sha256": "49ef52b039a7889ffe729d5a80863a4227327940801af7b2d0409f0e80fe6d7f",
+      "release_sha256": "49ef52b039a7889ffe729d5a80863a4227327940801af7b2d0409f0e80fe6d7f",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/presentation.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/presentation.py",
+      "source_sha256": "482de4ffb9836a7c5e384809031fbdbf2d1b1dbf5196ed2efbefb2dced2d610d",
+      "release_sha256": "482de4ffb9836a7c5e384809031fbdbf2d1b1dbf5196ed2efbefb2dced2d610d",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/retrieval.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/retrieval.py",
+      "source_sha256": "b50926d60de34eb147c67c217805deea90d58c60712b0fae22f9faa6981543ba",
+      "release_sha256": "b50926d60de34eb147c67c217805deea90d58c60712b0fae22f9faa6981543ba",
+      "byte_identical": true
+    },
+    {
+      "path": "goskills/validation.py",
+      "source_relative_path": "baseline/goskills_group_eval_v3/src/goskills/validation.py",
+      "source_sha256": "e7f174aa48a90a3b4e71220751928d82cdf6bc654daf93cde9b4f9c2c5b7bf32",
+      "release_sha256": "e7f174aa48a90a3b4e71220751928d82cdf6bc654daf93cde9b4f9c2c5b7bf32",
+      "byte_identical": true
+    }
+  ]
+}

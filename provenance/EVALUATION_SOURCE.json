@@ -1,0 +1,286 @@
+[
+  {
+    "release_path": "configs/alfworld_games.json",
+    "source_path": "baseline/alfworld_gpt54_v1/TASKS.json",
+    "source_sha256": "7ae98d5f650e9ee010d12974239948caf088c9f4d53016058f5ce49ce0760dab",
+    "changes": "Original134selected game IDs and SHA256 mapped to portable relative paths; no new simulator evaluation.",
+    "release_sha256": "4e949d7364972a2a98e67ee7a08a41579b5b16faf8ad09fd23c8f04619d3dde3"
+  },
+  {
+    "release_path": "configs/local.example.json",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "3052e960f0e30261da0676130742259a1596878f118fe78060615ba19b36a8b9"
+  },
+  {
+    "release_path": "evaluation/alfworld/run.py",
+    "release_sha256": "f7974d70e8f1bc31775eeb8ebdfe30f79babfb2a5575067271b60be4eaf0a3de",
+    "source_path": "baseline/alfworld_gpt54_v1/worker.py",
+    "source_sha256": "33489d669da6e2d35261df4766f0dfcc79cb5db754fa97e4e2f68b913c8e14ad",
+    "changes": "New standalone all-five episode wrapper. Original OOD seed42,30steps,low/4096,model/usage gates; portable game mapping, explicit execution, normalized cost/runtime receipt. Historical controller not bundled."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/__init__.py",
+    "release_sha256": "4f792993b99ebd945387784431e0aaef2944e76c17b164695e6260b6fed66ba4",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "new portable adapter"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/alfworld_adapter.py",
+    "release_sha256": "09c477bf3f2c240ad44aed1871a64eb92bf41ccac36f803a9508b324609cfbc5",
+    "source_path": "baseline/alfworld_gpt54_v1/adapter.py",
+    "source_sha256": "a0869aa353b1d485d67ec4969aec4632ee071664e63a43e5e3420397c9a95d14",
+    "changes": "All five original ALF skill conditions; original upstream SkillRequest protocol and D query shaping. Resource paths and isolated official retrieval are portable."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/alfworld_chat.py",
+    "release_sha256": "c6e126a69757167bd8bda0f79901b22146a418d32ff5c5af06cbe5581c8095c4",
+    "source_path": "baseline/alfworld_gpt54_v1/worker.py",
+    "source_sha256": "33489d669da6e2d35261df4766f0dfcc79cb5db754fa97e4e2f68b913c8e14ad",
+    "changes": "Original Chat class: request-level retry up to5, GPT5.4 model/usage guards and original low/4096; credentials use public env names."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/assessment.py",
+    "source_path": "baseline/terminalbench2_gpt54_recovery_v5/worker.py",
+    "source_sha256": "3e04d1b7cb4b90e5fbcb727cddee32a97636d2fb0f83e95c5afb54656773c894",
+    "changes": "Shared strict model/transport/retrieval/CTRF/trace gates, normalized original agent timings and token usage; SkillsBench fractional versus TB2 binary rewards. Cleanup checked separately by runner.",
+    "release_sha256": "c2696f1a27d82ecf3c6c2db98606e4b92655a80bb925bc8654af61fef14dcc61"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/async_http.py",
+    "release_sha256": "0f7747fcd7a2390cbbb49204d98b56d48f2bae2d6d13262339bdca3567d70614",
+    "source_path": "baseline/async_transport_v1/async_http.py",
+    "source_sha256": "0f7747fcd7a2390cbbb49204d98b56d48f2bae2d6d13262339bdca3567d70614",
+    "changes": "Byte-identical async transport; used by SkillsBench base runner, overridden by TB2 fixed transport."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/campaign.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New config-relative all15 sequential plan/execute orchestration, one attempt per job, exclusive outputs and receipt hashes; no score retries. Separate retrieval interpreter preserves virtual-environment executable paths; Harbor and GoS SDK requirements remain isolated.",
+    "release_sha256": "5769c896a35835ed5d01ab5deea843f8949cabf3af81d3386068c87216ba865b"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/common.py",
+    "release_sha256": "64f1c1edc9684424b41c9df1cccf9f77450fbe4f7cc790d02a26b5f5e0dcb20e",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "new portable adapter"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/compiled_pool.py",
+    "release_sha256": "6916c60ad0c0905780c75064f9c12c09d8ca4df2f0985357d9b15f6a575aa1f7",
+    "source_path": "baseline/four_methods_v1/compiled_pool_v3.py",
+    "source_sha256": "6916c60ad0c0905780c75064f9c12c09d8ca4df2f0985357d9b15f6a575aa1f7",
+    "changes": "Byte-identical compiled SQLite reader. Historical source commitments must match installed core."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/harbor_base.py",
+    "release_sha256": "6e188bad0be9c31108d87df3979f27bbd4fc34eb1638416a4a06ef074e016bd3",
+    "source_path": "artifacts/gpt54-camera-ready-20261104/code/source-b/terminalbench2_gpt54_recovery_v5/revisions/llm-test-formal-r4/vendor/agent.py",
+    "source_sha256": "37b755e5503f27fa1aea20af5850d0c19115cebb84fbd5105e1f26294bcce2e1",
+    "changes": "Relative package import only. Historical shared direct-API Harbor base.",
+    "system_prompt_literals_sha256": "de7f0e080d377454977b1dd42799155e598910635da32f038eb311e153b81432",
+    "source_system_prompt_literals_sha256": "de7f0e080d377454977b1dd42799155e598910635da32f038eb311e153b81432"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/method_backend.py",
+    "source_path": "baseline/terminalbench2_gpt54_recovery_v5/skill_query.py",
+    "source_sha256": "8afb74a66ea58766642dbf9057bb74b63c9ea3172c822679a2c6f59bdd06f64a",
+    "changes": "New shared dispatcher for all five methods. Original pinned official all_full catalog/vector/graph APIs, embedding checks and budgets; D frozen core. Isolated workspace copies, explicit resources, credential aliases, execution boundary and overlap checks.",
+    "release_sha256": "ab554cee423b0973d8ed019dc6b9a8cbebf9b72e3d7a06600a156ec7970aa17d"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/query_helper.py",
+    "release_sha256": "9f1b8d28308eca0904a1dfe661b2d62abbdd34c9d47ddb9f25248ffd144fddf9",
+    "source_path": "baseline/terminalbench2_gpt54_recovery_v5/skill_query.py",
+    "source_sha256": "8afb74a66ea58766642dbf9057bb74b63c9ea3172c822679a2c6f59bdd06f64a",
+    "changes": "Portable host subprocess protocol for the real five-method backend, no shared mutable pool environment variables."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/retrieval.py",
+    "release_sha256": "c5feec8f5e6d6a2910cf54c2882d0ae94c7a535ca02bea30691fdb757dd95109",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "new portable adapter"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/skillsbench_agent.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New subclass of preserved SkillsBench DirectAPIBashAgent. Original prompt/tool protocol; host standalone retrieval bridge, task guidance installation and normalized method receipt. Separate retrieval interpreter preserves virtual-environment executable paths; Harbor and GoS SDK requirements remain isolated.",
+    "release_sha256": "0535137374bd4afdaf73578a24a91d6856e58aeeacad2167a754acfdb4c0df41"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/skillsbench_bridge.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New standalone-query parser; recognized method command only, shell composition rejected. Ordinary task bash remains unchanged.",
+    "release_sha256": "764ef1e49b1f66c7502a45258e246f56b5b02b83466f40cb01b7d732633da3a2"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/skillsbench_pack.py",
+    "source_path": "baseline/native_overlay_v6/prepare_native.py",
+    "source_sha256": "c6a7f1cb9aa349a0c0e1aed9fe1cf960be2eaee2b4e808f0f6e26d6b4452aad7",
+    "changes": "New portable raw-task builder preserving protected task/test/resource bytes. Original all-arm oracle isolation and upstream method guidance; host query transport replaces deployment bootstrap, alternate compose name normalized with bytes preserved.",
+    "release_sha256": "456819ac6fe162635e41cb67142513683acd17672f4ec79ee52d4af83ae6394c"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/skillsbench_query.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New bounded host retrieval helper with structured request, isolated output and stdout protocol.",
+    "release_sha256": "177195ca4b3cbb05bb0b617b5b54ca06fd35f28c933357a32a8d36452607a0f2"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/source_gate.py",
+    "release_sha256": "d7cd69dd4f40c472721745573847c2a154f2db495984c0217ee46c4c37330370",
+    "source_path": "baseline/goskills_group_eval_v3/source_gate.py",
+    "source_sha256": "52a2b16ff69afc2932e5bed7a73b853f4b5a3e342925331621c3fa697add1030",
+    "changes": "Only source-root parameter added; fidelity checks unchanged."
+  },
+  {
+    "release_path": "evaluation/goskills_eval/terminal_agent.py",
+    "release_sha256": "128f4786fa34c2f22b065e244aa722972288725d47f1a541a8be5fadccabdac3",
+    "source_path": "baseline/terminalbench2_gpt54_recovery_v5/agent.py",
+    "source_sha256": "3c677d950cc9d20c2709d891b473f2b2ea95a977975e9353f6724e0dee14f0eb",
+    "changes": "All five original terminal methods; unchanged terminal system prompt and60turn/low/4096 protocol. Portable resource flags, standard env credentials, isolated retrieval helper. Original source retained. Separate retrieval interpreter preserves virtual-environment executable paths; Harbor and GoS SDK requirements remain isolated.",
+    "system_prompt_literals_sha256": "03d89ff69ff8b24e06b738fd675874c1b6e0585e66c5f6a6633255a99885bb26",
+    "source_system_prompt_literals_sha256": "03d89ff69ff8b24e06b738fd675874c1b6e0585e66c5f6a6633255a99885bb26"
+  },
+  {
+    "release_path": "evaluation/goskills_eval/terminal_config.py",
+    "release_sha256": "787ab52617d25e07557951f3d19ab11c6bf0e9a093b6e98afd14c98512048ae7",
+    "source_path": "baseline/terminalbench2_gpt54_recovery_v5/worker.py",
+    "source_sha256": "3e04d1b7cb4b90e5fbcb727cddee32a97636d2fb0f83e95c5afb54656773c894",
+    "changes": "Portable all-five config with original task resources/deadlines/native verifier. Read-only skill mounts, resource path validation and strict result assessment."
+  },
+  {
+    "release_path": "evaluation/skillsbench/agent.py",
+    "release_sha256": "37c6c2b0bddd99b1bd2700968985dc19c3f6c203dd27063013e6fd7b5191afd7",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "new portable integration"
+  },
+  {
+    "release_path": "evaluation/skillsbench/run.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New all-five raw-task plan/prepare/execute wrapper, pinned Harbor config, strict result and exact owned-project cleanup assessment.",
+    "release_sha256": "8e471d238633b2d66cad7770aba35bf3fa5e99b7b4c82bbb30d05aa4430186b3"
+  },
+  {
+    "release_path": "evaluation/terminalbench2/run.py",
+    "release_sha256": "8299538e854bc442ff12e2148bcbcfafa0d5a9d2817ff218b686d3790fce71d3",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New all-five standalone task wrapper with explicit execute boundary, normalized receipts and exact owned-project cleanup assessment."
+  },
+  {
+    "release_path": "requirements/retrieval-alfworld-py312-linux.txt",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New portable setup, dependency snapshot, orchestration or offline validation; not a recorded benchmark result.",
+    "release_sha256": "4965037d47d535d565a37a21ceaae4140788f7939c5a0ba2e44e777b9647db81"
+  },
+  {
+    "release_path": "requirements/terminal-py312-linux.txt",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New portable setup, dependency snapshot, orchestration or offline validation; not a recorded benchmark result.",
+    "release_sha256": "01d2b57f3ede49acb6bc71107cea577ff05c359e0ddfe3fe437f3391e152a921"
+  },
+  {
+    "release_path": "scripts/check_release.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "c85fc8ba7c72804d63f063f898aa666838ea663eaa7957fc734f0a9146ec3647"
+  },
+  {
+    "release_path": "scripts/doctor.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "9005bca6b936cfe5bc33faac5eca766696e2bfc77812758d42238f8318616d60"
+  },
+  {
+    "release_path": "scripts/fetch_asset.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "bf0a13d70f4f6cbb0cfd00712357cb11e481fc6a111a4c9e47f132f8d126f9f9"
+  },
+  {
+    "release_path": "scripts/reproduce_table.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "01bc8729b419a0c2066c0e1e7406ebe0c6d069651c00579942b920f2162cc5ec"
+  },
+  {
+    "release_path": "scripts/run_benchmark.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "8016ce714d4d18368cdbd880ea859b7cb0d777604be9e3ab3d8a54a9bd00948d"
+  },
+  {
+    "release_path": "scripts/summarize_runs.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "758c8a7ef6a8194634f6398b804e831319209806ef10e4933f6cf5352e64f7db"
+  },
+  {
+    "release_path": "tests/test_alfworld_five.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "40f5c1e1128dcb78a376fce8114a8516a7e3fb86401387f319939085a7a567cb"
+  },
+  {
+    "release_path": "tests/test_campaign.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "5c47882251d83224a7e604b49be01197930667b70f5fdec502cf351ee22de889"
+  },
+  {
+    "release_path": "tests/test_core_release.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "49c4411e3169a8640c61c14189a5706140b15049f8e7b1ad0098e033fd51e840"
+  },
+  {
+    "release_path": "tests/test_doctor.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New portable setup, dependency snapshot, orchestration or offline validation; not a recorded benchmark result.",
+    "release_sha256": "b30ab7ed83d529a8d890c548f58bd08050cbe1e09f9121136a2e54580825d260"
+  },
+  {
+    "release_path": "tests/test_evaluation.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "b59aee138f42f7e8b50571c8b6a974c85a0b3b4efd191d579cb5e6fe8eea1e05"
+  },
+  {
+    "release_path": "tests/test_skillsbench_five.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "7f832690be71ce00e17c77b7ec28e8234231ddb0334d07aec4f708f8027220f9"
+  },
+  {
+    "release_path": "tests/test_tb2_five.py",
+    "source_path": null,
+    "source_sha256": null,
+    "changes": "New release-only setup, orchestration, documentation validation or offline test code; not a historical benchmark result.",
+    "release_sha256": "732559b36c6e4613ee1f7220d8489a6500fd27895286e5f44be55dae9b2eb314"
+  }
+]

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "kind": "goskills_graph",
+  "skills": [
+    {
+      "id": "mesh/SKILL.md",
+      "name": "Mesh parser",
+      "body": "Parse a mesh with trimesh. Read STL vertices and calculate volume.",
+      "text": "Parse a mesh with trimesh. Read STL vertices and calculate volume.",
+      "source_path": "mesh/SKILL.md",
+      "description": "Mesh parser",
+      "metadata": {}
+    },
+    {
+      "id": "report/SKILL.md",
+      "name": "JSON report",
+      "body": "Format measurements as valid JSON. Preserve the requested schema.",
+      "text": "Format measurements as valid JSON. Preserve the requested schema.",
+      "source_path": "report/SKILL.md",
+      "description": "JSON report",
+      "metadata": {}
+    },
+    {
+      "id": "check/SKILL.md",
+      "name": "Geometry checker",
+      "body": "Use deterministic checks to validate volume. Run unit tests.",
+      "text": "Use deterministic checks to validate volume. Run unit tests.",
+      "source_path": "check/SKILL.md",
+      "description": "Geometry checker",
+      "metadata": {}
+    },
+    {
+      "id": "csv/SKILL.md",
+      "name": "CSV formatter",
+      "body": "Write CSV tables with explicit columns.",
+      "text": "Write CSV tables with explicit columns.",
+      "source_path": "csv/SKILL.md",
+      "description": "CSV formatter",
+      "metadata": {}
+    },
+    {
+      "id": "cloud/SKILL.md",
+      "name": "Cloud converter",
+      "body": "Convert meshes with a remote API.",
+      "text": "Convert meshes with a remote API.",
+      "source_path": "cloud/SKILL.md",
+      "description": "Cloud converter",
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "mesh/SKILL.md",
+      "target": "report/SKILL.md",
+      "type": "workflow",
+      "weight": 0.9,
+      "metadata": {}
+    },
+    {
+      "source": "check/SKILL.md",
+      "target": "mesh/SKILL.md",
+      "type": "dep",
+      "weight": 0.8,
+      "metadata": {}
+    },
+    {
+      "source": "mesh/SKILL.md",
+      "target": "csv/SKILL.md",
+      "type": "artifact",
+      "weight": 0.7,
+      "metadata": {}
+    },
+    {
+      "source": "mesh/SKILL.md",
+      "target": "cloud/SKILL.md",
+      "type": "alternative",
+      "weight": 0.5,
+      "metadata": {}
+    }
+  ],
+  "provenance": {
+    "fixture": "Synthetic tutorial data authored for this release; not experiment evidence, not a downloaded skill library."
+  }
+}

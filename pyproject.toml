@@ -1,27 +1,29 @@
-[project]
-name = "goskills"
-version = "0.1.0"
-description = "Group-structured skill retrieval for agent skill libraries."
-requires-python = ">=3.10"
-dependencies = [
-  "PyYAML>=6.0",
-]
-
-[project.optional-dependencies]
-dev = [
-  "pytest>=8.0",
-]
-
-[project.scripts]
-goskills-query = "goskills.cli:main"
-
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "goskills"
+version = "0.2.0rc2"
+description = "Group-structured skill retrieval: GPT-5.4 candidate-D code release"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "tomli>=2; python_version < '3.11'"]
+terminal = ["harbor==0.20.0", "httpx==0.28.1", "anyio>=4", "tomli>=2; python_version < '3.11'"]
+alfworld = ["openai>=1", "PyYAML>=6", "retry>=0.9", "tqdm>=4", "alfworld==0.4.2", "textworld==1.7.0"]
+
+[project.scripts]
+goskills = "goskills.__main__:main"
+
+[tool.setuptools.package-dir]
+goskills_eval = "evaluation/goskills_eval"
+
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["goskills*", "gos*"]
+where = [".", "evaluation"]
+include = ["goskills", "goskills.*", "goskills_eval", "goskills_eval.*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

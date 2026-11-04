@@ -1,0 +1,18 @@
+{
+  "files": [
+    {
+      "file": "configs/alfworld-environment.json",
+      "source": "baseline/alfworld_gpt54_v1/ENVIRONMENT_LOCK.json",
+      "source_sha256": "f01f5b8458c927ed96c978a58f7e47bc99c93942a87c97c4686b79cbeafcbc93",
+      "release_sha256": "f01f5b8458c927ed96c978a58f7e47bc99c93942a87c97c4686b79cbeafcbc93",
+      "adaptation": "Only host-specific skill_python path removed if present. Historical inventory, not a portable lockfile."
+    },
+    {
+      "file": "configs/terminal-environment.json",
+      "source": "baseline/terminalbench2_gpt54_recovery_v3/ENVIRONMENT_LOCK.json",
+      "source_sha256": "979bbd24f6480e4dd2fd48ee4ac3d3a063c0f2cffea83e4a510a07746d431c3b",
+      "release_sha256": "a1a8c140b76181727fdecf96bcbdf3233de3a8f328bf375206ac01447e771b08",
+      "adaptation": "Only host-specific skill_python path removed if present. Historical inventory, not a portable lockfile."
+    }
+  ]
+}

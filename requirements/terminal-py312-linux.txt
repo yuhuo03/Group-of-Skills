@@ -1,0 +1,306 @@
+# External dependency resolution snapshot: 2026-11-04; Python 3.12; Linux x86_64.
+# Generated with uv pip compile (resolution only; no live runtime tested).
+# GoSkills source: local release 0.2.0rc2; publication commit not yet assigned.
+# Pinned upstream GoS source: 203f60a2c689da055ce1ac351eb3cb9912a3bca7.
+# Harbor and GoS need separate environments because their OpenAI SDK ranges conflict.
+# Local projects are deliberately not included as machine-specific path requirements.
+# From the release root, install these pins together with the matching local projects:
+# python -m pip install -r requirements/terminal-py312-linux.txt -e ".[terminal]"
+# The upstream checkout must already be at the exact commit above.
+
+aiohappyeyeballs==2.7.1
+    # via aiohttp
+aiohttp==3.14.5
+    # via litellm
+aiosignal==1.4.0
+    # via aiohttp
+annotated-doc==0.0.5
+    # via
+    #   fastapi
+    #   typer
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.16.0
+    # via
+    #   goskills
+    #   httpx
+    #   httpx2
+    #   openai
+    #   starlette
+attrs==26.1.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
+    #   scantree
+boto3==1.43.123
+    # via litellm
+botocore==1.43.123
+    # via
+    #   boto3
+    #   s3transfer
+certifi==2026.10.23
+    # via
+    #   httpcore
+    #   httpx
+    #   litellm
+    #   requests
+cffi==2.1.1
+    # via cryptography
+charset-normalizer==3.5.2
+    # via requests
+click==8.5.0
+    # via
+    #   huggingface-hub
+    #   litellm
+    #   uvicorn
+cryptography==50.0.2
+    # via pyjwt
+deprecation==2.1.0
+    # via
+    #   postgrest
+    #   storage3
+dirhash==0.5.0
+    # via harbor
+fastapi==0.162.0
+    # via harbor
+fastuuid==0.14.0
+    # via litellm
+filelock==3.32.7
+    # via
+    #   harbor
+    #   huggingface-hub
+    #   litellm
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec==2026.9.0
+    # via huggingface-hub
+h11==0.16.0
+    # via
+    #   httpcore
+    #   httpcore2
+    #   uvicorn
+h2==4.4.1
+    # via httpx
+harbor==0.20.0
+    # via goskills
+hf-xet==1.8.0
+    # via huggingface-hub
+hpack==4.2.0
+    # via h2
+httpcore==1.0.9
+    # via httpx
+httpcore2==2.16.0
+    # via httpx2
+httpx==0.28.1
+    # via
+    #   goskills
+    #   harbor
+    #   huggingface-hub
+    #   litellm
+    #   postgrest
+    #   realtime
+    #   storage3
+    #   supabase
+    #   supabase-auth
+    #   supabase-functions
+httpx2==2.16.0
+    # via openai
+huggingface-hub==1.33.0
+    # via
+    #   litellm
+    #   tokenizers
+hyperframe==6.1.0
+    # via h2
+idna==3.20
+    # via
+    #   anyio
+    #   httpx
+    #   httpx2
+    #   requests
+    #   yarl
+importlib-metadata==8.9.0
+    # via litellm
+jinja2==3.1.6
+    # via
+    #   harbor
+    #   litellm
+jiter==0.18.0
+    # via openai
+jmespath==1.1.0
+    # via
+    #   boto3
+    #   botocore
+jsonschema==4.26.0
+    # via litellm
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+litellm==1.108.0
+    # via harbor
+markdown-it-py==4.2.0
+    # via rich
+markupsafe==3.0.4
+    # via jinja2
+mdurl==0.1.2
+    # via markdown-it-py
+multidict==7.2.1
+    # via
+    #   aiohttp
+    #   yarl
+openai==3.45.0
+    # via litellm
+opentelemetry-api==1.45.2
+    # via fastapi
+packaging==26.3
+    # via
+    #   deprecation
+    #   harbor
+    #   huggingface-hub
+    #   litellm
+pathspec==1.1.1
+    # via
+    #   harbor
+    #   scantree
+platformdirs==4.14.3
+    # via harbor
+postgrest==2.34.0
+    # via supabase
+propcache==0.5.4
+    # via
+    #   aiohttp
+    #   yarl
+pycparser==3.12
+    # via cffi
+pydantic==2.14.2
+    # via
+    #   fastapi
+    #   harbor
+    #   litellm
+    #   openai
+    #   postgrest
+    #   pydantic-settings
+    #   realtime
+    #   storage3
+    #   supabase-auth
+pydantic-core==2.50.2
+    # via pydantic
+pydantic-settings==2.16.2
+    # via litellm
+pygments==2.21.0
+    # via rich
+pyjwt==2.15.1
+    # via
+    #   harbor
+    #   supabase-auth
+python-dateutil==2.9.0.post0
+    # via botocore
+python-dotenv==1.2.4
+    # via
+    #   harbor
+    #   litellm
+    #   pydantic-settings
+pyyaml==6.0.3
+    # via
+    #   harbor
+    #   huggingface-hub
+    #   litellm
+realtime==2.34.0
+    # via supabase
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+regex==2026.9.29
+    # via tiktoken
+requests==2.34.2
+    # via
+    #   harbor
+    #   tiktoken
+rich==15.0.0
+    # via
+    #   harbor
+    #   typer
+rpds-py==2026.9.1
+    # via
+    #   jsonschema
+    #   referencing
+s3transfer==0.19.3
+    # via boto3
+scantree==0.0.4
+    # via dirhash
+shellingham==1.5.4
+    # via typer
+shortuuid==1.0.13
+    # via harbor
+six==1.17.0
+    # via python-dateutil
+sniffio==1.3.1
+    # via openai
+starlette==1.10.0
+    # via fastapi
+storage3==2.34.0
+    # via supabase
+supabase==2.34.0
+    # via harbor
+supabase-auth==2.34.0
+    # via supabase
+supabase-functions==2.34.0
+    # via supabase
+tenacity==9.2.1
+    # via harbor
+tiktoken==0.14.0
+    # via litellm
+tokenizers==0.23.3
+    # via litellm
+toml==0.10.2
+    # via harbor
+tqdm==4.70.1
+    # via huggingface-hub
+truststore==0.10.5
+    # via
+    #   httpcore2
+    #   httpx2
+typer==0.27.3
+    # via harbor
+typing-extensions==4.16.0
+    # via
+    #   aiohttp
+    #   aiosignal
+    #   anyio
+    #   fastapi
+    #   httpx2
+    #   huggingface-hub
+    #   litellm
+    #   openai
+    #   opentelemetry-api
+    #   pydantic
+    #   pydantic-core
+    #   pydantic-settings
+    #   realtime
+    #   referencing
+    #   starlette
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   fastapi
+    #   pydantic
+    #   pydantic-settings
+urllib3==2.8.0
+    # via
+    #   botocore
+    #   requests
+uvicorn==0.54.0
+    # via harbor
+websockets==15.0.1
+    # via realtime
+yarl==1.25.1
+    # via
+    #   aiohttp
+    #   postgrest
+    #   storage3
+    #   supabase
+    #   supabase-functions
+zipp==4.1.2
+    # via importlib-metadata
