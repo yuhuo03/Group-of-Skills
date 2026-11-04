@@ -80,9 +80,12 @@
     {
       "file": "tables/TABLE.md",
       "source": "gpt54-camera-ready-20261104/tables/TABLE.md",
-      "source_sha256": "4da9a125f86b4995e1d605c814642f92ec3efac4d4d31a4f40b0c2515d48e62c",
-      "release_sha256": "4da9a125f86b4995e1d605c814642f92ec3efac4d4d31a4f40b0c2515d48e62c",
-      "byte_identical": true
+      "source_sha256": "36dc2ef967c129b7477ef1f1bedd098b95e03e36e02995d584b577bd8ae013be",
+      "release_sha256": "36dc2ef967c129b7477ef1f1bedd098b95e03e36e02995d584b577bd8ae013be",
+      "byte_identical": true,
+      "previous_source_sha256": "4da9a125f86b4995e1d605c814642f92ec3efac4d4d31a4f40b0c2515d48e62c",
+      "previous_release_sha256": "4da9a125f86b4995e1d605c814642f92ec3efac4d4d31a4f40b0c2515d48e62c",
+      "change": "Condense descriptive note; table values and selected attempts unchanged."
     },
     {
       "file": "tables/TABLE.tex",

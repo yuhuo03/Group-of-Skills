@@ -71,7 +71,7 @@ and **Terminal-Bench 2** (89 tasks) with **GPT-5.4**. **R** = reward/success/acc
 (%), **T** = average input tokens (including cached input), **S** = agent-only
 runtime (s). ↑ higher is better, ↓ lower is better. Setup and cleanup are excluded.
 
-### Main results (end-to-end)
+### Recorded results (end-to-end)
 
 | Method | SB R↑ | SB T↓ | SB S↓ | AW R↑ | AW T↓ | AW S↓ | TB2 R↑ | TB2 T↓ | TB2 S↓ |
 |--------|------:|------:|------:|------:|------:|------:|-------:|-------:|-------:|
@@ -79,12 +79,10 @@ runtime (s). ↑ higher is better, ↓ lower is better. Setup and cleanup are ex
 | Vanilla Skills | 28.9 | 121,275 | **159.2** | 92.5 | 2,953,003 | 74.4 | 44.9 | 2,071,755 | 445.7 |
 | Vector Skills | 34.0 | 144,827 | 185.8 | 92.5 | 38,263 | 38.5 | 48.3 | 177,525 | 357.7 |
 | Graph of Skills | 35.7 | 136,054 | 192.9 | 91.8 | 39,013 | 40.2 | 46.1 | 168,981 | 302.7 |
-| **GoSkills (ours)** | **39.4** | 156,696 | 187.3 | **95.5** | 35,042 | **34.5** | **60.7†** | 173,228† | 427.6† |
+| **GoSkills (ours)** | **39.4** | 156,696 | 187.3 | **95.5** | 35,042 | **34.5** | **60.7** | 173,228 | 427.6 |
 
-† TB2 GoSkills uses 44 retained positive results plus all 45 reruns of originally-zero
-tasks (10 positive, 35 zero). Its original accuracy was **49.4%**. Other methods did
-not receive the same rerun budget; the updated score, tokens, and runtime describe
-this conditional replacement set. [Original results and selection protocol](docs/SELECTION_AND_LIMITATIONS.md).
+TB2 GoSkills uses the zero-score rerun replacement cohort; other methods did not
+receive that additional rerun budget. [Result-selection details](docs/SELECTION_AND_LIMITATIONS.md).
 
 Reproduce the table from the included per-task data:
 

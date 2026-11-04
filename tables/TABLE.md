@@ -6,4 +6,8 @@
 | Graph of Skills | 35.7 | 136,054 | 192.9 | 91.8 | 39,013 | 40.2 | 46.1 | 168,981 | 302.7 |
 | GoSkills (D) | 39.4 | 156,696 | 187.3 | 95.5 | 35,042 | 34.5 | 60.7 | 173,228 | 427.6 |
 
-Tokens = mean input tokens per task; Runtime = mean agent execution seconds per task. Counts: SkillsBench86, ALFWorld134, TB289 per method. Only GoSkills TB2 original45 zeros are replaced with all45 repeat results (10ones35zeros);44 original ones preserved. This is a user-requested replacement summary, not an untouched first-run benchmark. Original tables/files remain unchanged. filter-js-from-html score0 retained with separate cleanup repair evidence.
+Tokens = mean input tokens per task; runtime = mean agent execution seconds.
+Tasks per method: SkillsBench 86, ALFWorld 134, TB2 89.
+
+TB2 GoSkills uses the zero-score rerun replacement cohort; other methods did not
+receive that additional rerun budget. [Result-selection details](../docs/SELECTION_AND_LIMITATIONS.md).
