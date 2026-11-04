@@ -23,7 +23,7 @@ class EvaluationTests(unittest.TestCase):
   with self.assertRaises(ValueError):trial_config('a','b','goskills-d',None,900)
   with self.assertRaises(ValueError):trial_config('a','b','noskills',None,0)
  def test_source_fidelity_and_arbitrary_root(self):
-  graph=json.loads((Path(__file__).resolve().parents[1]/'assets/examples/minimal_graph.json').read_text())
+  graph=json.loads((Path(__file__).resolve().parents[1]/'tests/fixtures/minimal_graph.json').read_text())
   pool=build_pool(graph,validate_config(None))
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp)/'pool.json';p.write_text(json.dumps(pool));ctx=DContext(p,'/mounted/skills')

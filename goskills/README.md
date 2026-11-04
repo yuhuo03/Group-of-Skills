@@ -31,11 +31,12 @@ context, and selection trace.
 
 ## Usage
 
-From the repository root after [installation](../README.md#installation):
+Prepare a skill library and export its graph following [DATA.md](../DATA.md).
+Then run from the repository root:
 
 ```bash
 python -m goskills build \
-  --graph assets/examples/minimal_graph.json \
+  --graph data/external/native-graph.json \
   --output /tmp/goskills-pool.json
 
 python -m goskills query \
@@ -46,9 +47,8 @@ python -m goskills query \
 python -m goskills validate-bundle /tmp/goskills-query.json
 ```
 
-Use fresh output paths; writes refuse to replace existing records. The included
-graph is a small synthetic example. Follow [DATA.md](../DATA.md) to prepare a
-full skill library and workspace.
+Use fresh output paths; writes refuse to replace existing records. Reuse an
+existing compatible group pool by skipping the build command.
 
 ## Configuration
 

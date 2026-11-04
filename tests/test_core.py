@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def graph():
-    return read_json(ROOT / "assets/examples/minimal_graph.json")
+    return read_json(ROOT / "tests/fixtures/minimal_graph.json")
 
 
 class CoreTests(unittest.TestCase):
@@ -89,7 +89,7 @@ class CoreTests(unittest.TestCase):
             def run(*args):
                 return subprocess.run([sys.executable, "-m", "goskills", *map(str, args)], cwd=ROOT,
                                       check=True, capture_output=True, text=True).stdout
-            run("build", "--graph", ROOT / "assets/examples/minimal_graph.json", "--output", pool)
+            run("build", "--graph", ROOT / "tests/fixtures/minimal_graph.json", "--output", pool)
             run("query", "--pool", pool, "--query", "Parse STL and output JSON", "--output-json", bundle)
             report = json.loads(run("validate-bundle", bundle))
             self.assertEqual(report["status"], "passed")

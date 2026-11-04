@@ -145,9 +145,9 @@ use [evaluation/README.md](evaluation/README.md) for the benchmark runners.
 
 ### Step 0: Install (once per machine)
 
-Complete [Installation](#installation) above. No provider is needed for the small
-included example. For real benchmark assets, set up the two Python environments
-as described in [the evaluation setup](evaluation/SETUP.md) and [DATA.md](DATA.md).
+Complete [Installation](#installation) above, then set up the evaluation
+environments and external inputs using [the evaluation setup](evaluation/SETUP.md)
+and [DATA.md](DATA.md).
 
 ### Step 1: Download skill libraries
 
@@ -162,9 +162,6 @@ python scripts/fetch_asset.py \
   --output data/external/skills_2000 --execute
 ```
 
-**Tiny smoke test without a download:** use `assets/examples/minimal_graph.json`, a
-synthetic graph included with the repository.
-
 ### Step 2: Workspace directory layout (recommended for benchmarks)
 
 Use the same source library, directed workspace, and group pool across the
@@ -178,24 +175,17 @@ corresponding retrieval methods. The example configuration expects:
 | Exported source graph | `data/external/native-graph.json` |
 | GoSkills group pool | `data/external/pool.json` |
 
-### Step 3: Get a workspace (choose one path)
+### Step 3: Build a workspace and group pool
 
-**A. Build for the full library:** follow [DATA.md](DATA.md) to construct a typed
+Follow [DATA.md](DATA.md) to construct a typed
 directed GoS workspace and export its source graph. Index construction calls APIs;
-building the GoSkills group pool from an exported graph is local:
+building the GoSkills group pool from an exported graph is local. If DATA.md
+already created `pool.json`, reuse it and skip this command:
 
 ```bash
 python -m goskills build \
   --graph data/external/native-graph.json \
   --output data/external/pool.json
-```
-
-**B. Start with the included example** (no API or downloads):
-
-```bash
-DEMO_DIR=$(mktemp -d)
-python -m goskills build \
-  --graph assets/examples/minimal_graph.json --output "$DEMO_DIR/pool.json"
 ```
 
 > **Compatibility note:** use a typed directed source graph from the pinned GoS
@@ -204,22 +194,23 @@ python -m goskills build \
 
 ### Step 4: Retrieve
 
-For the example from Step 3B:
+Query the group pool prepared above:
 
 ```bash
-python -m goskills query --pool "$DEMO_DIR/pool.json" \
+QUERY_DIR=$(mktemp -d)
+python -m goskills query --pool data/external/pool.json \
   --query "Parse STL and produce JSON with unit tests." \
-  --output-json "$DEMO_DIR/answer.json"
+  --output-json "$QUERY_DIR/answer.json"
 ```
 
-For the full library, replace the pool path with `data/external/pool.json` and use
-a fresh output path. The default output is the bounded execution contract.
+Use a fresh output path for each saved query. The default output is the bounded
+execution contract.
 
 ### Step 5: Inspect or extend
 
 ```bash
-python -m goskills validate-bundle "$DEMO_DIR/answer.json"
-python -m goskills query --pool "$DEMO_DIR/pool.json" \
+python -m goskills validate-bundle "$QUERY_DIR/answer.json"
+python -m goskills query --pool data/external/pool.json \
   --query "Parse STL and produce JSON with unit tests." --json
 ```
 
@@ -246,7 +237,7 @@ from goskills.io import read_json
 from goskills.retrieval import Retriever
 from goskills.validation import validate_bundle
 
-pool = build_pool(read_json("assets/examples/minimal_graph.json"), validate_config())
+pool = build_pool(read_json("data/external/native-graph.json"), validate_config())
 bundle = Retriever(pool).query("Parse STL and produce JSON with unit tests.")
 validate_bundle(bundle)
 print(bundle["rendered_context"])
@@ -395,7 +386,7 @@ benchmark sweep. The commands below invoke APIs only when `--execute` is added.
 
 ```
 Group-of-Skills/
-├── assets/                      # Method figures and a small tutorial graph
+├── assets/                      # Method figures
 ├── evaluation/                  # Three benchmarks and five methods
 │   ├── alfworld/                #   ALFWorld runner
 │   ├── skillsbench/             #   SkillsBench / Harbor integration
