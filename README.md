@@ -26,7 +26,11 @@
 
 ## 🔥 Updates
 
-- **[2026-11-04]** Released the GPT-5.4 implementation and results on **SkillsBench, ALFWorld, and Terminal-Bench 2**, with five-method evaluation entrypoints and reproducible result tables.
+- **[2026-11-04]** Added the **GPT-5.4 implementation and results** on **SkillsBench, ALFWorld, and Terminal-Bench 2**, with all **15 benchmark–method combinations**, setup instructions, and reproducible [result tables](#results).
+- **[2026-11-04]** Prepared the **camera-ready artifact archive** with **1,545 selected trial traces**, per-task metrics, source checksums, and offline table reproduction. See [Artifacts](docs/ARTIFACTS.md); the public download is pending.
+- **[2026-09-25]** The **NeurIPS 2026 poster** paper record was published on [OpenReview](https://openreview.net/forum?id=MmJBYf16Bn).
+- **[2026-09-24]** 🎉 **Group of Skills is accepted to NeurIPS 2026 as a poster!**
+- **[2026-05-06]** Added the initial **GoSkills codebase** to this repository ([initial commit](https://github.com/yuhuo03/Group-of-Skills/commit/1fd6fd737ef39993cebe3b3cf25e38a191b57b3d)).
 
 ---
 
