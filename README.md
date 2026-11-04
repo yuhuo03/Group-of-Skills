@@ -239,21 +239,33 @@ output path. Pools and saved bundles are not overwritten. See
 
 ## Agent Integration
 
-### Agent skill
+### Agent skills
 
-[skills/goskills-retriever](skills/goskills-retriever/SKILL.md) provides agent
-instructions for querying a prepared GoSkills pool. Copy that folder into your
-agent's skill directory. For a first Codex installation, run from the repository root:
+The `skills/` directory provides three agent-facing retrieval skills:
+
+| Skill | Retrieval method |
+|-------|------------------|
+| [goskills-retriever](skills/goskills-retriever/SKILL.md) | GoSkills group plans from a prepared pool; no embedding API |
+| [graph-skills-retriever](skills/graph-skills-retriever/SKILL.md) | Graph of Skills retrieval from a prepared graph workspace |
+| [vector-skills-retriever](skills/vector-skills-retriever/SKILL.md) | Vector similarity retrieval from a prepared workspace |
+
+Copy the desired folder into your agent's skill directory. To install all three
+for Codex, run from the repository root:
 
 ```bash
 mkdir -p ~/.codex/skills
-cp -R skills/goskills-retriever ~/.codex/skills/
+cp -R skills/goskills-retriever skills/graph-skills-retriever \
+  skills/vector-skills-retriever ~/.codex/skills/
 ```
 
-For Claude Code, use `~/.claude/skills/` instead. Supply the agent with the Python
-interpreter where GoSkills is installed, the pool path, and the matching source
-library path. In Codex, invoke `$goskills-retriever` with your task. The skill
-wraps the existing retrieval CLI; it does not include or download the skill library.
+For Claude Code, use `~/.claude/skills/` instead. Supply the installed Python
+interpreter and matching local asset paths. GoSkills needs its pool and source
+library; Graph and Vector also need the pinned upstream checkout, workspace,
+and configured embedding provider from [DATA.md](DATA.md). In Codex, invoke
+`$goskills-retriever`, `$graph-skills-retriever`, or `$vector-skills-retriever`.
+These folders contain retrieval instructions, not the experimental skill library.
+No Skills uses no library; Vanilla exposes the library directly, so neither
+needs a retrieval skill. All five evaluation methods remain available.
 
 ### Python / CLI
 
@@ -426,7 +438,7 @@ Group-of-Skills/
 │   └── analysis/                #   Score, token and runtime summaries
 ├── goskills/                    # Group construction, retrieval and CLI
 ├── scripts/                     # Asset preparation and evaluation utilities
-├── skills/                      # Agent-facing GoSkills retrieval skill
+├── skills/                      # Agent-facing group, graph and vector retrieval skills
 ├── tests/                       # Offline tests
 ├── .env.example                 # Provider configuration template
 ├── pyproject.toml               # Package definition

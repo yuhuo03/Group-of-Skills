@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vector Skills Retriever"
+  short_description: "Retrieve source skills using vector similarity"
+  default_prompt: "Use $vector-skills-retriever to retrieve relevant skills from my configured vector workspace for this task."

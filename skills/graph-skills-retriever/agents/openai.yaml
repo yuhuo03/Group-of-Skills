@@ -1,0 +1,4 @@
+interface:
+  display_name: "Graph Skills Retriever"
+  short_description: "Retrieve source skills using graph structure"
+  default_prompt: "Use $graph-skills-retriever to retrieve relevant skills from my configured graph workspace for this task."
