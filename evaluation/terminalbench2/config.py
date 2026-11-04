@@ -9,7 +9,7 @@ from goskills_eval.runtime import METHODS
 
 
 def trial_config(task, output, method, skills_root=None, agent_timeout_sec=None,
-                 *, pool=None, workspace=None, upstream=None, retrieval_python=None, runtime=None):
+                 *, pool=None, workspace=None, upstream=None, retrieval_python=None, runtime=None, verifier_assets=None):
     from goskills_eval.runtime import resolve_runtime
     runtime = resolve_runtime(runtime)
     if method not in METHODS:
@@ -38,13 +38,20 @@ def trial_config(task, output, method, skills_root=None, agent_timeout_sec=None,
     if retrieval_python is not None:
         # Resolving a venv's python symlink would discard the selected environment.
         kwargs['retrieval_python'] = os.path.abspath(os.path.expanduser(str(retrieval_python)))
-    return {'task': {'path': str(task)},
+    result = {'task': {'path': str(task)},
             'trial_name': ('gpt54-' if runtime.profile == 'gpt54' else 'trial-') + method + '-' + hashlib.sha256(str(output).encode()).hexdigest()[:10],
             'trials_dir': str(output),
             'agent': {'import_path': 'goskills_eval.terminal_agent:TB2Agent',
                       'model_name': runtime.model, 'kwargs': kwargs},
             'environment': {'type': 'docker', 'delete': True, 'mounts': mounts},
             'timeout_multiplier': 1.0}
+    if verifier_assets is not None:
+        from goskills_eval.terminalbench2.dependency_transport import Assets
+        assets = Assets(verifier_assets)
+        assets.validate()
+        result['verifier'] = {'import_path': 'goskills_eval.terminalbench2.portable_verifier:PortableVerifier',
+                              'kwargs': {'assets_config': str(assets.config)}}
+    return result
 
 
 def validate_inputs(task, output, method, skills_root=None, *, pool=None, workspace=None, upstream=None, retrieval_python=None):

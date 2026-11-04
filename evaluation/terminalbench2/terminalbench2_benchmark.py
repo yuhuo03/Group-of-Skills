@@ -18,6 +18,7 @@ def main(argv=None):
     parser.add_argument('--workspace', type=Path)
     parser.add_argument('--upstream', type=Path)
     parser.add_argument('--retrieval-python', type=Path, help='Python executable in the separate GoS environment; required for vanilla/vector/native-gos')
+    parser.add_argument('--verifier-assets', type=Path, help='Configuration of verified public dependency-cache roots')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--execute', action='store_true', help='Run one Docker trial with billable API calls; otherwise validate and print configuration')
     from goskills_eval.runtime import add_runtime_arguments, runtime_from_args
@@ -33,7 +34,12 @@ def main(argv=None):
     validate_inputs(args.task, args.output, args.method, args.skills_root, **resources)
     task = tomllib.loads((args.task / 'task.toml').read_text())
     config = trial_config(args.task, args.output, args.method, args.skills_root,
-                          task['agent']['timeout_sec'], runtime=runtime, **resources)
+                          task['agent']['timeout_sec'], runtime=runtime, verifier_assets=args.verifier_assets, **resources)
+    if args.verifier_assets is not None:
+        from goskills_eval.terminalbench2.dependency_transport import Assets
+        from goskills_eval.skill import validate_output
+        assets = Assets(args.verifier_assets)
+        validate_output(args.output, verifier_config=assets.config, **assets.roots)
     if not args.execute:
         print(json.dumps(config, indent=2))
         return 0

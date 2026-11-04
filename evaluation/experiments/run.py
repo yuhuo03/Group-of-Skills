@@ -59,6 +59,12 @@ def build_plan(config_path, benchmark, methods, output, tasks=None, *, workers=1
         if not isinstance(spec,dict):raise ValueError('Missing benchmark configuration: '+track)
         selected=tasks or spec.get('tasks') or members[track]
         if not isinstance(selected,list) or not selected or len(set(selected))!=len(selected):raise ValueError('Empty or duplicate tasks')
+        asset_config=None
+        if track=='tb2' and spec.get('verifier_assets'):
+            from goskills_eval.terminalbench2.dependency_transport import Assets
+            asset_config=resource(spec,'verifier_assets',base)
+            assets=Assets(asset_config);assets.validate()
+            validate_output(output,verifier_config=assets.config,**assets.roots)
         games={}
         if track=='alfworld':
             manifest=Path(resource(spec,'games_manifest',base))
@@ -88,6 +94,8 @@ def build_plan(config_path, benchmark, methods, output, tasks=None, *, workers=1
                         inspect_task(task_path)
                     elif not (task_path/'task.toml').is_file():raise FileNotFoundError(task_path/'task.toml')
                     command+=['--task',str(task_path)]
+                    if asset_config is not None:
+                        command+=['--verifier-assets',asset_config]
                     if method!='noskills':command+=['--retrieval-python',retrieval_python]
                 jobs.append({'benchmark':track,'method':method,'task':task,'output':str(dest),'output_relative':dest.relative_to(output).as_posix(),'command':command})
     from goskills_eval.experiments.bindings import input_bindings,source_bindings

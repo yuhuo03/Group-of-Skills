@@ -52,7 +52,7 @@ def matrix(manifest, output, benchmark, methods, *, workers=1, per_method=1):
         for job in plan['jobs']:
             cmd = job['command']
             assets = [(flag, fingerprint(cmd[cmd.index(flag)+1]))
-                      for flag in ('--task', '--game-file', '--config', '--data-root', '--upstream') if flag in cmd]
+                      for flag in ('--task', '--game-file', '--config', '--data-root', '--upstream', '--verifier-assets') if flag in cmd]
             task_bindings.append((job['benchmark'], job['method'], job['task'], assets, cmd[0]))
         current = {'runtime': plan['runtime'], 'jobs': task_bindings}
         if signature is not None and current != signature:

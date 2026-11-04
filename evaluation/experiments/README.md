@@ -25,6 +25,11 @@ interrupted campaign, use `--resume --output PATH` and then add `--execute` afte
 reviewing the plan. Resume preserves completed attempts, including valid zeros;
 it dispatches only previously unclaimed jobs. See [resume details](../README.md#resume-a-campaign).
 
+For TB2, optionally set `tb2.verifier_assets` to a relative path to the four-root
+asset configuration described in the [TB2 guide](../terminalbench2/README.md#verifier-environment-support).
+Planning checks all catalogue-listed assets before any job is dispatched; resume
+refuses changes to those inputs.
+
 ## Library-size experiments
 
 The preparation follows the GoS skillset pattern: retain an explicit set of base

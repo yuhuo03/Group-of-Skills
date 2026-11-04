@@ -102,14 +102,55 @@ credentials are not written into task packs or mounted into task containers.
 
 ## Verifier environment support
 
-The default runner currently uses Harbor's task verifier plus the strict cleanup
-hook above. The historical server also used dependency-cache, image-identity and
-public-asset-mode adapters. That complete adapter chain has not yet been ported
-and validated here on Linux/Harbor, so the release is not a byte-identical
-reproduction of that server's verifier environment.
+By default, Harbor runs each task's native verifier. To use the public dependency
+transport from the GPT-5.4 TB2 runs, supply `--verifier-assets path/to/assets.json`
+to any of the five single-trial commands. For a batch, set `tb2.verifier_assets`
+in the local configuration; the path is relative to that configuration file.
+The same adapter is used for every method.
 
-`goskills_eval.terminalbench2.uv_transport` supplies a separately tested,
-exact-script wrapper for verified official uv 0.9.5 binaries. It is not enabled
-by the default runner. This local component does not establish that the complete
-historical environment fixes are active or that every task's installer will
-succeed on a new machine.
+The asset configuration names four directories:
+
+```json
+{
+  "runtime": "runtime",
+  "general": "general",
+  "pmars": "pmars",
+  "bookworm": "bookworm"
+}
+```
+
+These paths are relative to `assets.json`. The directories contain the original
+public runtime archives, APT metadata/packages and Python wheels listed in
+`dependency_catalog.json`. The catalogue pins their bytes; it does not download
+or redistribute them. This code repository does not bundle the dependency data.
+If you have the original four asset directories, you can prepare a portable
+bundle containing only the required files:
+
+```bash
+python -m goskills_eval.terminalbench2.asset_bundle \
+  --config path/to/source-assets.json --output data/external/tb2-verifier-assets
+
+python -m goskills_eval.terminalbench2.dependency_transport \
+  --config data/external/tb2-verifier-assets/assets.json
+```
+
+Both commands are local and make no API or Docker calls. The exporter copies
+only catalogue-listed inputs, uses relative paths and refuses an existing output.
+It does not include experiment results, traces or unrelated source-directory
+files. An interrupted export is incomplete until `assets.json` is present.
+
+Preflight checks every asset before dispatch. The verifier then selects caches
+by the original script hashes and, for image-specific caches, the original image
+identity checks. Uploads happen after the agent finishes. Uploaded data files
+receive mode 644 and directories mode 755; the separate uv/uvx executables keep
+mode 755. Only the four allowlisted test scripts receive the uv 0.9.5 command
+wrapper. Other scripts use the base verifier without that command wrapper.
+
+The adapter preserves task commands, dependencies, scoring and the outer verifier
+deadline. It requires a nonempty canonical report when the task uses CTRF;
+missing reports remain failures. Environment overrides are restored on success,
+failure and cancellation. Cache inputs are included in campaign resume bindings.
+
+The portable transport targets Linux x86_64 and Harbor 0.20.0. Different image
+references or changed dependencies require explicitly prepared compatible inputs;
+preflight does not silently replace them with the latest packages.

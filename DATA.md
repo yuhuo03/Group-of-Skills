@@ -169,7 +169,11 @@ credential presence without calling APIs or Docker.
 `evaluation/experiments/configs/task_ids.json` fixes membership: 86 SkillsBench, 134 ALFWorld and 89 TB2
 tasks per method. An optional `tasks` list in each benchmark section selects a
 deliberate subset for a new run; summaries retain the planned denominator.
-Native task verifiers can download their own dependencies.
+Native task verifiers can download their own dependencies. TB2 also supports
+explicit, hash-bound public dependency assets through `tb2.verifier_assets`; see
+[verifier environment setup](evaluation/terminalbench2/README.md#verifier-environment-support).
+These dependency inputs are separate from the skill library and are not included
+in this code repository.
 
 ## 5. Additional library sizes
 

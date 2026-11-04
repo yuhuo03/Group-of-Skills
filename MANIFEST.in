@@ -1,4 +1,4 @@
-include LICENSE README.md DATA.md CONTRIBUTING.md .env.example .gitignore
+include LICENSE README.md DATA.md CONTRIBUTING.md .env.example .gitignore .python-version
 recursive-include assets *.png
 recursive-include skills *.md *.yaml
 recursive-include scripts *.py

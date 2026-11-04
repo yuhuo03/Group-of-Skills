@@ -32,6 +32,7 @@ packages = [
 goskills_eval = "evaluation"
 
 [tool.setuptools.package-data]
+"goskills_eval.terminalbench2" = ["dependency_catalog.json"]
 "goskills_eval.experiments.configs" = ["task_ids.json", "alfworld_games.json", "local.example.json", "gpt54.json"]
 
 [tool.pytest.ini_options]

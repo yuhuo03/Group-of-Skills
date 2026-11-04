@@ -1,0 +1,605 @@
+{
+  "runtime": {
+    "manifest_sha256": "2da9efac5dd45f55ff527535d02261f76982242d9a717fa48ecc9782182573b2",
+    "files": [
+      {
+        "path": "uv/0.9.5/uv-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "2cf10babba653310606f8b49876cfb679928669e7ddaa1fb41fb00ce73e64f66",
+        "bytes": 21370871
+      },
+      {
+        "path": "python/20251014/cpython-3.11.14+20251014-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "91ab434738647ab45d630aaa02e3808bb516239beeb52f7799c12a12d1557a38",
+        "bytes": 30045958
+      },
+      {
+        "path": "python/20251014/cpython-3.12.12+20251014-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "c74addcd1b033a6e4d60ead3ab47fcc995569027e01d3061c4a934f363c4a0cf",
+        "bytes": 32587947
+      },
+      {
+        "path": "python/20251014/cpython-3.13.9+20251014-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "c0ccda275948c79996e46993c2c5476ff5cca606dee530f1dea712179131b348",
+        "bytes": 33517986
+      }
+    ],
+    "eligible_script_sha256": []
+  },
+  "general": {
+    "manifest_sha256": "c6cbaf6622b1c37dfdaad3fe14367a339ea0d725a0475f07f321a46a5586280a",
+    "files": [
+      {
+        "path": "apt/debian/dists/bookworm/InRelease",
+        "sha256": "77737fa4b34f2693e982cc9ee35736816c35a7778fc2d326cc1bbf5b301fe1aa",
+        "bytes": 151075
+      },
+      {
+        "path": "apt/debian/dists/bookworm/main/binary-amd64/Packages.xz",
+        "sha256": "9e0b5aabb2465b3d2e7a7fe27f9913846277833f7a2826e7767acccff5b588c5",
+        "bytes": 8790396
+      },
+      {
+        "path": "apt/debian/dists/bookworm/main/binary-amd64/by-hash/SHA256/9e0b5aabb2465b3d2e7a7fe27f9913846277833f7a2826e7767acccff5b588c5",
+        "sha256": "9e0b5aabb2465b3d2e7a7fe27f9913846277833f7a2826e7767acccff5b588c5",
+        "bytes": 8790396
+      },
+      {
+        "path": "apt/debian/dists/bookworm-updates/InRelease",
+        "sha256": "c0760a38ead3433079fc3b9e976b75411005626d6964b633a9a1efcbe94b9ad1",
+        "bytes": 55403
+      },
+      {
+        "path": "apt/debian/dists/bookworm-updates/main/binary-amd64/Packages.xz",
+        "sha256": "87e7e94047fb7fb6f4ceecc7022d4bee55b66031cc2a7666d3196f3e0aabb846",
+        "bytes": 6924
+      },
+      {
+        "path": "apt/debian/dists/bookworm-updates/main/binary-amd64/by-hash/SHA256/87e7e94047fb7fb6f4ceecc7022d4bee55b66031cc2a7666d3196f3e0aabb846",
+        "sha256": "87e7e94047fb7fb6f4ceecc7022d4bee55b66031cc2a7666d3196f3e0aabb846",
+        "bytes": 6924
+      },
+      {
+        "path": "apt/debian/pool/main/c/curl/curl_7.88.1-10+deb12u15_amd64.deb",
+        "sha256": "0dd9b6bf7a0bd11af2d68a52ec44c2a223fa7c11f9104c36ce1047e1137d4a8f",
+        "bytes": 315764
+      },
+      {
+        "path": "apt/debian/pool/main/c/curl/libcurl4_7.88.1-10+deb12u15_amd64.deb",
+        "sha256": "3042904de01f9c4fbdcf1452b8f81abedcf2b015f9b9deba109063322b5bd68b",
+        "bytes": 392184
+      },
+      {
+        "path": "apt/debian/pool/main/n/nghttp2/libnghttp2-14_1.52.0-1+deb12u3_amd64.deb",
+        "sha256": "5a5736cee57e51c1baed869979e6ecdbc6495e939e33203d6cfe3b6e5a149e3f",
+        "bytes": 72404
+      },
+      {
+        "path": "apt/debian/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb",
+        "sha256": "e1f69020dc2c466e421ec6a58406b643be8b5c382abf0f8989011c1d3df91c87",
+        "bytes": 60824
+      },
+      {
+        "path": "apt/debian-security/dists/bookworm-security/InRelease",
+        "sha256": "505cf8e467295c53bd9316d67a51ecfef4f8a82b61b061b85a448d07d4dd6b9b",
+        "bytes": 34770
+      },
+      {
+        "path": "apt/debian-security/dists/bookworm-security/main/binary-amd64/Packages.xz",
+        "sha256": "9984f1372899f152174d832acb97cc8a5ea25ebe205a156d9fe501b3862f9eba",
+        "bytes": 359456
+      },
+      {
+        "path": "apt/debian-security/dists/bookworm-security/main/binary-amd64/by-hash/SHA256/9984f1372899f152174d832acb97cc8a5ea25ebe205a156d9fe501b3862f9eba",
+        "sha256": "9984f1372899f152174d832acb97cc8a5ea25ebe205a156d9fe501b3862f9eba",
+        "bytes": 359456
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/libs/libssh2/libssh2-1_1.10.0-3+deb12u1_amd64.deb",
+        "sha256": "fff72a194e493f88e100a2567e22472bb4ab828d429c2956965c6f2f134f1b3a",
+        "bytes": 175976
+      },
+      {
+        "path": "apt.conf",
+        "sha256": "6302a124f6351ae13a1e23011779487e3ac1f32e786b61648be6c98fff0ad1ba",
+        "bytes": 123
+      },
+      {
+        "path": "apt.sources",
+        "sha256": "b8fff6ba5b7778097edd88524b1e7fad1719c014b9a60adfba29cbb8be2a516a",
+        "bytes": 352
+      },
+      {
+        "path": "wheels/PySocks-1.7.1-py3-none-any.whl",
+        "sha256": "2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5",
+        "bytes": 16725
+      },
+      {
+        "path": "wheels/attrs-26.1.0-py3-none-any.whl",
+        "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+        "bytes": 67548
+      },
+      {
+        "path": "wheels/beautifulsoup4-4.13.5-py3-none-any.whl",
+        "sha256": "642085eaa22233aceadff9c69651bc51e8bf3f874fb6d7104ece2beb24b47c4a",
+        "bytes": 105113
+      },
+      {
+        "path": "wheels/certifi-2026.10.23-py3-none-any.whl",
+        "sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1",
+        "bytes": 135082
+      },
+      {
+        "path": "wheels/h11-0.16.0-py3-none-any.whl",
+        "sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86",
+        "bytes": 37515
+      },
+      {
+        "path": "wheels/idna-3.20-py3-none-any.whl",
+        "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c",
+        "bytes": 69583
+      },
+      {
+        "path": "wheels/iniconfig-2.3.1-py3-none-any.whl",
+        "sha256": "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7",
+        "bytes": 7552
+      },
+      {
+        "path": "wheels/outcome-1.3.0.post0-py2.py3-none-any.whl",
+        "sha256": "e771c5ce06d1415e356078d3bdd68523f284b4ce5419828922b6871e65eda82b",
+        "bytes": 10692
+      },
+      {
+        "path": "wheels/packaging-26.3-py3-none-any.whl",
+        "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+        "bytes": 129956
+      },
+      {
+        "path": "wheels/pluggy-1.7.0-py3-none-any.whl",
+        "sha256": "7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec",
+        "bytes": 27082
+      },
+      {
+        "path": "wheels/pygments-2.21.0-py3-none-any.whl",
+        "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+        "bytes": 1250147
+      },
+      {
+        "path": "wheels/pytest-8.4.1-py3-none-any.whl",
+        "sha256": "539c70ba6fcead8e78eebbf1115e8b589e7565830d7d006a8723f19ac8a0afb7",
+        "bytes": 365474
+      },
+      {
+        "path": "wheels/pytest_json_ctrf-0.3.5-py3-none-any.whl",
+        "sha256": "e82fd1d69be2f92385bc33540063e5ad7b17b36de67764c84f3ceb9815a895e9",
+        "bytes": 6837
+      },
+      {
+        "path": "wheels/selenium-4.35.0-py3-none-any.whl",
+        "sha256": "90bb6c6091fa55805785cf1660fa1e2176220475ccdb466190f654ef8eef6114",
+        "bytes": 9602106
+      },
+      {
+        "path": "wheels/sniffio-1.3.1-py3-none-any.whl",
+        "sha256": "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2",
+        "bytes": 10235
+      },
+      {
+        "path": "wheels/sortedcontainers-2.4.0-py2.py3-none-any.whl",
+        "sha256": "a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0",
+        "bytes": 29575
+      },
+      {
+        "path": "wheels/soupsieve-3.0.4-py3-none-any.whl",
+        "sha256": "8412826614f9c632227067d0985aeb9f584bd15efc852955430e097a9fe7afbf",
+        "bytes": 42458
+      },
+      {
+        "path": "wheels/trio-0.30.0-py3-none-any.whl",
+        "sha256": "3bf4f06b8decf8d3cf00af85f40a89824669e2d033bb32469d34840edcfc22a5",
+        "bytes": 499194
+      },
+      {
+        "path": "wheels/trio_websocket-0.12.2-py3-none-any.whl",
+        "sha256": "df605665f1db533f4a386c94525870851096a223adcb97f72a07e8b4beba45b6",
+        "bytes": 21221
+      },
+      {
+        "path": "wheels/typing_extensions-4.14.1-py3-none-any.whl",
+        "sha256": "d1e1e3b58374dc93031d6eda2420a48ea44a36c2b4766a4fdeb3710755731d76",
+        "bytes": 43906
+      },
+      {
+        "path": "wheels/urllib3-2.8.0-py3-none-any.whl",
+        "sha256": "0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3",
+        "bytes": 135717
+      },
+      {
+        "path": "wheels/websocket_client-1.8.0-py3-none-any.whl",
+        "sha256": "17b44cc997f5c498e809b22cdf2d9c7a9e71c02c8cc2b6c56e7c2d1239bfa526",
+        "bytes": 58826
+      },
+      {
+        "path": "wheels/wsproto-1.3.2-py3-none-any.whl",
+        "sha256": "61eea322cdf56e8cc904bd3ad7573359a242ba65688716b0710a5eb12beab584",
+        "bytes": 24405
+      }
+    ],
+    "eligible_script_sha256": [
+      "09386b7e4929216fe490deb7d32c99841c03be2471897181dda2bd11f8922c00"
+    ]
+  },
+  "pmars": {
+    "manifest_sha256": "903676fa1a761aa6582339fce56053ce5b5cd33d86066a6bbcc05a491b6335a7",
+    "files": [
+      {
+        "path": "apt/debian/dists/trixie/InRelease",
+        "sha256": "0584fba32e13e0ab8285fb16c27adea1ec03a73669c18702821094fd6ca86675",
+        "bytes": 140421
+      },
+      {
+        "path": "apt/debian/dists/trixie/main/binary-amd64/Packages.xz",
+        "sha256": "7778d3e3f303b7ddb8ce0fe7c8d57473a076c6bf2e8f241f75421d2396352498",
+        "bytes": 9678380
+      },
+      {
+        "path": "apt/debian/dists/trixie/main/binary-amd64/by-hash/SHA256/7778d3e3f303b7ddb8ce0fe7c8d57473a076c6bf2e8f241f75421d2396352498",
+        "sha256": "7778d3e3f303b7ddb8ce0fe7c8d57473a076c6bf2e8f241f75421d2396352498",
+        "bytes": 9678380
+      },
+      {
+        "path": "apt/debian/dists/trixie-updates/InRelease",
+        "sha256": "eea247d49345fe6318091c177212fe45d10f9d32379070b6f21867abeb7d984a",
+        "bytes": 47340
+      },
+      {
+        "path": "apt/debian/dists/trixie-updates/main/binary-amd64/Packages.xz",
+        "sha256": "7b52592d46eb9bf694ffd99b90fb521064a6bfd1d0a9f69f22cabf31cb7ea38e",
+        "bytes": 1108
+      },
+      {
+        "path": "apt/debian/dists/trixie-updates/main/binary-amd64/by-hash/SHA256/7b52592d46eb9bf694ffd99b90fb521064a6bfd1d0a9f69f22cabf31cb7ea38e",
+        "sha256": "7b52592d46eb9bf694ffd99b90fb521064a6bfd1d0a9f69f22cabf31cb7ea38e",
+        "bytes": 1108
+      },
+      {
+        "path": "apt/debian/pool/main/b/bash-completion/bash-completion_2.16.0-7_all.deb",
+        "sha256": "e94b49cbfeccbf620effb20f4e9968bbbe6a5acbe0a5d7140ba394249060464a",
+        "bytes": 319436
+      },
+      {
+        "path": "apt/debian/pool/main/c/cyrus-sasl2/libsasl2-2_2.1.28+dfsg1-9_amd64.deb",
+        "sha256": "66e49d7ae026811b49a0050f18b0325960a2625ffd1ff60d91b7844a815fa9d2",
+        "bytes": 57512
+      },
+      {
+        "path": "apt/debian/pool/main/c/cyrus-sasl2/libsasl2-modules-db_2.1.28+dfsg1-9_amd64.deb",
+        "sha256": "a5c38659fbd62c33c6d9bfa2be43e75a572d1818531aad32dd74d0a58cc4bd19",
+        "bytes": 19768
+      },
+      {
+        "path": "apt/debian/pool/main/c/cyrus-sasl2/libsasl2-modules_2.1.28+dfsg1-9_amd64.deb",
+        "sha256": "cfb73ce3c26bb8637da0e625ed0d9a8050e994c0c496c00c49ab0cc188ab9ffb",
+        "bytes": 66712
+      },
+      {
+        "path": "apt/debian/pool/main/e/e2fsprogs/libcom-err2_1.47.2-3+b12_amd64.deb",
+        "sha256": "bd43e020b8fed399db3eebf098111f10fba4c436fff99ccad72cc7e27c9764ec",
+        "bytes": 25036
+      },
+      {
+        "path": "apt/debian/pool/main/g/gnutls28/libgnutls30t64_3.8.9-3+deb13u4_amd64.deb",
+        "sha256": "18a8bdfd91c7e3bcb01719d55a2b56849c7160b34f1f52b1c4fdfdd41bf1352b",
+        "bytes": 1469024
+      },
+      {
+        "path": "apt/debian/pool/main/k/keyutils/libkeyutils1_1.6.3-6_amd64.deb",
+        "sha256": "0b11ad17be0300b63ad4eeb4c6450fed24d34b7b740f23e5363dcb29ee6d5eba",
+        "bytes": 9456
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/krb5-locales_1.21.3-5+deb13u1_all.deb",
+        "sha256": "fb25cd5389c65e6ef6e1d40cc091e53c8499a2ac4576c9e2addbe7fd8b550e98",
+        "bytes": 101092
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb",
+        "sha256": "30847c1fde4240567d7ed3aeab4f655dd591203758b857e85e824045aae70299",
+        "bytes": 138356
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libk5crypto3_1.21.3-5+deb13u1_amd64.deb",
+        "sha256": "7da07ee674b47f1f0be7cc89317c25310086a1f1761217d0f72e6ae2c5a69b84",
+        "bytes": 81152
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libkrb5-3_1.21.3-5+deb13u1_amd64.deb",
+        "sha256": "47d71d6a7f2e59b9bae5f89602397594805113b95889ad18fa703cd53abafc97",
+        "bytes": 326056
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libkrb5support0_1.21.3-5+deb13u1_amd64.deb",
+        "sha256": "3a0acd8b37955c0e102c756b52c97df2a31f67b96453c35dab70df218d309117",
+        "bytes": 33124
+      },
+      {
+        "path": "apt/debian/pool/main/libi/libidn2/libidn2-0_2.3.8-2_amd64.deb",
+        "sha256": "90b039bcdc4578f8e1c4935adf8dbb525e36a164deefdbbb8c45bac347d48278",
+        "bytes": 109096
+      },
+      {
+        "path": "apt/debian/pool/main/libp/libpsl/libpsl5t64_0.21.2-1.1+b1_amd64.deb",
+        "sha256": "59d42bb1f9ebc0d1776fe616efb08a7a8568b05982e00f70b03c63863db768ab",
+        "bytes": 57188
+      },
+      {
+        "path": "apt/debian/pool/main/libs/libssh2/libssh2-1t64_1.11.1-1+deb13u2_amd64.deb",
+        "sha256": "dbb1024c192d4d292b7cfa902b96076cfe81b56a5eed4fb28da36e8bf543e49a",
+        "bytes": 245240
+      },
+      {
+        "path": "apt/debian/pool/main/libt/libtasn1-6/libtasn1-6_4.20.0-2+deb13u1_amd64.deb",
+        "sha256": "23fec6e06583ce2bad9b2c04c9b485e90440e259b1abf8677cd80d3ce60831ad",
+        "bytes": 50112
+      },
+      {
+        "path": "apt/debian/pool/main/libu/libunistring/libunistring5_1.3-2_amd64.deb",
+        "sha256": "6dd3490bef06ea1096f32d10766b7e016cf579bfae8451d1b7df15ce05b8aa46",
+        "bytes": 476768
+      },
+      {
+        "path": "apt/debian/pool/main/n/nghttp2/libnghttp2-14_1.64.0-1.1+deb13u1_amd64.deb",
+        "sha256": "896cb217537c09251fb909b8541349010ac279d802d871e98c06a62a2c67ce2c",
+        "bytes": 76188
+      },
+      {
+        "path": "apt/debian/pool/main/n/nghttp3/libnghttp3-9_1.8.0-1_amd64.deb",
+        "sha256": "388e4c33b72829cbf0d098afdc8539fa5ba7458eddb077f5538fdb4d5538716b",
+        "bytes": 67656
+      },
+      {
+        "path": "apt/debian/pool/main/o/openldap/libldap-common_2.6.10+dfsg-1_all.deb",
+        "sha256": "e45285afc6c45ee9274dd848baf1823d0cf6bb8f1fc769ea96f4de180a264de1",
+        "bytes": 35108
+      },
+      {
+        "path": "apt/debian/pool/main/o/openldap/libldap2_2.6.10+dfsg-1_amd64.deb",
+        "sha256": "60069e4a550ca890113fa89d3001417781b18e146ec5d637d31e368dec9909bd",
+        "bytes": 193576
+      },
+      {
+        "path": "apt/debian/pool/main/p/p11-kit/libp11-kit0_0.25.5-3_amd64.deb",
+        "sha256": "784bf2063e166c8bc851a32623b74ebd85c499043a9d57c5bbd64fa63447f45a",
+        "bytes": 425240
+      },
+      {
+        "path": "apt/debian/pool/main/p/publicsuffix/publicsuffix_20250328.1952-0.1_all.deb",
+        "sha256": "80b5b3959ddf1c54c82001380aab866fa9964274a59a7f169110c8a036e40864",
+        "bytes": 295872
+      },
+      {
+        "path": "apt/debian/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b5_amd64.deb",
+        "sha256": "93baa2004cbe6c8721b9e81beed078612540aef120970b4751305c51c6697368",
+        "bytes": 58840
+      },
+      {
+        "path": "apt/debian-security/dists/trixie-security/InRelease",
+        "sha256": "9d2e940411a33af246a612fd37e8c2d3b046b5b175bc24d22bf95cda38d77c99",
+        "bytes": 43409
+      },
+      {
+        "path": "apt/debian-security/dists/trixie-security/main/binary-amd64/Packages.xz",
+        "sha256": "47c58873c9ab913878036c403e824a34d6afaf63613224e997340c811410763f",
+        "bytes": 291668
+      },
+      {
+        "path": "apt/debian-security/dists/trixie-security/main/binary-amd64/by-hash/SHA256/47c58873c9ab913878036c403e824a34d6afaf63613224e997340c811410763f",
+        "sha256": "47c58873c9ab913878036c403e824a34d6afaf63613224e997340c811410763f",
+        "bytes": 291668
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/b/brotli/libbrotli1_1.1.0-2+deb13u1_amd64.deb",
+        "sha256": "db46824c60fee46aff3cc0be3e5f736bc606cae669b1fb17516a41e8073251a9",
+        "bytes": 303640
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/c/curl/curl_8.14.1-2+deb13u7_amd64.deb",
+        "sha256": "135636bd8b713c582d33e50ec4e36ea55cc3c5da3f12bbeb6b87d2bcbd3a0649",
+        "bytes": 270212
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/c/curl/libcurl4t64_8.14.1-2+deb13u7_amd64.deb",
+        "sha256": "4f89bd3e7a33bbd8f7422817a8a8e2233c9e194fda9c331e33bf98705f525bfc",
+        "bytes": 391640
+      },
+      {
+        "path": "apt.conf",
+        "sha256": "37586a64339dbce7aff42d2382fa96443b4b0476f9e351ee94d7bca90e01f352",
+        "bytes": 129
+      },
+      {
+        "path": "apt.sources",
+        "sha256": "073e82f08973d7ae214577e2ac7b05e2f03ab35788630da186c73528e2bc5522",
+        "bytes": 358
+      }
+    ],
+    "eligible_script_sha256": [
+      "4770437ea96c3cc84684b4f99d55fb148fcac09f9ea1e8ef49de487716e6c334"
+    ]
+  },
+  "bookworm": {
+    "manifest_sha256": "d92a30eca9bc242dee39499629608b82175e14ba35990bec0ed1255e3c403a5e",
+    "files": [
+      {
+        "path": "apt/debian/dists/bookworm/InRelease",
+        "sha256": "77737fa4b34f2693e982cc9ee35736816c35a7778fc2d326cc1bbf5b301fe1aa",
+        "bytes": 151075
+      },
+      {
+        "path": "apt/debian/dists/bookworm/main/binary-amd64/Packages.xz",
+        "sha256": "9e0b5aabb2465b3d2e7a7fe27f9913846277833f7a2826e7767acccff5b588c5",
+        "bytes": 8790396
+      },
+      {
+        "path": "apt/debian/dists/bookworm/main/binary-amd64/by-hash/SHA256/9e0b5aabb2465b3d2e7a7fe27f9913846277833f7a2826e7767acccff5b588c5",
+        "sha256": "9e0b5aabb2465b3d2e7a7fe27f9913846277833f7a2826e7767acccff5b588c5",
+        "bytes": 8790396
+      },
+      {
+        "path": "apt/debian/dists/bookworm-updates/InRelease",
+        "sha256": "c0760a38ead3433079fc3b9e976b75411005626d6964b633a9a1efcbe94b9ad1",
+        "bytes": 55403
+      },
+      {
+        "path": "apt/debian/dists/bookworm-updates/main/binary-amd64/Packages.xz",
+        "sha256": "87e7e94047fb7fb6f4ceecc7022d4bee55b66031cc2a7666d3196f3e0aabb846",
+        "bytes": 6924
+      },
+      {
+        "path": "apt/debian/dists/bookworm-updates/main/binary-amd64/by-hash/SHA256/87e7e94047fb7fb6f4ceecc7022d4bee55b66031cc2a7666d3196f3e0aabb846",
+        "sha256": "87e7e94047fb7fb6f4ceecc7022d4bee55b66031cc2a7666d3196f3e0aabb846",
+        "bytes": 6924
+      },
+      {
+        "path": "apt/debian/pool/main/c/curl/curl_7.88.1-10+deb12u15_amd64.deb",
+        "sha256": "0dd9b6bf7a0bd11af2d68a52ec44c2a223fa7c11f9104c36ce1047e1137d4a8f",
+        "bytes": 315764
+      },
+      {
+        "path": "apt/debian/pool/main/c/curl/libcurl4_7.88.1-10+deb12u15_amd64.deb",
+        "sha256": "3042904de01f9c4fbdcf1452b8f81abedcf2b015f9b9deba109063322b5bd68b",
+        "bytes": 392184
+      },
+      {
+        "path": "apt/debian/pool/main/n/nghttp2/libnghttp2-14_1.52.0-1+deb12u3_amd64.deb",
+        "sha256": "5a5736cee57e51c1baed869979e6ecdbc6495e939e33203d6cfe3b6e5a149e3f",
+        "bytes": 72404
+      },
+      {
+        "path": "apt/debian/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb",
+        "sha256": "e1f69020dc2c466e421ec6a58406b643be8b5c382abf0f8989011c1d3df91c87",
+        "bytes": 60824
+      },
+      {
+        "path": "apt/debian-security/dists/bookworm-security/InRelease",
+        "sha256": "505cf8e467295c53bd9316d67a51ecfef4f8a82b61b061b85a448d07d4dd6b9b",
+        "bytes": 34770
+      },
+      {
+        "path": "apt/debian-security/dists/bookworm-security/main/binary-amd64/Packages.xz",
+        "sha256": "9984f1372899f152174d832acb97cc8a5ea25ebe205a156d9fe501b3862f9eba",
+        "bytes": 359456
+      },
+      {
+        "path": "apt/debian-security/dists/bookworm-security/main/binary-amd64/by-hash/SHA256/9984f1372899f152174d832acb97cc8a5ea25ebe205a156d9fe501b3862f9eba",
+        "sha256": "9984f1372899f152174d832acb97cc8a5ea25ebe205a156d9fe501b3862f9eba",
+        "bytes": 359456
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/libs/libssh2/libssh2-1_1.10.0-3+deb12u1_amd64.deb",
+        "sha256": "fff72a194e493f88e100a2567e22472bb4ab828d429c2956965c6f2f134f1b3a",
+        "bytes": 175976
+      },
+      {
+        "path": "apt.conf",
+        "sha256": "6302a124f6351ae13a1e23011779487e3ac1f32e786b61648be6c98fff0ad1ba",
+        "bytes": 123
+      },
+      {
+        "path": "apt.sources",
+        "sha256": "b8fff6ba5b7778097edd88524b1e7fad1719c014b9a60adfba29cbb8be2a516a",
+        "bytes": 352
+      },
+      {
+        "path": "apt/debian/pool/main/k/keyutils/libkeyutils1_1.6.3-2_amd64.deb",
+        "sha256": "cfac89e6a7a54ff3c6a4f843310e25efeddaa771baeae470bd98bd588c373563",
+        "bytes": 8808
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/krb5-locales_1.20.1-2+deb12u5_all.deb",
+        "sha256": "7a904247cda4006e25a6a1bdcf10bc3f0fa10f5c7df69dd199c1e2fdf99327fa",
+        "bytes": 63520
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libgssapi-krb5-2_1.20.1-2+deb12u5_amd64.deb",
+        "sha256": "d8b87aea91b956b416c01a28c44ff6228315ae3b73de40acddac3dc5043607d2",
+        "bytes": 135168
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libk5crypto3_1.20.1-2+deb12u5_amd64.deb",
+        "sha256": "7b6e47d15c5c9cdcd456137533d8308aeba608a54cec73b28bd59bfc4b54cf06",
+        "bytes": 79712
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libkrb5-3_1.20.1-2+deb12u5_amd64.deb",
+        "sha256": "c90801be09701af221b54dd502a59cb378b7284ff31e480738baca317d2f7653",
+        "bytes": 332280
+      },
+      {
+        "path": "apt/debian/pool/main/k/krb5/libkrb5support0_1.20.1-2+deb12u5_amd64.deb",
+        "sha256": "8b9c05f2d8d461a10d657b118f572af5bf8fd6c8f93dcef81e852c5ab0f428ab",
+        "bytes": 33212
+      },
+      {
+        "path": "apt/debian/pool/main/libp/libpsl/libpsl5_0.21.2-1_amd64.deb",
+        "sha256": "4f0d35610204e4e754b057748719744114621f2f6f4202d846c314860a981afb",
+        "bytes": 58684
+      },
+      {
+        "path": "apt/debian/pool/main/o/openldap/libldap-2.5-0_2.5.13+dfsg-5_amd64.deb",
+        "sha256": "4b6c30f6554149c594628d945edc6003f0eea8d0cc1341638c0e71375db147ed",
+        "bytes": 183248
+      },
+      {
+        "path": "apt/debian/pool/main/o/openldap/libldap-common_2.5.13+dfsg-5_all.deb",
+        "sha256": "72a6c113801a0f307f3a9ab9fe7a7f9559d9164af990494ed2c50617a0e20452",
+        "bytes": 29348
+      },
+      {
+        "path": "apt/debian/pool/main/p/publicsuffix/publicsuffix_20230209.2326-1_all.deb",
+        "sha256": "791c92c681a3cefcc9721445dc8a301a1a3cb3eef40ac2c16a4d9dd9ad5a42d7",
+        "bytes": 126380
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/b/brotli/libbrotli1_1.0.9-2+deb12u1_amd64.deb",
+        "sha256": "e27b3d655fa6fadd7a56f706687e94573c0af68b7d6df394a32a381a3a6c6d8b",
+        "bytes": 274704
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/c/cyrus-sasl2/libsasl2-2_2.1.28+dfsg-10+deb12u1_amd64.deb",
+        "sha256": "d6f20408e2be92ebd9f5e3b1c1935b075efb3f03abb5f48f7b991a0ad3e2d6a5",
+        "bytes": 59908
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/c/cyrus-sasl2/libsasl2-modules_2.1.28+dfsg-10+deb12u1_amd64.deb",
+        "sha256": "c8f4780356794ed00b154866ead8c7bcdc6c3b76ffcd120b8d6bfcbdc536c8af",
+        "bytes": 66868
+      },
+      {
+        "path": "apt/debian-security/pool/updates/main/c/cyrus-sasl2/libsasl2-modules-db_2.1.28+dfsg-10+deb12u1_amd64.deb",
+        "sha256": "6c86ca8fe9a7d652e618874b8753b4b6ec6b42ed7649b3f388e38d0a99047ba5",
+        "bytes": 20524
+      }
+    ],
+    "eligible_script_sha256": []
+  },
+  "images": [
+    {
+      "task": "build-pmars",
+      "original_config_digest": "sha256:7b5bae6c1dea946c16c088a0f254182013f7040298420d0021612fe1b1a2e5ee",
+      "manifest_digest": "sha256:57a82706f7491e0b2d1ff7e927e97ae5339892dd09c47ac43290b4ba1f5abc6f",
+      "repo_digest": "alexgshaw/build-pmars@sha256:57a82706f7491e0b2d1ff7e927e97ae5339892dd09c47ac43290b4ba1f5abc6f"
+    },
+    {
+      "task": "cancel-async-tasks",
+      "original_config_digest": "sha256:760c5426807dc80edd6a1b1c3675c197599fc3f9cb46b1a06e7539cb94818553",
+      "manifest_digest": "sha256:84c7fae6b256dcc56a350790e2a9715eefc7dad662a9d8e8a472363aa71ef18d",
+      "repo_digest": "alexgshaw/cancel-async-tasks@sha256:84c7fae6b256dcc56a350790e2a9715eefc7dad662a9d8e8a472363aa71ef18d"
+    },
+    {
+      "task": "cobol-modernization",
+      "original_config_digest": "sha256:14e6e693be70ee0c7f07105dfc0f3cae71fd495cc0106042dd530fc5fbd8e637",
+      "manifest_digest": "sha256:593ab9df3d83f771e927888b2d9436b380cdf7ec4d0af2a9f0802d541edebba0",
+      "repo_digest": "alexgshaw/cobol-modernization@sha256:593ab9df3d83f771e927888b2d9436b380cdf7ec4d0af2a9f0802d541edebba0"
+    }
+  ]
+}

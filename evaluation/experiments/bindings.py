@@ -43,7 +43,7 @@ def fingerprint(path):
 
 def input_bindings(jobs, config_path):
     paths={str(Path(config_path).resolve())}
-    flags={'--skills-root','--pool','--workspace','--upstream','--task','--game-file','--config','--data-root'}
+    flags={'--skills-root','--pool','--workspace','--upstream','--task','--game-file','--config','--data-root','--verifier-assets'}
     for job in jobs:
         command=job['command']
         for i,value in enumerate(command):
@@ -52,6 +52,11 @@ def input_bindings(jobs, config_path):
                 if value=='--workspace':
                     from goskills_eval.workspace import identity_path
                     paths.add(str(identity_path(selected)))
+                if value=='--verifier-assets':
+                    from goskills_eval.terminalbench2.dependency_transport import Assets
+                    assets=Assets(selected)
+                    paths.update(str(assets.roots[name]/row['path'])
+                                 for name in assets.roots for row in assets.files(name))
     # Hash a directory only once when it already contains a selected child.
     roots=[]
     for value in sorted(paths,key=lambda value:(len(Path(value).parts),value)):
