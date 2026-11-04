@@ -4,6 +4,9 @@ The runner supports all five methods with ALFWorld 0.4.2 and TextWorld 1.7.0.
 It uses the out-of-distribution split, seed 42, GPT-5.4 with low reasoning,
 30 interaction steps, and a 4,096-token completion limit.
 
+The defaults use the shared `gpt54` reproduction profile. For another model,
+use the [shared model options](../README.md#model-profiles).
+
 ## Setup and inputs
 
 Complete [environment setup](../README.md#setup) and [input preparation](../../DATA.md).

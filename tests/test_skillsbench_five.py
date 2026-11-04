@@ -1,4 +1,6 @@
 """Fresh taskpack and host-bridge checks; no container/provider imports."""
+from goskills.groups import build_pool
+from goskills.config import validate_config
 from pathlib import Path
 import asyncio,hashlib,importlib.util,json,os,subprocess,sys,tempfile,types,unittest
 from unittest.mock import patch
@@ -19,7 +21,9 @@ def fixtures(root):
  graph='This environment contains a prebuilt **Graph of Skills** (GoS) workspace.\n```bash\ngraphskills-query "goal"\n```\nThis command is available on PATH. It queries a prebuilt skill graph and returns a ranked bundle of skills.\nYou must read the retrieval status from that result.\nStatus.\n## Reading the Output\nSource files.\n'
  for name,text in [('_gos_template',graph),('_vectorskills_template','```bash\nOPENAI_API_KEY="test-placeholder" \\\nvectorskills-query "goal"\n```\n'),('_allskills_template','Full filesystem access, no retrieval.\n')]:
   (base/name).mkdir(parents=True);(base/name/'AGENTS.md').write_text(text)
- pool=root/'pool.json';pool.write_text('{}');workspace=root/'index';workspace.mkdir()
+ from workspace_fixture import make_workspace
+ workspace=root/'index';graph=make_workspace(workspace,skills)
+ pool=root/'pool.json';pool.write_text(json.dumps(build_pool(graph,validate_config())))
  return task,skills,upstream,pool,workspace
 
 class SkillsBenchPackTests(unittest.TestCase):

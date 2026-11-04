@@ -73,7 +73,10 @@ class BackendTests(unittest.TestCase):
             source = root/'source'
             source.mkdir()
             (source/'index.bin').write_text('frozen')
-            rag = backend.OfficialRetriever(root/'output', source, root/'upstream')
+            from workspace_fixture import make_workspace
+            library=root/'skills';library.mkdir();(library/'SKILL.md').write_text('Synthetic skill')
+            make_workspace(source,library)
+            rag = backend.OfficialRetriever(root/'output', source, root/'upstream',library)
             graph = asyncio.run(rag.async_retrieve('visible', top_n=4, seed_top_k=5))
             vector = asyncio.run(rag.async_retrieve_vector('visible', top_n=4))
             self.assertEqual((graph.summary, vector.summary), ('graph', 'vector'))
@@ -101,9 +104,12 @@ class BackendTests(unittest.TestCase):
                 return Result('fallback')
         with tempfile.TemporaryDirectory() as d, patch.dict(sys.modules, {'numpy': FAKE_NUMPY}):
             root = Path(d); source = root/'source'; source.mkdir()
+            from workspace_fixture import make_workspace
+            library=root/'skills';library.mkdir();(library/'SKILL.md').write_text('Synthetic skill')
+            make_workspace(source,library)
             for n, factory in enumerate([(NoProviderEngine, Provider), (SwallowingEngine, BrokenProvider)]):
                 with patch.object(backend, '_load_official', return_value=factory):
-                    rag = backend.OfficialRetriever(root/str(n), source, root/'upstream')
+                    rag = backend.OfficialRetriever(root/str(n), source, root/'upstream',library)
                     with self.assertRaisesRegex(RuntimeError, 'embedding_fallback_forbidden'):
                         asyncio.run(rag.async_retrieve_vector('goal', top_n=4))
             event = json.loads((root/'1/embedding/0001.json').read_text())
@@ -131,11 +137,13 @@ class BackendTests(unittest.TestCase):
     def test_embedding_backend_cli_defaults_to_no_effect_plan(self):
         with tempfile.TemporaryDirectory() as d:
             output = Path(d)/'not-created'
+            from test_skillsbench_five import fixtures
+            _, skills, upstream, _, index = fixtures(Path(d))
             for method in ('vector', 'native-gos'):
                 proc = subprocess.run([sys.executable, '-m', 'goskills_eval.skill',
                     '--method', method, '--query', 'task', '--directory', str(output),
-                    '--skills-root', 'missing-skills', '--upstream', 'missing-checkout',
-                    '--workspace', 'missing-index'], cwd=ROOT/'evaluation',
+                    '--skills-root', str(skills), '--upstream', str(upstream),
+                    '--workspace', str(index)], cwd=ROOT/'evaluation',
                     check=True, capture_output=True, text=True)
                 self.assertEqual(json.loads(proc.stdout)['status'], 'PLAN_ONLY')
             self.assertFalse(output.exists())
@@ -200,11 +208,13 @@ class BackendTests(unittest.TestCase):
     def test_all_five_alf_plans_are_no_effect(self):
         with tempfile.TemporaryDirectory() as d:
             output = Path(d)/'never-created'
+            from test_skillsbench_five import fixtures
+            _, skills, upstream, pool, index = fixtures(Path(d))
             for method in backend.METHODS:
                 proc = subprocess.run([sys.executable, str(ROOT/'evaluation/alfworld_run.py'),
-                    '--method', method, '--upstream', 'upstream', '--config', 'config.yaml',
-                    '--game-file', 'game.tw-pddl', '--skills-root', 'skills', '--pool', 'pool.json',
-                    '--workspace', 'index', '--output', str(output)], check=True, capture_output=True, text=True)
+                    '--method', method, '--upstream', str(upstream), '--config', 'config.yaml',
+                    '--game-file', 'game.tw-pddl', '--skills-root', str(skills), '--pool', str(pool),
+                    '--workspace', str(index), '--output', str(output)], check=True, capture_output=True, text=True)
                 self.assertEqual(json.loads(proc.stdout)['method'], method)
             self.assertFalse(output.exists())
 
@@ -251,10 +261,10 @@ class BackendTests(unittest.TestCase):
             root = Path(d); source=root/'workspace'; source.mkdir()
             (source/'index').write_text('original')
             with self.assertRaisesRegex(ValueError, 'separate from input workspace'):
-                backend.OfficialRetriever(source/'output', source, root/'upstream')
+                backend.OfficialRetriever(source/'output', source, root/'upstream',root/'skills')
             self.assertEqual(sorted(p.name for p in source.iterdir()), ['index'])
             with self.assertRaisesRegex(ValueError, 'separate from input workspace'):
-                backend.OfficialRetriever(root, source, root/'upstream')
+                backend.OfficialRetriever(root, source, root/'upstream',root/'skills')
             load.assert_not_called()
             for key in ('skills_root', 'pool', 'workspace', 'upstream', 'game_file', 'config'):
                 with self.assertRaisesRegex(ValueError, 'separate from input'):

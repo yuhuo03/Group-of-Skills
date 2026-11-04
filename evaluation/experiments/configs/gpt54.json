@@ -1,0 +1,7 @@
+{
+  "profile": "gpt54",
+  "model": "gpt-5.4",
+  "expected_model": "gpt-5.4-2026-03-05",
+  "reasoning_effort": "low",
+  "completion_token_field": "max_completion_tokens"
+}

@@ -6,7 +6,8 @@ is delegated to the compatible official GoS implementation in isolated helpers.
 from goskills_eval.utils import *
 from goskills_eval import harbor_base as base
 import sys,asyncio,json,hashlib,time,uuid,contextlib,httpx,shlex
-METHODS=('noskills','vanilla','vector','native-gos','goskills-d')
+from goskills_eval.runtime import pinned_config
+from goskills_eval.runtime import METHODS
 def skill_env(offline=False):return dict(os.environ)
 def proc(pid):
  try:
@@ -83,7 +84,8 @@ class TB2Agent(base.DirectAPIBashAgent):
      response=await c.post(credentials()[1].rstrip('/')+'/chat/completions',content=body,headers={'Authorization':'Bearer '+credentials()[0],'Content-Type':'application/json'})
     event['http_status']=response.status_code
     if response.status_code>=300:raise httpx.HTTPStatusError('request_failed',request=response.request,response=response)
-    d=base.redact_secret(response.json());assert d.get('model')=='gpt-5.4-2026-03-05','actual_model_mismatch'
+    d=base.redact_secret(response.json())
+    if d.get('model')!=self._resolved_flags.get('expected_model',pinned_config()['expected_model']):raise ValueError('actual_model_mismatch')
     u=d.get('usage') or {};assert type(u.get('prompt_tokens')) is int and u['prompt_tokens']>0 and type(u.get('completion_tokens')) is int and u['completion_tokens']>=0,'usage_missing'
     assert d.get('choices') and isinstance(d['choices'][0].get('message'),dict),'completion_missing'
     event.update(status='SUCCESS',actual_model=d['model'],usage=u)

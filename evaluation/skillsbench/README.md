@@ -5,6 +5,9 @@ executes it with Harbor. It uses the SkillsBench bash-only agent and prompt,
 GPT-5.4 with low reasoning, 60 turns, a 4,096-token completion limit per call,
 a 180-second tool timeout, and a 900-second agent limit.
 
+The defaults use the shared `gpt54` reproduction profile. For another model,
+use the [shared model options](../README.md#model-profiles).
+
 ## Setup and inputs
 
 Complete [environment setup](../README.md#setup) and [input preparation](../../DATA.md).
@@ -12,7 +15,13 @@ Run the entrypoint with `.venv-eval/bin/python`. Vector and Graph of Skills also
 use `.venv-retrieval/bin/python` for upstream retrieval.
 
 Supply a raw task directory containing `instruction.md`, `task.toml`,
-`environment/Dockerfile`, and its verifier files. Docker Engine and Compose v2
+`environment/Dockerfile`, and its verifier files. The fixed task snapshot is listed
+in [DATA.md](../../DATA.md#2-benchmark-data). Supported single-step `task.md` schema
+1.3 tasks also work: preparation converts their metadata and instruction and copies
+`verifier/` and `oracle/` to Harbor's `tests/` and `solution/` directories in the new
+output. The source task stays unchanged. Unsupported fields (including verifier
+hardening), non-main verifier services, duplicate keys and conflicting layouts
+are rejected; no execution policy is silently discarded. Docker Engine and Compose v2
 are required for execution. Skill methods require the clean Graph of Skills
 checkout at commit `203f60a2c689da055ce1ac351eb3cb9912a3bca7` for their method
 guides.

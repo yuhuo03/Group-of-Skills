@@ -10,9 +10,16 @@ def script(name):
 class CampaignTests(unittest.TestCase):
  def fixture(self,tmp):
   tmp=Path(tmp);task=tmp/'tasks'/'sample';task.mkdir(parents=True);(task/'task.toml').write_text('[agent]\ntimeout_sec=300\n')
+  (task/'instruction.md').write_text('Synthetic task.\n')
   data=tmp/'data';data.mkdir();(data/'game.tw-pddl').write_text('synthetic game')
   for x in ['skills','upstream','workspace']:(tmp/x).mkdir()
-  (tmp/'pool.json').write_text('{}');(tmp/'base.yaml').write_text('synthetic config')
+  (tmp/'skills/a').mkdir();text='---\nname: synthetic\ndescription: synthetic\n---\nTest only.\n';(tmp/'skills/a/SKILL.md').write_text(text)
+  from goskills.groups import build_pool
+  from goskills.config import validate_config
+  from workspace_fixture import make_workspace
+  graph=make_workspace(tmp/'workspace',tmp/'skills')
+  (tmp/'pool.json').write_text(json.dumps(build_pool(graph,validate_config())))
+  (tmp/'base.yaml').write_text('synthetic config')
   (tmp/'games.json').write_text(json.dumps({'000':{'path':'game.tw-pddl'}}))
   cfg={'retrieval_python':sys.executable,'skills_root':'skills','pool':'pool.json','upstream':'upstream','workspace':'workspace','skillsbench':{'tasks_root':'tasks','tasks':['sample']},'tb2':{'tasks_root':'tasks','tasks':['sample']},'alfworld':{'config':'base.yaml','games_manifest':'games.json','data_root':'data','tasks':['000']}}
   file=tmp/'local.json';file.write_text(json.dumps(cfg));return file
@@ -35,7 +42,8 @@ class CampaignTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    p=build_plan(self.fixture(d),'all',list(METHODS),Path(d)/'run')
    def fake(cmd,**kw):
-    dest=Path(cmd[cmd.index('--output')+1]);dest.mkdir(parents=True);(dest/'receipt.json').write_text(json.dumps({'status':'VALID','method':cmd[cmd.index('--method')+1],'reward':0,'input_tokens':10,'output_tokens':2,'runtime_seconds':1.25}));return SimpleNamespace(returncode=0)
+    from campaign_fixture import complete
+    job=next(j for j in p['jobs'] if j['output']==cmd[cmd.index('--output')+1]);complete(job,p['runtime']);return SimpleNamespace(returncode=0)
    execute_plan(p,run_command=fake);rows,summ=script('summarize_runs').collect(Path(d)/'run')
    self.assertEqual(len(rows),15);self.assertTrue(all(r['score_percent']==0 and r['complete'] for r in summ))
    with self.assertRaises(FileExistsError):execute_plan(p,run_command=fake)
@@ -47,7 +55,9 @@ class CampaignTests(unittest.TestCase):
    with self.assertRaises(ValueError):script('summarize_runs').collect(moved)
  def test_missing_result_does_not_become_zero(self):
   with tempfile.TemporaryDirectory() as d:
-   p=build_plan(self.fixture(d),'tb2',['noskills'],Path(d)/'run');Path(p['output']).mkdir();(Path(p['output'])/'PLAN.json').write_text(json.dumps(p))
+   p=build_plan(self.fixture(d),'tb2',['noskills'],Path(d)/'run')
+   from goskills_eval.experiments.scheduler import durable,sha
+   Path(p['output']).mkdir();durable(Path(p['output'])/'PLAN.json',p,True);durable(Path(p['output'])/'PLAN_BINDING.json',{'plan_sha256':sha(p)},True)
    rows,summary=script('summarize_runs').collect(p['output']);self.assertIsNone(summary[0]['score_percent']);self.assertEqual(summary[0]['unresolved'],1)
  def test_path_and_duplicates_rejected(self):
   with tempfile.TemporaryDirectory() as d:
@@ -67,7 +77,6 @@ class CampaignTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    cfg=self.fixture(d);root=Path(d);task=root/'tasks/sample'
    (task/'instruction.md').write_text('Synthetic task.');(task/'environment').mkdir();(task/'environment/Dockerfile').write_text('FROM python:3.12-slim\n')
-   (root/'skills/a').mkdir();(root/'skills/a/SKILL.md').write_text('---\nname: synthetic\ndescription: synthetic\n---\nTest only.\n')
    (root/'upstream/gos').mkdir();(root/'upstream/evaluation').mkdir();(root/'upstream/evaluation/skill.py').write_text('# planning only\n')
    for name in ['_allskills_template','_vectorskills_template','_gos_template']:
     guide=root/'upstream/evaluation/skillsbench'/name;guide.mkdir(parents=True)

@@ -71,6 +71,9 @@ def load_api_key(env_key: str) -> str:
     raise RuntimeError(f"Missing API key. Set {env_key} or OPENAI_API_KEY.")
 
 
+from goskills_eval.runtime import TERMINAL_SETTINGS, pinned_config
+
+
 class DirectAPIBashAgent(BaseInstalledAgent):
     """A minimal tool-using coding agent backed by direct HTTP API calls."""
 
@@ -79,11 +82,13 @@ class DirectAPIBashAgent(BaseInstalledAgent):
     CLI_FLAGS = [
         CliFlag("base_url", cli="", type="str", env_fallback="OPENAI_BASE_URL"),
         CliFlag("api_env_key", cli="", type="str", default="OPENAI_API_KEY"),
-        CliFlag("reasoning_effort", cli="", type="str", default="low"),
-        CliFlag("max_turns", cli="", type="int", default=60),
-        CliFlag("tool_timeout_sec", cli="", type="int", default=180),
-        CliFlag("max_observation_chars", cli="", type="int", default=12000),
-        CliFlag("max_completion_tokens", cli="", type="int", default=4096),
+        CliFlag("reasoning_effort", cli="", type="str", default=pinned_config()["reasoning_effort"]),
+        CliFlag("expected_model", cli="", type="str", default=pinned_config()["expected_model"]),
+        CliFlag("completion_token_field", cli="", type="str", default=pinned_config()["completion_token_field"]),
+        CliFlag("max_turns", cli="", type="int", default=TERMINAL_SETTINGS["max_turns"]),
+        CliFlag("tool_timeout_sec", cli="", type="int", default=TERMINAL_SETTINGS["tool_timeout_sec"]),
+        CliFlag("max_observation_chars", cli="", type="int", default=TERMINAL_SETTINGS["max_observation_chars"]),
+        CliFlag("max_completion_tokens", cli="", type="int", default=TERMINAL_SETTINGS["max_completion_tokens"]),
         CliFlag("request_audit_root", cli="", type="str", default=""),
     ]
 
@@ -104,7 +109,7 @@ class DirectAPIBashAgent(BaseInstalledAgent):
         return "direct-api-bash"
 
     def version(self) -> str | None:
-        return "cr-native-0.2.0-async-candidate"
+        return "goskills-0.2.0rc2"
 
     async def install(self, environment: BaseEnvironment) -> None:
         await self.exec_as_root(
@@ -145,23 +150,23 @@ class DirectAPIBashAgent(BaseInstalledAgent):
 
     @property
     def _reasoning_effort(self) -> str:
-        return str(self._resolved_flags.get("reasoning_effort") or "low")
+        return str(self._resolved_flags.get("reasoning_effort", pinned_config()["reasoning_effort"]) or "")
 
     @property
     def _max_turns(self) -> int:
-        return int(self._resolved_flags.get("max_turns") or 60)
+        return int(self._resolved_flags.get("max_turns") or TERMINAL_SETTINGS["max_turns"])
 
     @property
     def _tool_timeout_sec(self) -> int:
-        return int(self._resolved_flags.get("tool_timeout_sec") or 180)
+        return int(self._resolved_flags.get("tool_timeout_sec") or TERMINAL_SETTINGS["tool_timeout_sec"])
 
     @property
     def _max_observation_chars(self) -> int:
-        return int(self._resolved_flags.get("max_observation_chars") or 12000)
+        return int(self._resolved_flags.get("max_observation_chars") or TERMINAL_SETTINGS["max_observation_chars"])
 
     @property
     def _max_completion_tokens(self) -> int:
-        return int(self._resolved_flags.get("max_completion_tokens") or 4096)
+        return int(self._resolved_flags.get("max_completion_tokens") or TERMINAL_SETTINGS["max_completion_tokens"])
 
     def _headers(self) -> dict[str, str]:
         return {
@@ -201,7 +206,7 @@ class DirectAPIBashAgent(BaseInstalledAgent):
             "tool_choice": "auto",
             "temperature": 0,
         }
-        if use_max_completion_tokens:
+        if use_max_completion_tokens and self._resolved_flags.get("completion_token_field", "max_completion_tokens") == "max_completion_tokens":
             payload["max_completion_tokens"] = self._max_completion_tokens
         else:
             payload["max_tokens"] = self._max_completion_tokens
@@ -214,7 +219,7 @@ class DirectAPIBashAgent(BaseInstalledAgent):
         if not audit_root:
             raise RuntimeError("Async candidate requires a public external request_audit_root")
         trial=Path(self.logs_dir).resolve().parent
-        return await chat_completion(
+        response = await chat_completion(
             messages, endpoint=f"{self._base_url}/chat/completions", model=self.model_name,
             payload_factory=self._request_payload, headers_factory=self._headers,
             calls=self._api_calls, logs_dir=self.logs_dir, redact=redact_secret, utc_now=utc_now,
@@ -223,6 +228,9 @@ class DirectAPIBashAgent(BaseInstalledAgent):
                 "attempt_uuid":self._request_attempt_uuid,
                 "trial_path_sha256":hashlib.sha256(str(trial).encode()).hexdigest()},
         )
+        if response.get("model") != self._resolved_flags.get("expected_model", pinned_config()["expected_model"]):
+            raise ValueError("actual_model_mismatch")
+        return response
 
     def _record_usage(self, response: dict[str, Any]) -> Metrics | None:
         usage = response.get("usage") or {}

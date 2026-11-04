@@ -69,19 +69,21 @@ def api_token_usage(calls):
     return totals
 
 
-def assess_trial(trial_directory, method, binary=True, *, require_retrieval=None):
+def assess_trial(trial_directory, method, binary=True, *, require_retrieval=None, runtime=None):
     """Original model/transport/score gates plus canonical report evidence.
 
     This function does not turn missing reports, setup failures or null rewards
     into valid zeros. Container cleanup is checked by the runner separately.
     """
+    from goskills_eval.runtime import resolve_runtime
+    runtime = resolve_runtime(runtime)
     td = Path(trial_directory)
     read = lambda path: json.loads(path.read_text())
     result = read(td / 'result.json')
     receipt = read(td / 'agent/agent_receipt.json')
     if receipt.get('method') != method:
         raise ValueError('agent_method_mismatch')
-    if type(receipt.get('api_calls')) is not int or receipt['api_calls'] <= 0 or receipt.get('actual_models') != ['gpt-5.4-2026-03-05'] or receipt.get('transport_fatal'):
+    if type(receipt.get('api_calls')) is not int or receipt['api_calls'] <= 0 or receipt.get('actual_models') != [runtime.expected_model] or receipt.get('transport_fatal'):
         raise ValueError('agent_model_or_transport_failed')
     if receipt.get('finish_status') not in {'completed', 'max_turns', 'agent_timeout'}:
         raise ValueError('agent_failed')
@@ -105,7 +107,7 @@ def assess_trial(trial_directory, method, binary=True, *, require_retrieval=None
     calls = read(td / 'agent/api_calls.json')
     if not isinstance(calls, list) or len(calls) != receipt['api_calls'] or any(
             not isinstance(c, dict) or not isinstance(c.get('response'), dict) or
-            c['response'].get('model') != 'gpt-5.4-2026-03-05' for c in calls):
+            c['response'].get('model') != runtime.expected_model for c in calls):
         raise ValueError('api_evidence_mismatch')
     if not (td / 'agent/trajectory.json').is_file():
         raise ValueError('trajectory_missing')
@@ -113,6 +115,6 @@ def assess_trial(trial_directory, method, binary=True, *, require_retrieval=None
     recorded_usage = api_token_usage(calls)
     if any(metrics[key] != value for key, value in recorded_usage.items() if key in metrics):
         raise ValueError('api_usage_totals_mismatch')
-    return {'reward': reward, **metrics, 'actual_model': 'gpt-5.4-2026-03-05',
+    return {'reward': reward, **metrics, 'actual_model': runtime.expected_model,
             'result_sha256': hashlib.sha256((td / 'result.json').read_bytes()).hexdigest(),
             'trace_sha256': hashlib.sha256((td / 'agent/trajectory.json').read_bytes()).hexdigest()}

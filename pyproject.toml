@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,12 +7,14 @@ name = "goskills"
 version = "0.2.0rc2"
 description = "Group-structured skill retrieval for language agents"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "tomli>=2; python_version < '3.11'"]
-terminal = ["harbor==0.20.0", "httpx==0.28.1", "anyio>=4", "tomli>=2; python_version < '3.11'"]
+dev = ["pytest>=8.0", "httpx==0.28.1", "anyio>=4", "PyYAML==6.0.3", "tomli>=2; python_version < '3.11'"]
+terminal = ["harbor==0.20.0", "httpx==0.28.1", "anyio>=4", "PyYAML==6.0.3", "tomli>=2; python_version < '3.11'"]
 alfworld = ["openai>=1", "PyYAML>=6", "retry>=0.9", "tqdm>=4", "alfworld==0.4.2", "textworld==1.7.0"]
 
 [project.scripts]
@@ -30,7 +32,7 @@ packages = [
 goskills_eval = "evaluation"
 
 [tool.setuptools.package-data]
-"goskills_eval.experiments.configs" = ["task_ids.json", "alfworld_games.json", "local.example.json"]
+"goskills_eval.experiments.configs" = ["task_ids.json", "alfworld_games.json", "local.example.json", "gpt54.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

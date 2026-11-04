@@ -461,5 +461,5 @@ Group-of-Skills/
 
 ## License
 
-A project license has not yet been specified. Third-party components and datasets
-retain their own licenses; see [DATA.md](DATA.md#attribution).
+GoSkills is released under the [MIT License](LICENSE). Third-party components and
+datasets retain their own licenses; see [DATA.md](DATA.md#attribution).

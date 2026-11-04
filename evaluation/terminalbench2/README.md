@@ -3,6 +3,9 @@
 The runner supports all five methods with the GPT-5.4 terminal prompt, low
 reasoning, a 4,096-token completion limit, and each task's original deadline.
 
+The defaults use the shared `gpt54` reproduction profile. For another model,
+use the [shared model options](../README.md#model-profiles).
+
 ## Setup and inputs
 
 Complete [environment setup](../README.md#setup) and [input preparation](../../DATA.md).
@@ -66,7 +69,8 @@ RETRIEVAL_PYTHON="$PWD/.venv-retrieval/bin/python"
 Commands validate local inputs and print the trial configuration by default.
 After configuring providers in [provider setup](../README.md#4-configure-providers), add `--execute` to run
 one trial. Execution starts Docker and makes API requests. Use a new output
-directory for every trial; there is no automatic resume or score-based retry.
+directory for every single trial. The batch runner supports explicit resume of
+never-dispatched jobs and never retries completed attempts based on their score.
 
 For multiple tasks or methods, use the [batch runner](../README.md).
 
@@ -78,6 +82,15 @@ retrieval records, and verifier outputs. A valid receipt requires confirmed
 model/usage records, method retrieval evidence, a finite reward and canonical
 test report, a trajectory, and completed cleanup.
 
+After a trial exits, even when result assessment fails, the runner checks its exact
+Compose project. If Harbor left one main container, the cleanup hook waits for
+two observations of the stopped state, then rechecks the full ID, project,
+service and state immediately before a non-force removal. Running containers,
+unexpected identities, multiple residual containers and failed Docker queries
+remain unresolved. It never kills containers, removes volumes or restarts the
+daemon. `cleanup_observation.jsonl` and `cleanup_receipt.json` record the outcome;
+a final empty-project check is required before the trial becomes valid.
+
 Receipts record reward, input/output/cache tokens, agent runtime in seconds,
 and result/trace hashes. Missing or null results and environment failures remain
 failed trials; a verified zero remains zero. Agent runtime excludes environment
@@ -86,3 +99,17 @@ setup, verification, and cleanup.
 Retrieval uses an isolated host process with a 180-second deadline. Keep the
 virtual environment executable path in `--retrieval-python`; provider
 credentials are not written into task packs or mounted into task containers.
+
+## Verifier environment support
+
+The default runner currently uses Harbor's task verifier plus the strict cleanup
+hook above. The historical server also used dependency-cache, image-identity and
+public-asset-mode adapters. That complete adapter chain has not yet been ported
+and validated here on Linux/Harbor, so the release is not a byte-identical
+reproduction of that server's verifier environment.
+
+`goskills_eval.terminalbench2.uv_transport` supplies a separately tested,
+exact-script wrapper for verified official uv 0.9.5 binaries. It is not enabled
+by the default runner. This local component does not establish that the complete
+historical environment fixes are active or that every task's installer will
+succeed on a new machine.

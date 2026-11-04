@@ -17,7 +17,7 @@ import sys
 
 from goskills_eval.utils import write
 
-METHODS = ('noskills', 'vanilla', 'vector', 'native-gos', 'goskills-d')
+from goskills_eval.runtime import METHODS
 OFFICIAL_COMMIT = '203f60a2c689da055ce1ac351eb3cb9912a3bca7'
 
 
@@ -53,6 +53,12 @@ def validate_resources(method, *, skills_root=None, pool=None, workspace=None, u
                 raise ValueError(f'{name} is missing or has the wrong type')
             if name == 'skills_root' and not any(path.rglob('SKILL.md')):
                 raise ValueError('skills_root contains no SKILL.md library')
+    if check_files and method == 'goskills-d':
+        from goskills_eval.assets import validate_library
+        validate_library(pool, skills_root)
+    if check_files and method in {'vector', 'native-gos'}:
+        from goskills_eval.workspace import validate_workspace
+        validate_workspace(workspace, skills_root)
 
 
 def prepare_upstream(upstream):
@@ -122,10 +128,13 @@ class CheckedEmbeddings:
 
 class OfficialRetriever:
     """Pinned Graph/Vector engine, sharing the historical ALFWorld interface."""
-    def __init__(self, directory, workspace, upstream):
+    def __init__(self, directory, workspace, upstream, skills_root):
         self.directory = Path(directory)
         source = Path(workspace).expanduser().resolve()
-        validate_output(directory, workspace=source, upstream=upstream)
+        validate_output(directory, workspace=source, upstream=upstream, skills_root=skills_root)
+        from goskills_eval.workspace import validate_workspace
+        from goskills.native import _tree_hash
+        identity = validate_workspace(source, skills_root)
         self.directory.mkdir(parents=True, exist_ok=True)
         target = self.directory/'index'
         if target.exists():
@@ -138,6 +147,8 @@ class OfficialRetriever:
         engine, factory = _load_official(upstream)
         # The official loader may update storage. Only a per-worker copy is used.
         shutil.copytree(source, target)
+        if _tree_hash(target) != identity['workspace_hash']:
+            raise ValueError('Workspace changed while creating the retrieval copy')
         self.embed = CheckedEmbeddings(self.directory, factory)
         self.real = engine(working_dir=str(target), config=engine.Config(
             working_dir=str(target), prebuilt_working_dir=str(target), llm_service=None,
@@ -192,7 +203,7 @@ def query(method, text, directory, *, skills_root=None, pool=None, workspace=Non
         content = bundle['rendered_context']
         write(directory/'bundle.json', bundle, True)
     else:
-        retriever = OfficialRetriever(directory, workspace, upstream)
+        retriever = OfficialRetriever(directory, workspace, upstream, skills_root)
         async def get():
             options = {'top_n': 4, 'max_chars_per_skill': 1800, 'max_context_chars': 9000}
             if method == 'native-gos':
@@ -224,7 +235,7 @@ def main():
     parser.add_argument('--source-root', default='/opt/graphskills/skills')
     parser.add_argument('--execute', action='store_true', help='Allow the embedding request for vector/native-gos; those methods otherwise print a plan')
     args = parser.parse_args()
-    validate_resources(args.method, skills_root=args.skills_root, pool=args.pool, workspace=args.workspace, upstream=args.upstream)
+    validate_resources(args.method, skills_root=args.skills_root, pool=args.pool, workspace=args.workspace, upstream=args.upstream, check_files=True)
     validate_output(args.directory, skills_root=args.skills_root, pool=args.pool, workspace=args.workspace, upstream=args.upstream)
     if args.method in {'vector', 'native-gos'} and not args.execute:
         print(json.dumps({'status': 'PLAN_ONLY', 'method': args.method, 'directory': str(args.directory), 'embedding_model': 'text-embedding-3-small', 'embedding_dimensions': 1536}))

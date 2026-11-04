@@ -82,7 +82,7 @@ export GOS_EMBEDDING_DIM=1536
 The launchers read these shell variables; they do not automatically load
 `.env`; load a local file with `set -a; . ./.env; set +a` first.
 `GOS_LLM_MODEL` configures upstream graph construction, not the benchmark agent.
-These evaluation runners retain their recorded GPT-5.4 model settings.
+The benchmark agent model is selected through the shared runtime profile below.
 Vector Skills and Graph of Skills need the same embedding model and
 dimension as their workspace. GoSkills uses lexical retrieval and needs no
 embedding service.
@@ -97,6 +97,45 @@ embedding service.
 This checks installed dependencies and local inputs without API requests or
 Docker commands. It does not test provider access or run a simulator.
 
+
+## Model profiles
+
+All three benchmark entrypoints accept the same model options. The default
+`--profile gpt54` reads [gpt54.json](experiments/configs/gpt54.json): requested
+model `gpt-5.4`, expected response model `gpt-5.4-2026-03-05`, low reasoning,
+and a 4,096-token completion limit. Its settings cannot be overridden in place.
+
+For a different OpenAI-compatible chat model, append these options to a
+single-task command:
+
+```bash
+--profile custom --model YOUR_MODEL --expected-model YOUR_RESPONSE_MODEL
+```
+
+`--expected-model` must match the model ID returned by the provider; it defaults
+to `--model`. The custom profile omits `reasoning_effort` unless explicitly
+selected with `--reasoning-effort low` (or another supported value). Use
+`--completion-token-field max_tokens` if your endpoint expects that field
+instead of `max_completion_tokens`. The model must support the tools used by
+the selected benchmark; these options do not emulate a different API protocol.
+
+For a batch, set the top-level `runtime` block in your local configuration:
+
+```json
+"runtime": {
+  "profile": "custom",
+  "model": "YOUR_MODEL",
+  "expected_model": "YOUR_RESPONSE_MODEL",
+  "reasoning_effort": null,
+  "completion_token_field": "max_completion_tokens"
+}
+```
+
+One batch uses the same configuration for every selected method. Plans and
+receipts record it, and result validation rejects a different response model.
+Changing models keeps each benchmark's prompts, retrieval settings, resource
+limits and task deadlines. Custom-model runs are separate experiments from the
+GPT-5.4 reproduction profile.
 
 ## Run a benchmark
 
@@ -122,8 +161,46 @@ For one benchmark and method:
   --tasks adaptive-rejection-sampler --output runs/tb2-one
 ```
 
-Use a new output directory for each run. The runner stops dispatching on an
-invalid trial; it does not automatically retry completed tasks or zero scores.
+Use a new output directory for a new campaign. Execution is sequential by
+default. To run concurrently, choose both limits before starting:
+
+```bash
+.venv-eval/bin/python evaluation/experiments/run.py \
+  --config evaluation/experiments/configs/local.json \
+  --benchmark all --methods all --workers 4 --per-method 2 \
+  --output runs/concurrent --execute
+```
+
+`--workers` limits total active trials and `--per-method` limits each method.
+Both are bounded at 20; select limits your machine and provider can support.
+On an invalid trial, Ctrl-C, or SIGTERM, dispatch stops and active runners drain.
+The runner does not automatically retry failed attempts or valid zero scores.
+
+### Resume a campaign
+
+Preview the saved campaign, then add `--execute` to continue only jobs that have
+never been dispatched:
+
+```bash
+.venv-eval/bin/python evaluation/experiments/run.py \
+  --resume --output runs/concurrent
+.venv-eval/bin/python evaluation/experiments/run.py \
+  --resume --output runs/concurrent --execute
+```
+
+Resume uses the saved inputs, code, model and concurrency settings; do not pass
+a replacement configuration. Input or source changes are rejected. Completed
+receipts and their result artifacts are checked and preserved, including zero
+scores. Previous failed attempts remain failed, so a campaign with unresolved
+failures does not become complete merely because all queued jobs finish.
+
+A campaign lock is inherited by each runner. If the controller exits abruptly,
+resume waits for those runners to exit. A terminal receipt with confirmed
+cleanup can then be recovered without executing that task again. An existing
+claim without such evidence blocks continuation; inspect its trial and resources
+rather than deleting the claim or starting another attempt. Failed trials must
+also confirm cleanup before remaining jobs can be dispatched. Resume at the
+original campaign path; completed archives can be moved for summarization.
 
 ## Summarize your runs
 

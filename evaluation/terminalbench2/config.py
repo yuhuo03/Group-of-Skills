@@ -5,11 +5,13 @@ import json
 import math
 import os
 
-METHODS = ('noskills', 'vanilla', 'vector', 'native-gos', 'goskills-d')
+from goskills_eval.runtime import METHODS
 
 
 def trial_config(task, output, method, skills_root=None, agent_timeout_sec=None,
-                 *, pool=None, workspace=None, upstream=None, retrieval_python=None):
+                 *, pool=None, workspace=None, upstream=None, retrieval_python=None, runtime=None):
+    from goskills_eval.runtime import resolve_runtime
+    runtime = resolve_runtime(runtime)
     if method not in METHODS:
         raise ValueError('Unsupported method')
     if type(agent_timeout_sec) not in (int, float) or not math.isfinite(agent_timeout_sec) or agent_timeout_sec <= 0:
@@ -26,9 +28,9 @@ def trial_config(task, output, method, skills_root=None, agent_timeout_sec=None,
     mounts = [] if method == 'noskills' else [
         {'type': 'bind', 'source': str(Path(skills_root).resolve()),
          'target': '/opt/graphskills/skills', 'read_only': True}]
-    kwargs = {'method': method, 'reasoning_effort': 'low', 'max_turns': 60,
-              'max_completion_tokens': 4096, 'task_budget_sec': int(agent_timeout_sec),
-              'max_observation_chars': 12000}
+    kwargs = {**runtime.agent_kwargs(), 'method': method, 'task_budget_sec': int(agent_timeout_sec)}
+    # TB2 command deadlines come from the task, not a per-command override.
+    kwargs.pop('tool_timeout_sec')
     for name, value in [('skills_root', skills_root), ('pool', pool),
                         ('workspace', workspace), ('upstream', upstream)]:
         if value is not None:
@@ -37,10 +39,10 @@ def trial_config(task, output, method, skills_root=None, agent_timeout_sec=None,
         # Resolving a venv's python symlink would discard the selected environment.
         kwargs['retrieval_python'] = os.path.abspath(os.path.expanduser(str(retrieval_python)))
     return {'task': {'path': str(task)},
-            'trial_name': 'gpt54-' + method + '-' + hashlib.sha256(str(output).encode()).hexdigest()[:10],
+            'trial_name': ('gpt54-' if runtime.profile == 'gpt54' else 'trial-') + method + '-' + hashlib.sha256(str(output).encode()).hexdigest()[:10],
             'trials_dir': str(output),
             'agent': {'import_path': 'goskills_eval.terminal_agent:TB2Agent',
-                      'model_name': 'gpt-5.4', 'kwargs': kwargs},
+                      'model_name': runtime.model, 'kwargs': kwargs},
             'environment': {'type': 'docker', 'delete': True, 'mounts': mounts},
             'timeout_multiplier': 1.0}
 
@@ -71,11 +73,16 @@ def validate_inputs(task, output, method, skills_root=None, *, pool=None, worksp
     if method == 'goskills-d':
         if not pool or not Path(pool).exists():
             raise FileNotFoundError('A JSON or compiled D pool is required')
+        from goskills_eval.assets import validate_library
+        validate_library(pool, skills_root)
     else:
         if not upstream or not (Path(upstream) / 'gos').is_dir() or not (Path(upstream) / 'evaluation/skill.py').is_file():
             raise FileNotFoundError('The compatible official GoS checkout is required')
         if method in ('vector', 'native-gos') and (not workspace or not Path(workspace).is_dir()):
             raise FileNotFoundError('A matching official GoS workspace is required')
+        if method in ('vector', 'native-gos'):
+            from goskills_eval.workspace import validate_workspace
+            validate_workspace(workspace, skills_root)
     # Neither evidence nor credentials may be saved inside downloaded assets.
     for value in (skills_root, pool, workspace, upstream):
         if value is not None:

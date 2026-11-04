@@ -43,7 +43,7 @@ def official_skill_class(SkillModule):
    self.mode=mode
    if mode in {'gos','vector'}:
     self.gos_workspace=str(directory/'index')
-    self.rag=OfficialRetriever(directory,workspace,upstream)
+    self.rag=OfficialRetriever(directory,workspace,upstream,skills_root)
  return OfficialSkills
 
 

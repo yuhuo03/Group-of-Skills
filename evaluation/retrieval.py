@@ -1,4 +1,4 @@
-"""Portable D retrieval interface shared by all three benchmarks.
+"""Portable GoSkills retrieval interface shared by all three benchmarks.
 
 Regular JSON pools are convenient locally. Compiled pools preserve the historical
 read-only disk-map loading path; neither form changes scoring or presentation.

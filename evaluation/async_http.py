@@ -132,8 +132,9 @@ async def chat_completion(messages,*,endpoint,model,payload_factory,headers_fact
         if archive is not None:_append(archive/'request_lifecycle.jsonl',value,redact)
     try:
         for variant,(include_reasoning,use_max_completion_tokens) in enumerate(VARIANTS,1):
-            body=json.dumps(payload_factory(messages,include_reasoning=include_reasoning,
-                      use_max_completion_tokens=use_max_completion_tokens)).encode('utf-8')
+            payload=payload_factory(messages,include_reasoning=include_reasoning,
+                      use_max_completion_tokens=use_max_completion_tokens)
+            body=json.dumps(payload).encode('utf-8')
             headers=headers_factory()
             for attempt in range(1,4):
                 # Give a pending timeout/cancellation a checkpoint before a new POST.
@@ -166,8 +167,8 @@ async def chat_completion(messages,*,endpoint,model,payload_factory,headers_fact
                             event('request_end',**common,error_type=last_error,http_status=status)
                         else:
                             record={'response':data,'duration_sec':time.monotonic()-started,
-                                'requested_model':model,'include_reasoning':include_reasoning,
-                                'max_token_field':'max_completion_tokens' if use_max_completion_tokens else 'max_tokens',
+                                'requested_model':model,'include_reasoning':'reasoning_effort' in payload,
+                                'max_token_field':'max_completion_tokens' if 'max_completion_tokens' in payload else 'max_tokens',
                                 'attempt':attempt,'timestamp':utc_now()}
                             calls.append(record);logs.mkdir(parents=True,exist_ok=True)
                             (logs/'api_calls.json').write_text(json.dumps(calls,ensure_ascii=False,indent=2),encoding='utf-8')

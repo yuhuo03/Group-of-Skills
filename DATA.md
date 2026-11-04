@@ -38,18 +38,31 @@ original episode runner and prompts.
 
 ## 2. Benchmark data
 
-SkillsBench task definitions come from their upstream repository:
+For new SkillsBench runs, use this fixed upstream task snapshot rather than the
+moving default branch. It contains all 86 selected task IDs in the native
+`task.toml` layout:
 
 ```bash
 git clone --filter=blob:none --sparse https://github.com/benchflow-ai/skillsbench.git data/external/skillsbench
+git -C data/external/skillsbench checkout --detach 7c3d1091c6dd777d5cd2ec924050289427122fce
 git -C data/external/skillsbench sparse-checkout set tasks
-git -C data/external/skillsbench rev-parse HEAD > data/external/skillsbench-task-revision.txt
 ```
 
 The task list in `evaluation/experiments/configs/task_ids.json` selects 86 SkillsBench tasks.
-Use a task checkout containing all selected IDs; the setup check reports any
-missing tasks. The preparation step preserves task instructions, tests, resources
-and verifier configuration while removing the per-task oracle skill directory.
+The historical task files were frozen separately and are not proven identical to
+this upstream snapshot; use the original frozen task data to reproduce historical
+scores. A matching task ID alone is not an input-version guarantee. Preparation
+records the supplied source file hashes for each new trial.
+
+Doctor, batch planning and single-task preparation share the same layout check.
+Native `task.toml`/`instruction.md` inputs stay byte-identical. Supported single-step
+`task.md` schema 1.3 inputs are normalized only in a fresh prepared copy, including
+`verifier/` to `tests/` and `oracle/` to `solution/`. Configuration values and source
+files are preserved. Unknown fields, conflicting layouts, custom verifier services
+and verifier hardening policies require an explicit compatible runner; they are
+rejected before execution rather than silently removed. Newer upstream tasks may
+therefore need additional support. The method-only preparation removes the
+per-task oracle skill directory, not the verifier or scoring configuration.
 
 Download Terminal-Bench 2:
 
@@ -92,6 +105,8 @@ export GOS_LLM_MODEL=openai/YOUR_MODEL_NAME
 export GOSKILLS_OFFICIAL_ROOT="$PWD/data/external/graph-of-skills"
 .venv-retrieval/bin/python -m goskills export-native --workspace data/external/workspace \
   --skills-root data/external/skills_2000 --output data/external/native-graph.json
+python -m goskills_eval.workspace bind --workspace data/external/workspace \
+  --skills-root data/external/skills_2000 --graph data/external/native-graph.json
 .venv-retrieval/bin/python -m goskills build --graph data/external/native-graph.json \
   --output data/external/pool.json
 ```
@@ -105,6 +120,36 @@ failed check. Native index files deserialize upstream data; use trusted inputs.
 
 Preserve the construction report, exported graph and group pool for reuse across
 the retrieval methods.
+
+The local `workspace bind` command checks the verified native export against the
+complete workspace and library, then writes `workspace.identity.json` beside the
+workspace. Keep that file with the index when moving it; the binding is based on
+relative paths and content, not the original machine's absolute paths. Vector and
+Graph of Skills validate it before importing provider clients. A five-method
+campaign additionally checks that the GoSkills pool came from the same exported
+graph. Changed indexes, source documents or auxiliary library files require a new
+verified export and binding; do not edit hashes to bypass a mismatch.
+
+For a large pool, optionally compile the JSON maps to SQLite to reduce retrieval
+memory use. This is local and makes no API requests:
+
+```bash
+python -m goskills_eval.compiled_pool compile \
+  --pool data/external/pool.json --output data/external/pool-compiled
+```
+
+Set `pool` in the evaluation configuration to that directory, or pass it as
+`--pool` to an evaluation runner. Compilation checks every stored record against
+the validated JSON source and refuses to overwrite an existing output. The
+reader verifies the cache and retrieval-code hashes; rebuild the cache after
+updating the retrieval code. JSON and compiled retrieval use the same policy.
+
+GoSkills evaluation preflight compares every pool source with the actual host
+skill library, including exact membership. Native exports use recorded source
+hashes; authored graphs must retain their complete source text. Both JSON and
+compiled pools receive this check. Container-visible paths are labels, not the
+host paths used for validation. If a source changed, rebuild from the intended
+library instead of editing the pool or its receipt.
 
 ## 4. Local configuration
 
@@ -125,6 +170,15 @@ credential presence without calling APIs or Docker.
 tasks per method. An optional `tasks` list in each benchmark section selects a
 deliberate subset for a new run; summaries retain the planned denominator.
 Native task verifiers can download their own dependencies.
+
+## 5. Additional library sizes
+
+The [experiment guide](evaluation/experiments/README.md#library-size-experiments)
+provides deterministic nested subset preparation and a checked scale matrix.
+It accepts explicit sizes and required members, preserves full skill directories,
+and requires a matching workspace and pool for each library. Prepared subsets
+are new experiment assets until original paper membership is supplied; no
+historical 100/200/500/1000-skill packages are implied by the entrypoint.
 
 ## Attribution
 

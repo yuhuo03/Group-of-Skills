@@ -72,6 +72,12 @@ def runtime_checks(cfg, base, record):
 def check(config, runtime=False):
  p=Path(config).resolve();cfg=json.loads(p.read_text());base=p.parent;checks=[]
  def record(name,ok,detail=None):checks.append({'check':name,'ok':bool(ok),'detail':detail})
+ try:
+  from goskills_eval.runtime import resolve_runtime
+  model_config=resolve_runtime(cfg.get('runtime'))
+  record('model_configuration',True,model_config.to_dict())
+ except (ValueError,TypeError) as exc:
+  record('model_configuration',False,str(exc))
  def path(v):
   q=Path(v).expanduser();return (base/q).resolve() if not q.is_absolute() else q
  for k in ['upstream','skills_root','workspace','pool']:
@@ -84,16 +90,39 @@ def check(config, runtime=False):
  else:record('upstream_commit',False,'Pinned GoS git checkout required')
  skills=path(cfg.get('skills_root',''));count=sum(1 for _ in skills.rglob('SKILL.md')) if skills.is_dir() else 0
  record('nonempty_skill_library',count>0,{'skill_documents':count,'historical_count':2000})
+ if cfg.get('pool') and cfg.get('skills_root'):
+  try:
+   from goskills_eval.assets import validate_library
+   identity=validate_library(path(cfg['pool']),skills)
+   record('pool_library_identity',True,identity)
+  except (ValueError,OSError,KeyError,AssertionError) as exc:
+   record('pool_library_identity',False,str(exc))
  workspace=path(cfg.get('workspace',''))
  for n in ['graph_igraph_data.pklz','construction_report.json']:
   record('workspace_'+n,(workspace/n).is_file())
  record('embedding_1536_index',len(list(workspace.glob('entities_hnsw_index_1536.bin')))==1)
+ if cfg.get('workspace') and cfg.get('skills_root'):
+  try:
+   from goskills_eval.workspace import validate_workspace
+   identity=validate_workspace(workspace,skills,pool=path(cfg['pool']) if cfg.get('pool') else None)
+   record('workspace_library_identity',True,{'source_documents':identity['source_document_count']})
+  except (ValueError,OSError,KeyError,AssertionError) as exc:
+   record('workspace_library_identity',False,str(exc))
  members=json.loads((ROOT/'evaluation/experiments/configs/task_ids.json').read_text())
  for b in ['skillsbench','tb2']:
   s=cfg.get(b,{})
   if not s:record(b,False,'Missing benchmark section');continue
-  r=path(s.get('tasks_root',''));tasks=s.get('tasks',members[b]);missing=[n for n in tasks if not (r/n/'task.toml').is_file()]
-  record(b+'_tasks',not missing,{'selected':len(tasks),'missing':missing})
+  r=path(s.get('tasks_root',''));tasks=s.get('tasks',members[b]);invalid={}
+  for n in tasks:
+   try:
+    from goskills_eval.experiments.run import safe_id
+    safe_id(n)
+    if b=='skillsbench':
+     from goskills_eval.skillsbench.task_schema import inspect_task
+     inspect_task(r/n)
+    elif not (r/n/'task.toml').is_file():raise ValueError('Missing task.toml')
+   except (ValueError,OSError) as exc:invalid[n]=str(exc)
+  record(b+'_tasks',not invalid,{'selected':len(tasks),'invalid':invalid})
  a=cfg.get('alfworld',{});record('alfworld_config',bool(a.get('config')) and path(a.get('config','')).is_file())
  mf=path(a.get('games_manifest',''))
  if mf.is_file():

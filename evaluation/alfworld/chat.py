@@ -1,18 +1,23 @@
 from goskills_eval.utils import *
 import time,random
+from goskills_eval.runtime import resolve_runtime, ALFWORLD_SETTINGS
 
 class Chat:
- def __init__(self,directory,upstream):
+ def __init__(self,directory,upstream,runtime=None):
+  self.runtime=resolve_runtime(runtime)
   from openai import OpenAI
   self.client=OpenAI(api_key=credentials()[0],base_url=credentials()[1],max_retries=0,timeout=90)
   self.directory=directory;self.upstream=upstream;self.calls=[];self.events=[];self.failed=False
  def __call__(self,messages,model):
-  assert model=='gpt-5.4';reply=None
+  if model!=self.runtime.model:raise ValueError('requested_model_mismatch')
+  reply=None
+  parameters={self.runtime.completion_token_field:ALFWORLD_SETTINGS['max_completion_tokens']}
+  if self.runtime.reasoning_effort is not None:parameters['reasoning_effort']=self.runtime.reasoning_effort
   for attempt in range(1,6):
    event={'at':now(),'turn':len(self.calls)+1,'request_attempt':attempt,'request_model':model,'input_sha256':hashlib.sha256(json.dumps(messages,ensure_ascii=False).encode()).hexdigest()}
    try:
-    reply=self.client.chat.completions.create(model=model,messages=messages,reasoning_effort='low',max_completion_tokens=4096,timeout=90)
-    assert reply.model=='gpt-5.4-2026-03-05','actual_model_mismatch'
+    reply=self.client.chat.completions.create(model=model,messages=messages,timeout=90,**parameters)
+    self.runtime.validate_response(reply.model)
     assert reply.usage is not None and reply.usage.prompt_tokens>0 and reply.usage.completion_tokens>=0,'usage_missing'
     assert reply.choices and reply.choices[0].message.content is not None,'completion_missing'
     event.update(status='success',actual_model=reply.model);self.events.append(event);write(self.directory/'transport.json',self.events)

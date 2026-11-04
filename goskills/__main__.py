@@ -6,7 +6,7 @@ from .io import read_json, write_json
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="GoSkills paper-based clean rewrite")
+    parser = argparse.ArgumentParser(description="GoSkills: group-structured skill retrieval")
     commands = parser.add_subparsers(dest="command", required=True)
     export = commands.add_parser("export-native", help="Read an official GoS workspace without modifying it")
     export.add_argument("--workspace", type=Path, required=True)

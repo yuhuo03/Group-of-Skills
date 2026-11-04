@@ -7,6 +7,7 @@ import sys
 import json
 import math
 from goskills_eval.skill import METHODS, validate_resources, validate_output
+from goskills_eval.runtime import add_runtime_arguments, runtime_from_args, ALFWORLD_SETTINGS
 
 
 def resolve_game(args):
@@ -60,9 +61,11 @@ def main():
     p.add_argument('--method', choices=METHODS, default='goskills-d')
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--execute', action='store_true', help='Run one billable simulator episode; default prints plan')
+    add_runtime_arguments(p)
     a = p.parse_args()
+    runtime = runtime_from_args(a)
     try:
-        validate_resources(a.method, skills_root=a.skills_root, pool=a.pool, workspace=a.workspace, upstream=a.upstream)
+        validate_resources(a.method, skills_root=a.skills_root, pool=a.pool, workspace=a.workspace, upstream=a.upstream, check_files=True)
         game_path, expected_game_sha = resolve_game(a)
         validate_output(a.output, skills_root=a.skills_root, pool=a.pool, workspace=a.workspace,
                         upstream=a.upstream, config=a.config, games_manifest=a.games_manifest,
@@ -71,8 +74,8 @@ def main():
         p.error(str(exc))
     if not a.execute:
         print(json.dumps({'status': 'PLAN_ONLY', 'method': a.method, 'game_file': str(game_path),
-                          'output': str(a.output), 'seed': 42, 'max_steps': 30,
-                          'model': 'gpt-5.4', 'reasoning_effort': 'low'}))
+                          'output': str(a.output), 'seed': ALFWORLD_SETTINGS['seed'], 'max_steps': ALFWORLD_SETTINGS['max_steps'],
+                          'model': runtime.model, 'reasoning_effort': runtime.reasoning_effort, 'runtime': runtime.to_dict()}))
         return
     from goskills_eval.utils import credentials, write, sha, now
     from goskills_eval.skill import prepare_upstream
@@ -93,14 +96,14 @@ def main():
     from goskills_eval.alfworld.adapter import make
     from goskills_eval.alfworld.chat import Chat
     config = yaml.safe_load(a.config.read_text())
-    config['general']['random_seed'] = 42
+    config['general']['random_seed'] = ALFWORLD_SETTINGS['seed']
     config['general']['use_cuda'] = False
     a.output.mkdir(parents=True, exist_ok=False)
     env = None
     receipt = {'status': 'RUNNING', 'method': a.method, 'started_at': now(),
                'game_sha256': sha(game_path), 'config_sha256': sha(a.config),
                'upstream_runner_sha256': sha(Path(upstream.__file__)),
-               'model': 'gpt-5.4', 'max_steps': 30, 'seed': 42}
+               'model': runtime.model, 'runtime': runtime.to_dict(), 'max_steps': ALFWORLD_SETTINGS['max_steps'], 'seed': ALFWORLD_SETTINGS['seed']}
     write(a.output/'receipt.json', receipt)
     try:
         e = get_environment('AlfredTWEnv')(config, train_eval='eval_out_of_distribution')
@@ -109,7 +112,7 @@ def main():
             raise ValueError('game file is outside the official out-of-distribution split')
         e.game_files = [game]
         env = e.init_env(batch_size=1)
-        env.seed(42)
+        env.seed(ALFWORLD_SETTINGS['seed'])
         obs, info = env.reset()
         if str(info['extra.gamefile'][0]) != game:
             raise ValueError('environment game identity mismatch')
@@ -117,10 +120,10 @@ def main():
         name = '/'.join(game.split('/')[-3:-1])
         skill = make(a.method, SkillModule, a.output, skills_root=a.skills_root, pool=a.pool,
                      workspace=a.workspace, upstream=a.upstream)
-        chat = Chat(a.output, upstream)
+        chat = Chat(a.output, upstream, runtime=runtime)
         upstream.llm = chat
-        result = upstream.alfworld_run_single(env=env, obs=[ob], names=[name], max_steps=30,
-                                             model='gpt-5.4', Skill_Module=skill)[0]
+        result = upstream.alfworld_run_single(env=env, obs=[ob], names=[name], max_steps=ALFWORLD_SETTINGS['max_steps'],
+                                             model=runtime.model, Skill_Module=skill)[0]
         write(a.output/'result.json', result, True)
         if chat.failed or not chat.calls or len(chat.calls) != result['steps']:
             raise ValueError('incomplete agent trace')

@@ -6,13 +6,10 @@ benchmark containers; no historical image/cache controller is replayed.
 """
 from __future__ import annotations
 import hashlib,json,os,re,shutil
-try:
- import tomllib
-except ImportError:
- import tomli as tomllib
 from pathlib import Path
+from goskills_eval.skillsbench.task_schema import inspect_task, normalize_copy
 
-METHODS=('noskills','vanilla','vector','native-gos','goskills-d')
+from goskills_eval.runtime import METHODS
 COMMANDS={'vector':'vectorskills-query','native-gos':'graphskills-query','goskills-d':'goskills-query'}
 COMMON='# Task Environment\n\nBefore implementation, inspect visible task requirements/tests and preserve required output paths. Prefer the shortest verifier-aligned solution and local files.\n'
 PROMPT='Before writing or editing solution code, read /root/AGENTS.md if it exists. Follow its skill-access condition, inspect visible requirements/tests, preserve exact output paths, and prefer the shortest verifier-aligned solution.\n\n{{ instruction }}\n'
@@ -50,9 +47,8 @@ def inspect_inputs(task,method,output,skills_root=None,pool=None,workspace=None,
   retrieval_python=os.path.abspath(os.path.expanduser(str(retrieval_python)))
   if not Path(retrieval_python).is_file() or not os.access(retrieval_python,os.X_OK):raise ValueError('Retrieval Python must be an executable file')
  task=Path(task).resolve();output=Path(output).resolve()
- for filename in ['task.toml','instruction.md']:
-  if not(task/filename).is_file():raise ValueError('Missing SkillsBench task file: '+filename)
- config=tomllib.loads((task/'task.toml').read_text())
+ normalization=inspect_task(task)
+ config=normalization['config']
  if config.get('environment',{}).get('os','linux')!='linux':raise ValueError('The SkillsBench bash agent requires a Linux task')
  env=task/'environment';dockerfile=env/'Dockerfile'
  compose_files=[env/name for name in ['docker-compose.yaml','compose.yml','compose.yaml','docker-compose.yml'] if (env/name).is_file()]
@@ -88,17 +84,25 @@ def inspect_inputs(task,method,output,skills_root=None,pool=None,workspace=None,
   if 'skills_root' not in resources or 'upstream' not in resources:raise ValueError('Skill methods require --skills-root and --upstream')
   if not list(Path(resources['skills_root']).glob('*/SKILL.md')):raise ValueError('Skill library contains no SKILL.md files')
   guidance(method,resources['upstream']) # Check exact template availability now.
- if method=='goskills-d' and 'pool' not in resources:raise ValueError('GoSkills D requires --pool')
+ if method=='goskills-d' and 'pool' not in resources:raise ValueError('GoSkills requires --pool')
+ if method=='goskills-d':
+  from goskills_eval.assets import validate_library
+  validate_library(resources['pool'],resources['skills_root'])
  if method in {'vector','native-gos'} and 'workspace' not in resources:raise ValueError('Vector/GoS require --workspace')
- return {'task':str(task),'method':method,'output':str(output),'resources':resources,'retrieval_python':retrieval_python,'source_task_sha256':tree(task),'transport':'host-standalone-query-v1','compose_source':compose.relative_to(task).as_posix() if compose.is_file() else None}
+ if method in {'vector','native-gos'}:
+  from goskills_eval.workspace import validate_workspace
+  validate_workspace(resources['workspace'],resources['skills_root'])
+ return {'task':str(task),'method':method,'output':str(output),'resources':resources,'retrieval_python':retrieval_python,'source_task_sha256':tree(task),'normalization':normalization,'transport':'host-standalone-query-v1','compose_source':compose.relative_to(task).as_posix() if compose.is_file() else None}
 
 def trial_config(plan):
+ from goskills_eval.runtime import resolve_runtime
+ runtime=resolve_runtime(plan.get('runtime'))
  out=Path(plan['output']);method=plan['method'];resources=plan['resources']
  root='/opt/skillsbench/skills' if method=='vanilla' else '/opt/graphskills/skills'
  mounts=[] if method=='noskills' else [{'type':'bind','source':resources['skills_root'],'target':root,'read_only':True}]
- return {'task':{'path':str(out/'prepared-task')},'trial_name':'gpt54-sb-'+method+'-'+hashlib.sha256(str(out).encode()).hexdigest()[:10],
- 'trials_dir':str(out/'trials'),'agent':{'import_path':'goskills_eval.skillsbench.agents.goskills:SkillsBenchAgent','model_name':'gpt-5.4','override_timeout_sec':900,'override_setup_timeout_sec':180,
- 'kwargs':{'method':method,'retrieval_python':plan.get('retrieval_python') or '', 'method_resources':json.dumps(resources,sort_keys=True),'guide_path':str(out/'method-AGENTS.md'),'prompt_template_path':str(out/'prompt.txt'),'reasoning_effort':'low','max_turns':60,'max_completion_tokens':4096,'tool_timeout_sec':180,'max_observation_chars':12000,'request_audit_root':str(out/'transport-audit')}},
+ return {'task':{'path':str(out/'prepared-task')},'trial_name':('gpt54-sb-' if runtime.profile=='gpt54' else 'sb-')+method+'-'+hashlib.sha256(str(out).encode()).hexdigest()[:10],
+ 'trials_dir':str(out/'trials'),'agent':{'import_path':'goskills_eval.skillsbench.agents.goskills:SkillsBenchAgent','model_name':runtime.model,'override_timeout_sec':900,'override_setup_timeout_sec':180,
+ 'kwargs':{'method':method,'retrieval_python':plan.get('retrieval_python') or '', 'method_resources':json.dumps(resources,sort_keys=True),'guide_path':str(out/'method-AGENTS.md'),'prompt_template_path':str(out/'prompt.txt'),**runtime.agent_kwargs(),'request_audit_root':str(out/'transport-audit')}},
  'environment':{'type':'docker','delete':True,'mounts':mounts},'timeout_multiplier':1.0}
 
 def prepare(plan):
@@ -108,9 +112,12 @@ def prepare(plan):
   # Verify local tracked source before creating a pack or starting a paid agent.
   from goskills_eval.skill import prepare_upstream
   prepare_upstream(plan['resources']['upstream'])
- out.mkdir(parents=True,exist_ok=False)
  if tree(task)!=plan['source_task_sha256']:raise ValueError('Task changed since planning')
+ normalization=inspect_task(task)
+ if normalization!=plan['normalization']:raise ValueError('Task normalization changed since planning')
+ out.mkdir(parents=True,exist_ok=False)
  dest=out/'prepared-task';shutil.copytree(task,dest,ignore=shutil.ignore_patterns('.git','__pycache__','*.pyc'))
+ normalize_copy(dest,normalization)
  compose_source=plan.get('compose_source')
  if compose_source and compose_source!='environment/docker-compose.yaml':
   (dest/compose_source).rename(dest/'environment/docker-compose.yaml')
@@ -124,11 +131,12 @@ def prepare(plan):
  docker.write_text(text)
  (out/'method-AGENTS.md').write_text(guidance(plan['method'],plan['resources'].get('upstream')))
  (out/'prompt.txt').write_text(PROMPT)
- protected=['task.toml','instruction.md']+[p.relative_to(task).as_posix() for p in (task/'tests').rglob('*') if p.is_file()]
- for name in protected:
-  if sha(task/name)!=sha(dest/name):raise ValueError('Protected task file modified: '+name)
+ protected=dict(normalization['protected'])
+ protected.update({name:hashlib.sha256(text.encode()).hexdigest() for name,text in normalization['generated'].items()})
+ for name,expected in protected.items():
+  if expected!=sha(dest/name):raise ValueError('Protected task file modified: '+name)
  manifest={**plan,'prepared_task_sha256':tree(dest),'removed_oracle_files':removed,'protected_files':{n:sha(dest/n) for n in protected},'guide_sha256':sha(out/'method-AGENTS.md'),'prompt_sha256':sha(out/'prompt.txt'),
- 'changes':['Remove oracle environment/skills and corresponding plain Docker COPY','Normalize a single alternate compose filename to docker-compose.yaml without changing its bytes','Add host-only standalone query bridge guidance','Read-only method skill-library mount; custom compose bytes and services preserved','Original SkillsBench 900-second agent override; native task resource and verifier settings retained'],
+ 'changes':['Convert supported task.md metadata/instruction and verifier/oracle directories in the fresh copy; preserve source files','Remove oracle environment/skills and corresponding plain Docker COPY','Normalize a single alternate compose filename to docker-compose.yaml without changing its bytes','Add host-only standalone query bridge guidance','Read-only method skill-library mount; custom compose bytes and services preserved','Original SkillsBench 900-second agent override; native task resource and verifier settings retained'],
  'provider_calls':0,'docker_runs':0}
  (out/'PREPARATION.json').write_text(json.dumps(manifest,indent=2)+'\n')
  config=trial_config(plan);(out/'trial_config.json').write_text(json.dumps(config,indent=2)+'\n')

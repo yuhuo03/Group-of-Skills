@@ -1,0 +1,8 @@
+include LICENSE README.md DATA.md CONTRIBUTING.md .env.example .gitignore
+recursive-include assets *.png
+recursive-include skills *.md *.yaml
+recursive-include scripts *.py
+recursive-include goskills *.md
+recursive-include evaluation *.md *.txt
+recursive-include tests *.py *.json
+global-exclude __pycache__ *.py[cod] .DS_Store

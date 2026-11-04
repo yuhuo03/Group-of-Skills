@@ -12,7 +12,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--task', type=Path)
     parser.add_argument('--config', type=Path, help='Validate a legacy single-trial JSON only; execute fresh tasks with --task')
-    parser.add_argument('--method', choices=['noskills', 'vanilla', 'vector', 'native-gos', 'goskills-d'], default='goskills-d')
+    from goskills_eval.runtime import METHODS
+    parser.add_argument('--method', choices=METHODS, default='goskills-d')
     for resource in ['skills-root', 'pool', 'workspace', 'upstream']:
         parser.add_argument('--' + resource, type=Path)
     parser.add_argument('--retrieval-python', type=Path, help='Separate GoS virtualenv Python; required for vector/native-gos')
@@ -20,7 +21,10 @@ def main(argv=None):
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument('--prepare-only', action='store_true', help='Write a local task pack/config; no Docker or API calls')
     actions.add_argument('--execute', action='store_true', help='Run one new Docker trial with billable API calls')
+    from goskills_eval.runtime import add_runtime_arguments, runtime_from_args
+    add_runtime_arguments(parser)
     args = parser.parse_args(argv)
+    runtime = runtime_from_args(args)
     if bool(args.task) == bool(args.config):
         parser.error('Supply exactly one of --task or --config')
     from goskills_eval.utils import load, write, credentials, now
@@ -29,12 +33,18 @@ def main(argv=None):
             parser.error('--config supports validation only; use --task for a fresh reproducible trial')
         cfg = load(args.config)
         agent = cfg['agent']
-        if agent.get('model_name') != 'gpt-5.4' or agent.get('kwargs', {}).get('reasoning_effort') != 'low':
-            raise ValueError('Expected GPT-5.4/low prepared configuration')
+        if agent.get('model_name') != runtime.model or agent.get('kwargs', {}).get('reasoning_effort') != (runtime.reasoning_effort or ''):
+            raise ValueError('Prepared configuration does not match the selected runtime')
+        kw = agent.get('kwargs', {})
+        defaults = runtime.agent_kwargs() if runtime.profile == 'gpt54' else {}
+        for key in ('expected_model', 'completion_token_field'):
+            if kw.get(key, defaults.get(key)) != runtime.agent_kwargs()[key]:
+                raise ValueError('Prepared model identity or token field differs from selected runtime')
         print(json.dumps({'status': 'CONFIG_VALIDATED_NOT_EXECUTED', 'task': cfg['task'], 'model': agent['model_name'], 'output': str(args.output)}))
         return 0
     from goskills_eval.skillsbench.task_pack import inspect_inputs, prepare, trial_config
     plan = inspect_inputs(args.task, args.method, args.output, args.skills_root, args.pool, args.workspace, args.upstream, args.retrieval_python)
+    plan['runtime'] = runtime.to_dict()
     if not args.prepare_only and not args.execute:
         print(json.dumps({'status': 'PLAN_ONLY', 'benchmark': 'skillsbench', 'method': args.method,
                           'task': str(args.task), 'output': str(args.output), 'configuration': trial_config(plan)}, indent=2))
@@ -49,10 +59,12 @@ def main(argv=None):
     from harbor.trial.trial import Trial
     validated = TrialConfig.model_validate(trial_config(plan))
     cfg = prepare(plan)
-    receipt = {'status': 'RUNNING', 'benchmark': 'skillsbench', 'method': args.method, 'started_at': now()}
+    receipt = {'status': 'RUNNING', 'benchmark': 'skillsbench', 'method': args.method, 'started_at': now(), 'runtime': runtime.to_dict()}
     write(args.output / 'receipt.json', receipt)
 
+    trial = None
     async def run():
+        nonlocal trial
         trial = await Trial.create(validated)
         await trial.run()
         return trial
@@ -61,17 +73,23 @@ def main(argv=None):
         trial = asyncio.run(run())
         from goskills_eval.assessment import assess_trial
         evidence = assess_trial(args.output / 'trials' / cfg['trial_name'], args.method, binary=False,
-                                require_retrieval=args.method not in {'noskills', 'vanilla'})
-        from harbor.environments.docker.docker import _sanitize_docker_compose_project_name
-        project = _sanitize_docker_compose_project_name(trial.agent_environment.session_id)
-        owned = subprocess.run(['docker', 'ps', '-a', '--filter', 'label=com.docker.compose.project=' + project,
-                                '--format', '{{.ID}}'], capture_output=True, text=True, timeout=15)
-        if owned.returncode != 0 or owned.stdout.strip():
-            raise RuntimeError('owned_containers_not_confirmed_clear')
-        receipt.update(status='VALID', owned_containers_clear=True, **evidence)
+                                require_retrieval=args.method not in {'noskills', 'vanilla'}, runtime=runtime)
+        receipt.update(status='VALID', **evidence)
     except Exception as exc:
         receipt.update(status='PROCESS_FAILED', error_type=type(exc).__name__)
     finally:
+        receipt['owned_containers_clear'] = False
+        if trial is not None:
+            try:
+                from harbor.environments.docker.docker import _sanitize_docker_compose_project_name
+                project = _sanitize_docker_compose_project_name(trial.agent_environment.session_id)
+                owned = subprocess.run(['docker', 'ps', '-a', '--filter', 'label=com.docker.compose.project=' + project,
+                                        '--format', '{{.ID}}'], capture_output=True, text=True, timeout=15)
+                if owned.returncode != 0 or owned.stdout.strip():
+                    raise RuntimeError('owned_containers_not_confirmed_clear')
+                receipt['owned_containers_clear'] = True
+            except Exception as exc:
+                receipt.update(status='PROCESS_FAILED', cleanup_error_type=type(exc).__name__)
         receipt['finished_at'] = now()
         write(args.output / 'receipt.json', receipt)
     print(json.dumps(receipt))

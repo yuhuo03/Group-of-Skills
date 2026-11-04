@@ -1,4 +1,6 @@
 """Five-method TB2 checks using synthetic local assets and fake service objects."""
+from goskills.groups import build_pool
+from goskills.config import validate_config
 from pathlib import Path
 import asyncio
 import importlib.util
@@ -26,8 +28,9 @@ class TB2FiveTests(unittest.TestCase):
         (skills/'example/SKILL.md').write_text('---\nname: example\ndescription: synthetic\n---\nSynthetic body')
         upstream=root/'official'; (upstream/'gos').mkdir(parents=True)
         (upstream/'evaluation').mkdir(); (upstream/'evaluation/skill.py').write_text('# synthetic: no import in planning')
-        workspace=root/'index'; workspace.mkdir()
-        pool=root/'pool.json'; pool.write_text('{}')
+        from workspace_fixture import make_workspace
+        workspace=root/'index';graph=make_workspace(workspace,skills)
+        pool=root/'pool.json';pool.write_text(json.dumps(build_pool(graph,validate_config())))
         return task, skills, upstream, workspace, pool
 
     def test_five_configurations_preserve_task_resources_and_method_access(self):
@@ -203,6 +206,48 @@ class TB2FiveTests(unittest.TestCase):
             result['verifier_result']['rewards']['reward']=0
             (td/'result.json').write_text(json.dumps(result));(td/'verifier/ctrf.json').unlink()
             with self.assertRaises(FileNotFoundError):assess_trial(td,'noskills')
+
+    def test_runner_requires_cleanup_before_accepting_valid_zero(self):
+        from goskills_eval.terminalbench2 import cleanup
+        from test_tb2_cleanup import Docker, PROJECT
+        spec=importlib.util.spec_from_file_location('tb2_cleanup_runner',ROOT/'evaluation/terminalbench2/terminalbench2_benchmark.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        original_cleanup=cleanup.reconcile_trial
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);task,*_=self.fixture(root);docker=Docker()
+            owner=self
+            class Trial:
+                agent_environment=types.SimpleNamespace(session_id=PROJECT)
+                @classmethod
+                async def create(cls,cfg):obj=cls();obj.cfg=cfg;return obj
+                async def run(self):
+                    td=Path(self.cfg['trials_dir'])/self.cfg['trial_name'];td.mkdir()
+                    owner.evidence(td)
+            configmod=types.ModuleType('harbor.models.trial.config');configmod.TrialConfig=types.SimpleNamespace(model_validate=lambda x:x)
+            trialmod=types.ModuleType('harbor.trial.trial');trialmod.Trial=Trial
+            dockermod=types.ModuleType('harbor.environments.docker.docker');dockermod._sanitize_docker_compose_project_name=lambda x:x
+            def hook(project,path):
+                return original_cleanup(project,path,run=docker,clock=lambda:0,sleep=lambda _:None)
+            with patch.dict(sys.modules,{'harbor.models.trial.config':configmod,'harbor.trial.trial':trialmod,'harbor.environments.docker.docker':dockermod}),patch('goskills_eval.utils.credentials',return_value=('offline','offline')),patch.object(cleanup,'reconcile_trial',side_effect=hook),patch.object(module.subprocess,'run',return_value=types.SimpleNamespace(returncode=0,stdout='')):
+                code=module.main(['--task',str(task),'--method','noskills','--output',str(root/'out'),'--execute'])
+                self.assertTrue(docker.removed)
+                from test_tb2_cleanup import CID
+                docker=Docker([cleanup.stopped(PROJECT,CID)|{'status':'running','running':True,'pid':123}])
+                failed=module.main(['--task',str(task),'--method','noskills','--output',str(root/'refused'),'--execute'])
+                refused_removed=docker.removed
+                docker=Docker()
+                with patch('goskills_eval.terminalbench2.config.assess_trial',side_effect=ValueError('synthetic invalid report')):
+                    invalid=module.main(['--task',str(task),'--method','noskills','--output',str(root/'invalid'),'--execute'])
+                self.assertTrue(docker.removed)
+                invalid_receipt=json.loads((root/'invalid/receipt.json').read_text())
+                self.assertEqual((invalid,invalid_receipt['status'],invalid_receipt['owned_containers_clear']),(1,'PROCESS_FAILED',True))
+            self.assertEqual(code,0);self.assertEqual(failed,1);self.assertFalse(refused_removed)
+            receipt=json.loads((root/'out/receipt.json').read_text())
+            self.assertEqual((receipt['status'],receipt['reward']),('VALID',0))
+            self.assertTrue(json.loads((root/'out/cleanup_receipt.json').read_text())['owned_clear'])
+            self.assertEqual(json.loads((root/'refused/receipt.json').read_text())['status'],'PROCESS_FAILED')
+            result=next((root/'refused').glob('gpt54-*/result.json'))
+            self.assertEqual(json.loads(result.read_text())['verifier_result']['rewards']['reward'],0)
 
     def test_metrics_do_not_fabricate_missing_runtime_or_tokens(self):
         with self.assertRaises(ValueError):normalize_metrics({}, {})
