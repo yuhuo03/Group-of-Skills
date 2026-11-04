@@ -1,4 +1,4 @@
-"""Cancellable HTTP candidate; frozen payload and retry order, no provider SDK.
+"""Cancellable HTTP transport with stable payloads and bounded retries.
 
 Only successful, fully parsed responses enter the existing api_calls contract.
 The separate append-only ledger records incomplete/unknown-cost physical POSTs.

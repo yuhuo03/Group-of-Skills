@@ -14,8 +14,8 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT/'evaluation'))
-from goskills_eval import method_backend as backend
-from goskills_eval.alfworld_adapter import official_skill_class
+from goskills_eval import skill as backend
+from goskills_eval.alfworld.adapter import official_skill_class
 
 
 class Matrix:
@@ -132,7 +132,7 @@ class BackendTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             output = Path(d)/'not-created'
             for method in ('vector', 'native-gos'):
-                proc = subprocess.run([sys.executable, '-m', 'goskills_eval.method_backend',
+                proc = subprocess.run([sys.executable, '-m', 'goskills_eval.skill',
                     '--method', method, '--query', 'task', '--directory', str(output),
                     '--skills-root', 'missing-skills', '--upstream', 'missing-checkout',
                     '--workspace', 'missing-index'], cwd=ROOT/'evaluation',
@@ -188,7 +188,7 @@ class BackendTests(unittest.TestCase):
         class SkillModule:
             def __init__(self, **kw):
                 self.kw = kw
-        with patch('goskills_eval.method_backend.OfficialRetriever') as rag:
+        with patch('goskills_eval.skill.OfficialRetriever') as rag:
             cls = official_skill_class(SkillModule)
             for mode in ('all_full', 'vector', 'gos'):
                 obj = cls(mode, Path('output'), 'skills', 'workspace', 'upstream')
@@ -201,7 +201,7 @@ class BackendTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             output = Path(d)/'never-created'
             for method in backend.METHODS:
-                proc = subprocess.run([sys.executable, str(ROOT/'evaluation/alfworld/run.py'),
+                proc = subprocess.run([sys.executable, str(ROOT/'evaluation/alfworld_run.py'),
                     '--method', method, '--upstream', 'upstream', '--config', 'config.yaml',
                     '--game-file', 'game.tw-pddl', '--skills-root', 'skills', '--pool', 'pool.json',
                     '--workspace', 'index', '--output', str(output)], check=True, capture_output=True, text=True)
@@ -209,7 +209,7 @@ class BackendTests(unittest.TestCase):
             self.assertFalse(output.exists())
 
     def test_game_index_resolution_is_relocatable(self):
-        spec = importlib.util.spec_from_file_location('alfworld_runner_test', ROOT/'evaluation/alfworld/run.py')
+        spec = importlib.util.spec_from_file_location('alfworld_runner_test', ROOT/'evaluation/alfworld_run.py')
         module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
         with tempfile.TemporaryDirectory() as d:
             root = Path(d); manifest=root/'games.json'
@@ -219,7 +219,7 @@ class BackendTests(unittest.TestCase):
             self.assertEqual(digest,'f'*64)
 
     def test_selected_metrics_use_actual_token_and_runtime_fields(self):
-        spec = importlib.util.spec_from_file_location('alfworld_metrics_test', ROOT/'evaluation/alfworld/run.py')
+        spec = importlib.util.spec_from_file_location('alfworld_metrics_test', ROOT/'evaluation/alfworld_run.py')
         module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
         result = {'token_usage': {'prompt_tokens':123,'completion_tokens':7}, 'agent_runtime_seconds':2.5}
         self.assertEqual(module.normalized_metrics(result), {'input_tokens':123,'output_tokens':7,'runtime_seconds':2.5})
@@ -230,9 +230,9 @@ class BackendTests(unittest.TestCase):
             module.normalized_metrics({'token_usage':result['token_usage']})
 
     def test_shipped_game_manifest_and_root_containment(self):
-        spec = importlib.util.spec_from_file_location('alfworld_shipped_manifest_test', ROOT/'evaluation/alfworld/run.py')
+        spec = importlib.util.spec_from_file_location('alfworld_shipped_manifest_test', ROOT/'evaluation/alfworld_run.py')
         module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-        manifest = ROOT/'evaluation/configs/alfworld_games.json'
+        manifest = ROOT/'evaluation/experiments/configs/alfworld_games.json'
         data = json.loads(manifest.read_text())
         with tempfile.TemporaryDirectory() as d:
             root = Path(d).resolve()

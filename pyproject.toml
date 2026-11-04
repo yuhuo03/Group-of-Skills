@@ -18,12 +18,19 @@ alfworld = ["openai>=1", "PyYAML>=6", "retry>=0.9", "tqdm>=4", "alfworld==0.4.2"
 [project.scripts]
 goskills = "goskills.__main__:main"
 
-[tool.setuptools.package-dir]
-goskills_eval = "evaluation/goskills_eval"
+[tool.setuptools]
+packages = [
+  "goskills", "goskills_eval", "goskills_eval.alfworld",
+  "goskills_eval.skillsbench", "goskills_eval.skillsbench.agents",
+  "goskills_eval.terminalbench2", "goskills_eval.experiments",
+  "goskills_eval.analysis", "goskills_eval.experiments.configs",
+]
 
-[tool.setuptools.packages.find]
-where = [".", "evaluation"]
-include = ["goskills", "goskills.*", "goskills_eval", "goskills_eval.*"]
+[tool.setuptools.package-dir]
+goskills_eval = "evaluation"
+
+[tool.setuptools.package-data]
+"goskills_eval.experiments.configs" = ["task_ids.json", "alfworld_games.json", "local.example.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

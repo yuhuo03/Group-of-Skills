@@ -12,7 +12,7 @@ import hashlib
 import os
 import shlex
 import time
-from .async_http import chat_completion
+from goskills_eval.async_http import chat_completion
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path

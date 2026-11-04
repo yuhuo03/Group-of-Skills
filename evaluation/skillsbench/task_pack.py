@@ -97,7 +97,7 @@ def trial_config(plan):
  root='/opt/skillsbench/skills' if method=='vanilla' else '/opt/graphskills/skills'
  mounts=[] if method=='noskills' else [{'type':'bind','source':resources['skills_root'],'target':root,'read_only':True}]
  return {'task':{'path':str(out/'prepared-task')},'trial_name':'gpt54-sb-'+method+'-'+hashlib.sha256(str(out).encode()).hexdigest()[:10],
- 'trials_dir':str(out/'trials'),'agent':{'import_path':'goskills_eval.skillsbench_agent:SkillsBenchAgent','model_name':'gpt-5.4','override_timeout_sec':900,'override_setup_timeout_sec':180,
+ 'trials_dir':str(out/'trials'),'agent':{'import_path':'goskills_eval.skillsbench.agents.goskills:SkillsBenchAgent','model_name':'gpt-5.4','override_timeout_sec':900,'override_setup_timeout_sec':180,
  'kwargs':{'method':method,'retrieval_python':plan.get('retrieval_python') or '', 'method_resources':json.dumps(resources,sort_keys=True),'guide_path':str(out/'method-AGENTS.md'),'prompt_template_path':str(out/'prompt.txt'),'reasoning_effort':'low','max_turns':60,'max_completion_tokens':4096,'tool_timeout_sec':180,'max_observation_chars':12000,'request_audit_root':str(out/'transport-audit')}},
  'environment':{'type':'docker','delete':True,'mounts':mounts},'timeout_multiplier':1.0}
 
@@ -106,7 +106,7 @@ def prepare(plan):
  if out.exists():raise FileExistsError('Output already exists')
  if plan['method']!='noskills':
   # Verify local tracked source before creating a pack or starting a paid agent.
-  from .method_backend import prepare_upstream
+  from goskills_eval.skill import prepare_upstream
   prepare_upstream(plan['resources']['upstream'])
  out.mkdir(parents=True,exist_ok=False)
  if tree(task)!=plan['source_task_sha256']:raise ValueError('Task changed since planning')

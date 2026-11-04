@@ -6,10 +6,10 @@ upstream Python installations or an alternate TB2 system prompt into the task.
 """
 from pathlib import Path
 import asyncio,base64,json,os,sys
-from .harbor_base import DirectAPIBashAgent,CliFlag,redact_secret
-from .skillsbench_pack import METHODS
-from .skillsbench_bridge import parse_query_command
-from .common import write
+from goskills_eval.harbor_base import DirectAPIBashAgent,CliFlag,redact_secret
+from goskills_eval.skillsbench.task_pack import METHODS
+from goskills_eval.skillsbench.bridge import parse_query_command
+from goskills_eval.utils import write
 
 class SkillsBenchAgent(DirectAPIBashAgent):
  CLI_FLAGS=DirectAPIBashAgent.CLI_FLAGS+[
@@ -38,11 +38,9 @@ class SkillsBenchAgent(DirectAPIBashAgent):
   resources=json.loads(self._resolved_flags['method_resources'])
   payload={'method':self.method,'query':query,'directory':str(directory),'resources':resources}
   env=dict(os.environ)
-  release=Path(__file__).resolve().parents[2]
-  env['PYTHONPATH']=str(release/'evaluation')+os.pathsep+str(release)
   interpreter=self._resolved_flags.get('retrieval_python') or sys.executable
   if self.method in {'vector','native-gos'} and not self._resolved_flags.get('retrieval_python'):raise RuntimeError('retrieval_python_required')
-  process=await asyncio.create_subprocess_exec(interpreter,'-B','-m','goskills_eval.skillsbench_query',stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE,env=env)
+  process=await asyncio.create_subprocess_exec(interpreter,'-B','-m','goskills_eval.skillsbench.query',stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE,env=env)
   try:
    out,err=await asyncio.wait_for(process.communicate(json.dumps(payload).encode()),timeout=180)
   except BaseException:

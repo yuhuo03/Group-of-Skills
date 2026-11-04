@@ -6,7 +6,7 @@ It uses the out-of-distribution split, seed 42, GPT-5.4 with low reasoning,
 
 ## Setup and inputs
 
-Complete [environment setup](../SETUP.md) and [input preparation](../../DATA.md).
+Complete [environment setup](../README.md#setup) and [input preparation](../../DATA.md).
 Run ALFWorld with `.venv-retrieval/bin/python` and set `ALFWORLD_DATA` to the
 unpacked ALFWorld dataset.
 
@@ -32,7 +32,7 @@ skill request consumes an interaction step.
 From the repository root, replace the example game path:
 
 ```bash
-.venv-retrieval/bin/python evaluation/alfworld/run.py \
+.venv-retrieval/bin/python evaluation/alfworld_run.py \
   --upstream data/external/graph-of-skills \
   --config data/external/graph-of-skills/evaluation/alfworld/base_config.yaml \
   --game-file data/external/alfworld/json_2.1.1/valid_unseen/EXAMPLE/TRIAL/game.tw-pddl \
@@ -45,12 +45,12 @@ From the repository root, replace the example game path:
 Change `--method` to any identifier in the table. Inputs unused by that method
 may be omitted. The default prints a plan without importing the simulator or
 calling an API. Add `--execute` to run one episode using the provider variables
-in [SETUP.md](../SETUP.md). Use a fresh output directory.
+in [provider setup](../README.md#4-configure-providers). Use a fresh output directory.
 
 To select a task by the supplied game mapping, replace `--game-file` with:
 
 ```bash
---game-index 0 --games-manifest evaluation/configs/alfworld_games.json \
+--game-index 0 --games-manifest evaluation/experiments/configs/alfworld_games.json \
   --data-root data/external/alfworld
 ```
 

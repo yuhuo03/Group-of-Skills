@@ -5,7 +5,7 @@ reasoning, a 4,096-token completion limit, and each task's original deadline.
 
 ## Setup and inputs
 
-Complete [environment setup](../SETUP.md) and [input preparation](../../DATA.md).
+Complete [environment setup](../README.md#setup) and [input preparation](../../DATA.md).
 Run the entrypoint with `.venv-eval/bin/python`. Vanilla, Vector, and Graph of
 Skills also use the separate `.venv-retrieval/bin/python` environment.
 GoSkills and No Skills can use the terminal environment alone.
@@ -40,31 +40,31 @@ WORKSPACE=data/external/workspace
 POOL=data/external/pool.json
 RETRIEVAL_PYTHON="$PWD/.venv-retrieval/bin/python"
 
-.venv-eval/bin/python evaluation/terminalbench2/run.py \
+.venv-eval/bin/python evaluation/terminalbench2/terminalbench2_benchmark.py \
   --task "$TASK" --method noskills --output runs/tb2-noskills
 
-.venv-eval/bin/python evaluation/terminalbench2/run.py \
+.venv-eval/bin/python evaluation/terminalbench2/terminalbench2_benchmark.py \
   --task "$TASK" --method vanilla --skills-root "$SKILLS" \
   --upstream "$UPSTREAM" --retrieval-python "$RETRIEVAL_PYTHON" \
   --output runs/tb2-vanilla
 
-.venv-eval/bin/python evaluation/terminalbench2/run.py \
+.venv-eval/bin/python evaluation/terminalbench2/terminalbench2_benchmark.py \
   --task "$TASK" --method vector --skills-root "$SKILLS" \
   --upstream "$UPSTREAM" --workspace "$WORKSPACE" \
   --retrieval-python "$RETRIEVAL_PYTHON" --output runs/tb2-vector
 
-.venv-eval/bin/python evaluation/terminalbench2/run.py \
+.venv-eval/bin/python evaluation/terminalbench2/terminalbench2_benchmark.py \
   --task "$TASK" --method native-gos --skills-root "$SKILLS" \
   --upstream "$UPSTREAM" --workspace "$WORKSPACE" \
   --retrieval-python "$RETRIEVAL_PYTHON" --output runs/tb2-graph
 
-.venv-eval/bin/python evaluation/terminalbench2/run.py \
+.venv-eval/bin/python evaluation/terminalbench2/terminalbench2_benchmark.py \
   --task "$TASK" --method goskills-d --skills-root "$SKILLS" \
   --pool "$POOL" --output runs/tb2-goskills
 ```
 
 Commands validate local inputs and print the trial configuration by default.
-After configuring providers in [SETUP.md](../SETUP.md), add `--execute` to run
+After configuring providers in [provider setup](../README.md#4-configure-providers), add `--execute` to run
 one trial. Execution starts Docker and makes API requests. Use a new output
 directory for every trial; there is no automatic resume or score-based retry.
 

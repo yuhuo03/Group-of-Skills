@@ -27,7 +27,7 @@ traces/
 .DS_Store
 
 # Local evaluation configuration and environments
-evaluation/configs/local.json
+evaluation/experiments/configs/local.json
 .venv-eval/
 
 .venv-retrieval/

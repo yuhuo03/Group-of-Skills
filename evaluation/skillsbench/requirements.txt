@@ -2,7 +2,7 @@
 # Harbor and GoS use separate environments because their OpenAI SDK ranges conflict.
 # Pinned GoS commit: 203f60a2c689da055ce1ac351eb3cb9912a3bca7.
 # From the repository root:
-# python -m pip install -r evaluation/requirements/terminal-py312-linux.txt -e ".[terminal]"
+# python -m pip install -r evaluation/skillsbench/requirements.txt -e ".[terminal]"
 
 aiohappyeyeballs==2.7.1
     # via aiohttp

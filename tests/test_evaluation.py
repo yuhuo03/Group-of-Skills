@@ -1,8 +1,7 @@
 """Offline adapter tests: no simulator, Docker or provider calls."""
 from pathlib import Path
 import copy,json,sys,tempfile,unittest
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'evaluation'))
-from goskills_eval.terminal_config import trial_config
+from goskills_eval.terminalbench2.config import trial_config
 from goskills_eval.source_gate import validate_frozen_sources
 from goskills_eval.retrieval import DContext
 from goskills.groups import build_pool
@@ -35,11 +34,11 @@ class EvaluationTests(unittest.TestCase):
  def test_blank_endpoint_falls_back(self):
   import os
   from unittest.mock import patch
-  from goskills_eval.common import credentials
+  from goskills_eval.utils import credentials
   with patch.dict(os.environ,{'OPENAI_API_KEY':'offline-synthetic','OPENAI_BASE_URL':''}):
    self.assertEqual(credentials()[1],'https://api.openai.com/v1')
  def test_output_not_overwritten(self):
-  from goskills_eval.common import write
+  from goskills_eval.utils import write
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp)/'result.json';write(p,{'reward':0},True)
    with self.assertRaises(FileExistsError):write(p,{'reward':1},True)
@@ -49,7 +48,26 @@ class EntrypointTests(unittest.TestCase):
   import subprocess,os
   root=Path(__file__).resolve().parents[1]
   env=dict(os.environ);env['PYTHONPATH']=str(root)+os.pathsep+str(root/'evaluation')
-  return subprocess.run([sys.executable,str(root/'evaluation'/track/'run.py'),*args],capture_output=True,text=True,env=env,timeout=20)
+  return subprocess.run([sys.executable,str(root/'evaluation'/{'alfworld':'alfworld_run.py','skillsbench':'skillsbench/goskills_benchmark.py','terminalbench2':'terminalbench2/terminalbench2_benchmark.py'}[track]),*args],capture_output=True,text=True,env=env,timeout=20)
+ def test_local_and_upstream_evaluation_namespaces_stay_separate(self):
+  import subprocess,os
+  with tempfile.TemporaryDirectory() as d:
+   upstream=Path(d)/'upstream';package=upstream/'evaluation';package.mkdir(parents=True)
+   for name in ['alfworld_run','skill']:(package/(name+'.py')).write_text("origin = 'upstream'\n")
+   code="""
+import sys
+from pathlib import Path
+import goskills_eval.alfworld_run as local_runner
+import goskills_eval.skill as local_skill
+sys.path.insert(0, sys.argv[1])
+import evaluation.alfworld_run as official_runner
+import evaluation.skill as official_skill
+assert official_runner.origin == official_skill.origin == 'upstream'
+assert Path(official_runner.__file__).is_relative_to(sys.argv[1])
+assert local_runner is not official_runner and local_skill is not official_skill
+"""
+   result=subprocess.run([sys.executable,'-c',code,str(upstream)],cwd=d,env={'PATH':os.defpath},capture_output=True,text=True,timeout=20)
+   self.assertEqual(result.returncode,0,result.stderr)
  def test_help_without_provider_or_simulator(self):
   for track in ['alfworld','skillsbench','terminalbench2']:
    result=self.run_script(track,['--help']);self.assertEqual(result.returncode,0,result.stderr)

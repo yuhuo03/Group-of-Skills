@@ -1,12 +1,12 @@
 """One owned retrieval subprocess; stdin/stdout JSON, no shell execution."""
 import contextlib,json,sys
 from pathlib import Path
-from .common import write
+from goskills_eval.utils import write
 
 def main():
  payload=json.load(sys.stdin);directory=Path(payload['directory'])
  try:
-  from .method_backend import query
+  from goskills_eval.skill import query
   resources=payload['resources']
   directory.mkdir(parents=True,exist_ok=True)
   # Upstream libraries may print diagnostics; reserve stdout for the JSON protocol.

@@ -3,8 +3,8 @@
 Pass the official GoS SkillModule class. No task-specific legacy ALF selector is
 used. Retrieval sees the visible goal/current blocker, never an episode answer.
 """
-from .common import write
-from .retrieval import DContext
+from goskills_eval.utils import write
+from goskills_eval.retrieval import DContext
 
 def d_skill_class(SkillModule):
  class DSkills(SkillModule):
@@ -35,7 +35,7 @@ def d_skill_class(SkillModule):
 
 def official_skill_class(SkillModule):
  """Keep upstream all_full/vector/graph ALFWorld behavior, including query shaping."""
- from .method_backend import OfficialRetriever
+ from goskills_eval.skill import OfficialRetriever
  class OfficialSkills(SkillModule):
   def __init__(self,mode,directory,skills_root,workspace=None,upstream=None):
    # Construct metadata without triggering the upstream default LLM/embedding services.
@@ -49,7 +49,7 @@ def official_skill_class(SkillModule):
 
 def make(method,SkillModule,directory,*,skills_root=None,pool=None,workspace=None,upstream=None):
  from pathlib import Path
- from .method_backend import validate_resources
+ from goskills_eval.skill import validate_resources
  validate_resources(method,skills_root=skills_root,pool=pool,workspace=workspace,upstream=upstream,check_files=True)
  if method=='noskills':return None
  if method=='goskills-d':return d_skill_class(SkillModule)(Path(directory),skills_root,pool)

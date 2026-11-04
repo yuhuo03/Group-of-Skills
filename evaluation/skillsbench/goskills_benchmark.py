@@ -6,7 +6,6 @@ import asyncio
 import json
 import subprocess
 import sys
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def main(argv=None):
@@ -24,7 +23,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if bool(args.task) == bool(args.config):
         parser.error('Supply exactly one of --task or --config')
-    from goskills_eval.common import load, write, credentials, now
+    from goskills_eval.utils import load, write, credentials, now
     if args.config:
         if args.execute or args.prepare_only:
             parser.error('--config supports validation only; use --task for a fresh reproducible trial')
@@ -34,7 +33,7 @@ def main(argv=None):
             raise ValueError('Expected GPT-5.4/low prepared configuration')
         print(json.dumps({'status': 'CONFIG_VALIDATED_NOT_EXECUTED', 'task': cfg['task'], 'model': agent['model_name'], 'output': str(args.output)}))
         return 0
-    from goskills_eval.skillsbench_pack import inspect_inputs, prepare, trial_config
+    from goskills_eval.skillsbench.task_pack import inspect_inputs, prepare, trial_config
     plan = inspect_inputs(args.task, args.method, args.output, args.skills_root, args.pool, args.workspace, args.upstream, args.retrieval_python)
     if not args.prepare_only and not args.execute:
         print(json.dumps({'status': 'PLAN_ONLY', 'benchmark': 'skillsbench', 'method': args.method,

@@ -3,8 +3,8 @@
 Five methods use the same terminal prompt and task budget. Baseline retrieval
 is delegated to the compatible official GoS implementation in isolated helpers.
 """
-from .common import *
-from . import harbor_base as base
+from goskills_eval.utils import *
+from goskills_eval import harbor_base as base
 import sys,asyncio,json,hashlib,time,uuid,contextlib,httpx,shlex
 METHODS=('noskills','vanilla','vector','native-gos','goskills-d')
 def skill_env(offline=False):return dict(os.environ)

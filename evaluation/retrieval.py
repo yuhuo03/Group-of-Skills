@@ -8,14 +8,14 @@ from goskills.io import read_json
 from goskills.config import canonical_hash
 from goskills.retrieval import Retriever
 from goskills.validation import validate_bundle
-from .source_gate import validate_frozen_sources
-from .common import write
+from goskills_eval.source_gate import validate_frozen_sources
+from goskills_eval.utils import write
 
 class DContext:
  def __init__(self,pool,source_root='/opt/graphskills/skills'):
   path=Path(pool);self.source_root=source_root
   if path.is_dir():
-   from .compiled_pool import retriever
+   from goskills_eval.compiled_pool import retriever
    self.retriever=retriever(path,source_root)
    self.pool_hash=read_json(path/'RECEIPT.json')['original_pool_hash']
   else:

@@ -1,5 +1,5 @@
 """Isolated five-method retrieval. Stdout contains one structured result only."""
-from .common import Path, json, write, sha
+from goskills_eval.utils import Path, json, write, sha
 import contextlib
 import hashlib
 import sys
@@ -15,7 +15,7 @@ def execute_query(data, backend=None):
         if not isinstance(data.get('query'), str):
             raise ValueError('Query must be a string')
         if backend is None:
-            from .method_backend import query as backend
+            from goskills_eval.skill import query as backend
         resources = {key: data.get(key) for key in ('skills_root', 'pool', 'workspace', 'upstream')}
         with (directory / 'retrieval-private.log').open('x') as log, contextlib.redirect_stdout(log), contextlib.redirect_stderr(log):
             content = backend(method, data['query'], directory, **resources,

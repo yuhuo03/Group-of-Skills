@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'evaluation'))
-from goskills_eval.terminal_config import METHODS, trial_config, validate_inputs, assess_trial
+from goskills_eval.terminalbench2.config import METHODS, trial_config, validate_inputs, assess_trial
 from goskills_eval.query_helper import execute_query
 from goskills_eval.assessment import normalize_metrics
 
@@ -50,7 +50,7 @@ class TB2FiveTests(unittest.TestCase):
             env['PYTHONPATH']=str(ROOT)+os.pathsep+str(ROOT/'evaluation')
             for method in METHODS:
                 output=root/('out-'+method)
-                result=subprocess.run([sys.executable,str(ROOT/'evaluation/terminalbench2/run.py'),
+                result=subprocess.run([sys.executable,str(ROOT/'evaluation/terminalbench2/terminalbench2_benchmark.py'),
                     '--task',str(task),'--method',method,'--skills-root',str(skills),'--pool',str(pool),
                     '--workspace',str(index),'--upstream',str(upstream),'--retrieval-python',sys.executable,'--output',str(output)],
                     env=env,capture_output=True,text=True,timeout=20)
@@ -92,7 +92,7 @@ class TB2FiveTests(unittest.TestCase):
                 return json.dumps({'status':'PASSED','content':'synthetic context'}).encode(),None
         async def spawn(*args,**kwargs):commands.append(args);return Process()
         with patch.dict(sys.modules,{'goskills_eval.harbor_base':fake,'httpx':types.ModuleType('httpx')}),patch.object(goskills_eval,'harbor_base',fake,create=True):
-            spec=importlib.util.spec_from_file_location('goskills_eval._tb2_python_test',ROOT/'evaluation/goskills_eval/terminal_agent.py')
+            spec=importlib.util.spec_from_file_location('goskills_eval._tb2_python_test',ROOT/'evaluation/terminal_agent.py')
             module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
             with tempfile.TemporaryDirectory() as d,patch.object(module.asyncio,'create_subprocess_exec',spawn):
                 for method in ('vanilla','vector','native-gos','goskills-d'):
@@ -140,7 +140,7 @@ class TB2FiveTests(unittest.TestCase):
             def _tools(self):return [{'function':{'name':'bash','description':'base'}}]
         fake.DirectAPIBashAgent=Base;fake.CliFlag=lambda *a,**k:object()
         httpx=types.ModuleType('httpx')
-        path=ROOT/'evaluation/goskills_eval/terminal_agent.py'
+        path=ROOT/'evaluation/terminal_agent.py'
         with patch.dict(sys.modules,{'goskills_eval.harbor_base':fake,'httpx':httpx}),patch.object(goskills_eval,'harbor_base',fake,create=True):
             spec=importlib.util.spec_from_file_location('goskills_eval._tb2_test',path);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
             for method in METHODS:
@@ -159,7 +159,7 @@ class TB2FiveTests(unittest.TestCase):
             def populate_context_post_run(self,context):pass
         fake.DirectAPIBashAgent=Base;fake.CliFlag=lambda *a,**k:object();fake.redact_secret=lambda x:x
         with patch.dict(sys.modules,{'goskills_eval.harbor_base':fake,'httpx':types.ModuleType('httpx')}),patch.object(goskills_eval,'harbor_base',fake,create=True):
-            spec=importlib.util.spec_from_file_location('goskills_eval._tb2_loop_test',ROOT/'evaluation/goskills_eval/terminal_agent.py')
+            spec=importlib.util.spec_from_file_location('goskills_eval._tb2_loop_test',ROOT/'evaluation/terminal_agent.py')
             module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
             with tempfile.TemporaryDirectory() as tmp:
                 for method in METHODS:

@@ -1,4 +1,4 @@
-from .common import *
+from goskills_eval.utils import *
 import time,random
 
 class Chat:

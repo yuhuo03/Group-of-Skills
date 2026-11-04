@@ -88,7 +88,7 @@ def check(config, runtime=False):
  for n in ['graph_igraph_data.pklz','construction_report.json']:
   record('workspace_'+n,(workspace/n).is_file())
  record('embedding_1536_index',len(list(workspace.glob('entities_hnsw_index_1536.bin')))==1)
- members=json.loads((ROOT/'evaluation/configs/task_ids.json').read_text())
+ members=json.loads((ROOT/'evaluation/experiments/configs/task_ids.json').read_text())
  for b in ['skillsbench','tb2']:
   s=cfg.get(b,{})
   if not s:record(b,False,'Missing benchmark section');continue

@@ -4,8 +4,8 @@ import asyncio,hashlib,importlib.util,json,os,subprocess,sys,tempfile,types,unit
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'evaluation'))
-from goskills_eval.skillsbench_pack import METHODS,inspect_inputs,prepare,trial_config,guidance
-from goskills_eval.skillsbench_bridge import parse_query_command
+from goskills_eval.skillsbench.task_pack import METHODS,inspect_inputs,prepare,trial_config,guidance
+from goskills_eval.skillsbench.bridge import parse_query_command
 
 def fixtures(root):
  task=root/'task';(task/'environment/skills/oracle').mkdir(parents=True);(task/'tests').mkdir()
@@ -30,7 +30,7 @@ class SkillsBenchPackTests(unittest.TestCase):
    for method in METHODS:
     out=r/method
     plan=inspect_inputs(task,method,out,skills,pool,index,upstream,sys.executable)
-    with patch('goskills_eval.method_backend.prepare_upstream'):
+    with patch('goskills_eval.skill.prepare_upstream'):
      cfg=prepare(plan)
     pack=out/'prepared-task'
     self.assertEqual((pack/'task.toml').read_bytes(),original[Path('task.toml')])
@@ -79,7 +79,7 @@ class SkillsBenchPackTests(unittest.TestCase):
    for m in METHODS:
     out=r/('dry-'+m)
     env=dict(os.environ);env['PYTHONPATH']=str(ROOT)+os.pathsep+str(ROOT/'evaluation')
-    result=subprocess.run([sys.executable,str(ROOT/'evaluation/skillsbench/run.py'),'--method',m,'--task',str(task),'--skills-root',str(skills),'--pool',str(pool),'--workspace',str(index),'--upstream',str(up),'--retrieval-python',sys.executable,'--output',str(out)],env=env,capture_output=True,text=True,timeout=10)
+    result=subprocess.run([sys.executable,str(ROOT/'evaluation/skillsbench/goskills_benchmark.py'),'--method',m,'--task',str(task),'--skills-root',str(skills),'--pool',str(pool),'--workspace',str(index),'--upstream',str(up),'--retrieval-python',sys.executable,'--output',str(out)],env=env,capture_output=True,text=True,timeout=10)
     self.assertEqual(result.returncode,0,result.stderr);self.assertEqual(json.loads(result.stdout)['status'],'PLAN_ONLY');self.assertFalse(out.exists())
 
  def test_compose_preserved_and_external_context_rejected(self):
@@ -88,7 +88,7 @@ class SkillsBenchPackTests(unittest.TestCase):
    compose=task/'environment/docker-compose.yaml'
    original='services:\n  main:\n    networks: [task-net]\n  api:\n    build: .\nnetworks:\n  task-net: {}\n'
    compose.write_text(original)
-   with patch('goskills_eval.method_backend.prepare_upstream'):
+   with patch('goskills_eval.skill.prepare_upstream'):
     cfg=prepare(inspect_inputs(task,'vanilla',r/'out',skills,pool,index,up))
    self.assertEqual((r/'out/prepared-task/environment/docker-compose.yaml').read_text(),original)
    self.assertEqual(cfg['environment']['mounts'][0]['read_only'],True)
@@ -100,7 +100,7 @@ class SkillsBenchPackTests(unittest.TestCase):
    with self.assertRaises(ValueError):inspect_inputs(task,'noskills',r/'bad')
 
  def test_execute_fake_harbor_uses_fractional_assessment_and_cleanup(self):
-  spec=importlib.util.spec_from_file_location('skillsbench_run_under_test',ROOT/'evaluation/skillsbench/run.py')
+  spec=importlib.util.spec_from_file_location('skillsbench_run_under_test',ROOT/'evaluation/skillsbench/goskills_benchmark.py')
   module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
   with tempfile.TemporaryDirectory() as d:
    r=Path(d);task,*_=fixtures(r);out=r/'executed'
@@ -119,7 +119,7 @@ class SkillsBenchPackTests(unittest.TestCase):
    configmod=types.ModuleType('harbor.models.trial.config');configmod.TrialConfig=types.SimpleNamespace(model_validate=lambda x:x)
    trialmod=types.ModuleType('harbor.trial.trial');trialmod.Trial=Trial
    dockermod=types.ModuleType('harbor.environments.docker.docker');dockermod._sanitize_docker_compose_project_name=lambda x:x
-   with patch.dict(sys.modules,{'harbor.models.trial.config':configmod,'harbor.trial.trial':trialmod,'harbor.environments.docker.docker':dockermod}),patch('goskills_eval.common.credentials',return_value=('offline','offline')),patch.object(module.subprocess,'run',return_value=types.SimpleNamespace(returncode=0,stdout='')) as cleanup:
+   with patch.dict(sys.modules,{'harbor.models.trial.config':configmod,'harbor.trial.trial':trialmod,'harbor.environments.docker.docker':dockermod}),patch('goskills_eval.utils.credentials',return_value=('offline','offline')),patch.object(module.subprocess,'run',return_value=types.SimpleNamespace(returncode=0,stdout='')) as cleanup:
     self.assertEqual(module.main(['--task',str(task),'--method','noskills','--output',str(out),'--execute']),0)
    receipt=json.loads((out/'receipt.json').read_text());self.assertEqual(receipt['status'],'VALID');self.assertEqual(receipt['reward'],0.5);self.assertEqual(receipt['runtime_seconds'],10);self.assertEqual(receipt['input_tokens'],120)
    self.assertEqual(cleanup.call_args.args[0][4],'label=com.docker.compose.project=owned-only')
@@ -142,7 +142,7 @@ class BridgeTests(unittest.TestCase):
    CLI_FLAGS=[]
    async def _run_bash(self,env,command):return 'container:'+command
   fake.DirectAPIBashAgent=Base;fake.CliFlag=lambda *a,**kw:(a,kw);fake.redact_secret=lambda x:x
-  spec=importlib.util.spec_from_file_location('goskills_eval._sb_agent_under_test',ROOT/'evaluation/goskills_eval/skillsbench_agent.py')
+  spec=importlib.util.spec_from_file_location('goskills_eval._sb_agent_under_test',ROOT/'evaluation/skillsbench/agents/goskills.py')
   module=importlib.util.module_from_spec(spec)
   with patch.dict(sys.modules,{'goskills_eval.harbor_base':fake}):spec.loader.exec_module(module)
   with tempfile.TemporaryDirectory() as d:
@@ -153,7 +153,7 @@ class BridgeTests(unittest.TestCase):
      self.payload=json.loads(stdin);return json.dumps({'status':'PASSED','content':'START: selected skill'}).encode(),b''
    process=Process()
    async def create(*args,**kwargs):
-    self.assertNotIn('shell',kwargs);self.assertEqual(args[0],'/separate/env/bin/python');self.assertEqual(args[1:4],('-B','-m','goskills_eval.skillsbench_query'));return process
+    self.assertNotIn('shell',kwargs);self.assertEqual(args[0],'/separate/env/bin/python');self.assertEqual(args[1:4],('-B','-m','goskills_eval.skillsbench.query'));return process
    with patch.object(module.asyncio,'create_subprocess_exec',side_effect=create):
     observation=asyncio.run(agent._run_bash(None,'goskills-query "goal $(data)"'))
     self.assertIn('START: selected skill',observation);self.assertEqual(process.payload['query'],'goal $(data)');self.assertEqual(agent._successful_retrievals,1)

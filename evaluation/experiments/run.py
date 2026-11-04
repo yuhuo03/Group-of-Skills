@@ -1,10 +1,11 @@
 """Plan/run a sequential benchmark matrix without score retries or overwritten trials."""
 from pathlib import Path
 import argparse, json, subprocess, sys, re, hashlib, os
-from .common import write, now
+from goskills_eval.utils import write, now
 METHODS = ('noskills', 'vanilla', 'vector', 'native-gos', 'goskills-d')
 TRACKS = {'skillsbench': 'skillsbench', 'alfworld': 'alfworld', 'tb2': 'terminalbench2'}
-ROOT = Path(__file__).resolve().parents[2]
+EVALUATION_ROOT = Path(__file__).resolve().parents[1]
+RUNNERS = {'alfworld': 'alfworld_run.py', 'skillsbench': 'skillsbench/goskills_benchmark.py', 'tb2': 'terminalbench2/terminalbench2_benchmark.py'}
 
 def safe_id(value):
     if not isinstance(value, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', value) or value in {'.','..'}:
@@ -29,7 +30,7 @@ def build_plan(config_path, benchmark, methods, output, tasks=None):
     tracks=list(TRACKS) if benchmark=='all' else [benchmark]
     if any(t not in TRACKS for t in tracks):raise ValueError('Invalid benchmark')
     if tasks and len(tracks)!=1:raise ValueError('--tasks requires one benchmark')
-    from .method_backend import validate_output
+    from goskills_eval.skill import validate_output
     inputs={'config':config_path}
     for key in ['skills_root','pool','upstream','workspace']:
         if cfg.get(key):inputs[key]=base/Path(cfg[key]).expanduser()
@@ -41,7 +42,7 @@ def build_plan(config_path, benchmark, methods, output, tasks=None):
     value=cfg.get('retrieval_python')
     retrieval_python=str((base/Path(value).expanduser()).absolute()) if value else sys.executable
     if not Path(retrieval_python).is_file() or not os.access(retrieval_python,os.X_OK):raise ValueError('retrieval_python must be an executable Python path')
-    members=json.loads((ROOT/'evaluation/configs/task_ids.json').read_text())
+    members=json.loads((Path(__file__).parent/'configs/task_ids.json').read_text())
     jobs=[]
     for track in tracks:
         spec=cfg.get(track)
@@ -61,7 +62,7 @@ def build_plan(config_path, benchmark, methods, output, tasks=None):
             if method in {'vector','native-gos'}:extra+=['--workspace',resource(cfg,'workspace',base)]
             for task in selected:
                 safe_id(task);dest=output/track/method/task
-                command=[retrieval_python if track=='alfworld' else sys.executable,str(ROOT/'evaluation'/TRACKS[track]/'run.py'),'--method',method,'--output',str(dest),*extra]
+                command=[retrieval_python if track=='alfworld' else sys.executable,str(EVALUATION_ROOT/RUNNERS[track]),'--method',method,'--output',str(dest),*extra]
                 if track=='alfworld':
                     if task not in games:raise ValueError('Missing ALF game ID: '+task)
                     item=games[task];item={'path':item} if isinstance(item,str) else item

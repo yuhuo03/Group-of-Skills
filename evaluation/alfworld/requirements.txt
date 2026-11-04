@@ -2,7 +2,7 @@
 # Harbor and GoS use separate environments because their OpenAI SDK ranges conflict.
 # Pinned GoS commit: 203f60a2c689da055ce1ac351eb3cb9912a3bca7.
 # From the repository root:
-# python -m pip install -r evaluation/requirements/retrieval-alfworld-py312-linux.txt -e ".[alfworld]" -e data/external/graph-of-skills
+# python -m pip install -r evaluation/alfworld/requirements.txt -e ".[alfworld]" -e data/external/graph-of-skills
 
 aiohappyeyeballs==2.7.1
     # via aiohttp

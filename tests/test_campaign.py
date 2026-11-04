@@ -2,7 +2,7 @@ import importlib.util,json,sys,tempfile,unittest
 from pathlib import Path
 from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'evaluation'))
-from goskills_eval.campaign import build_plan,execute_plan,METHODS
+from goskills_eval.experiments.run import build_plan,execute_plan,METHODS
 
 def script(name):
  s=importlib.util.spec_from_file_location(name,ROOT/'scripts'/(name+'.py'));m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m

@@ -6,11 +6,10 @@ import asyncio
 import json
 import sys
 import subprocess
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def main(argv=None):
-    from goskills_eval.terminal_config import METHODS, trial_config, validate_inputs, assess_trial
+    from goskills_eval.terminalbench2.config import METHODS, trial_config, validate_inputs, assess_trial
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--task', type=Path, required=True)
     parser.add_argument('--method', choices=METHODS, default='goskills-d')
@@ -35,7 +34,7 @@ def main(argv=None):
     if not args.execute:
         print(json.dumps(config, indent=2))
         return 0
-    from goskills_eval.common import credentials, write, now
+    from goskills_eval.utils import credentials, write, now
     credentials()
     # Model/simulator imports occur only beyond the explicit execution boundary.
     from harbor.models.trial.config import TrialConfig

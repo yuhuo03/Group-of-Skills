@@ -17,7 +17,7 @@ git clone https://github.com/davidliuk/graph-of-skills.git data/external/graph-o
 git -C data/external/graph-of-skills checkout --detach 203f60a2c689da055ce1ac351eb3cb9912a3bca7
 uv venv --python 3.12 --seed .venv-retrieval
 .venv-retrieval/bin/python -m pip install --upgrade pip setuptools wheel
-.venv-retrieval/bin/python -m pip install -r evaluation/requirements/retrieval-alfworld-py312-linux.txt \
+.venv-retrieval/bin/python -m pip install -r evaluation/alfworld/requirements.txt \
   -e ".[alfworld]" -e data/external/graph-of-skills
 .venv-retrieval/bin/python -m pip check
 
@@ -46,7 +46,7 @@ git -C data/external/skillsbench sparse-checkout set tasks
 git -C data/external/skillsbench rev-parse HEAD > data/external/skillsbench-task-revision.txt
 ```
 
-The task list in `evaluation/configs/task_ids.json` selects 86 SkillsBench tasks.
+The task list in `evaluation/experiments/configs/task_ids.json` selects 86 SkillsBench tasks.
 Use a task checkout containing all selected IDs; the setup check reports any
 missing tasks. The preparation step preserves task instructions, tests, resources
 and verifier configuration while removing the per-task oracle skill directory.
@@ -67,7 +67,7 @@ export ALFWORLD_DATA="$PWD/data/external/alfworld"
 .venv-retrieval/bin/alfworld-download
 ```
 
-This download can be large. `evaluation/configs/alfworld_games.json` maps all 134 selected
+This download can be large. `evaluation/experiments/configs/alfworld_games.json` maps all 134 selected
 OOD IDs to relative game paths and original SHA256 hashes. The doctor and batch
 planner check those bytes. Keep the downloaded `logic/` and
 `json_2.1.1/valid_unseen/` layout; do not generate substitute episodes.
@@ -109,8 +109,8 @@ the retrieval methods.
 ## 4. Local configuration
 
 ```bash
-cp evaluation/configs/local.example.json evaluation/configs/local.json
-.venv-eval/bin/python scripts/doctor.py --config evaluation/configs/local.json --runtime
+cp evaluation/experiments/configs/local.example.json evaluation/experiments/configs/local.json
+.venv-eval/bin/python scripts/doctor.py --config evaluation/experiments/configs/local.json --runtime
 ```
 
 The example matches the directories above, including `retrieval_python` pointing
@@ -121,7 +121,7 @@ not the caller's working directory. Customize them for existing assets. The doct
 is read-only: it reports missing packages/data, commit/game hash mismatches and
 credential presence without calling APIs or Docker.
 
-`evaluation/configs/task_ids.json` fixes membership: 86 SkillsBench, 134 ALFWorld and 89 TB2
+`evaluation/experiments/configs/task_ids.json` fixes membership: 86 SkillsBench, 134 ALFWorld and 89 TB2
 tasks per method. An optional `tasks` list in each benchmark section selects a
 deliberate subset for a new run; summaries retain the planned denominator.
 Native task verifiers can download their own dependencies.

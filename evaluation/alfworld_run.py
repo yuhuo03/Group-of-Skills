@@ -6,8 +6,7 @@ import os
 import sys
 import json
 import math
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from goskills_eval.method_backend import METHODS, validate_resources, validate_output
+from goskills_eval.skill import METHODS, validate_resources, validate_output
 
 
 def resolve_game(args):
@@ -75,8 +74,8 @@ def main():
                           'output': str(a.output), 'seed': 42, 'max_steps': 30,
                           'model': 'gpt-5.4', 'reasoning_effort': 'low'}))
         return
-    from goskills_eval.common import credentials, write, sha, now
-    from goskills_eval.method_backend import prepare_upstream
+    from goskills_eval.utils import credentials, write, sha, now
+    from goskills_eval.skill import prepare_upstream
     validate_resources(a.method, skills_root=a.skills_root, pool=a.pool, workspace=a.workspace, upstream=a.upstream, check_files=True)
     if a.output.exists():
         raise FileExistsError('Choose a new output directory')
@@ -91,8 +90,8 @@ def main():
     import evaluation.alfworld_run as upstream
     from evaluation.skill import SkillModule
     from alfworld.agents.environment import get_environment
-    from goskills_eval.alfworld_adapter import make
-    from goskills_eval.alfworld_chat import Chat
+    from goskills_eval.alfworld.adapter import make
+    from goskills_eval.alfworld.chat import Chat
     config = yaml.safe_load(a.config.read_text())
     config['general']['random_seed'] = 42
     config['general']['use_cuda'] = False

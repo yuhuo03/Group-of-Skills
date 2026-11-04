@@ -1,8 +1,8 @@
 """Five real skill methods, with isolated native workspaces and checked embeddings.
 
-No dependency import or provider request occurs at module import. GoSkills D is
+No dependency import or provider request occurs at module import. GoSkills is
 lexical; Vector/Graph call their distinct pinned upstream algorithms and cannot
-silently substitute D or a zero-vector fallback when embeddings fail.
+silently substitute GoSkills or a zero-vector fallback when embeddings fail.
 """
 from pathlib import Path
 import asyncio
@@ -15,7 +15,7 @@ import shutil
 import subprocess
 import sys
 
-from .common import write
+from goskills_eval.utils import write
 
 METHODS = ('noskills', 'vanilla', 'vector', 'native-gos', 'goskills-d')
 OFFICIAL_COMMIT = '203f60a2c689da055ce1ac351eb3cb9912a3bca7'
@@ -187,7 +187,7 @@ def query(method, text, directory, *, skills_root=None, pool=None, workspace=Non
         if not content:
             raise ValueError('Empty skill catalog; check the SKILL.md library format')
     elif method == 'goskills-d':
-        from .retrieval import DContext
+        from goskills_eval.retrieval import DContext
         bundle = DContext(pool, source_root).query(text)
         content = bundle['rendered_context']
         write(directory/'bundle.json', bundle, True)

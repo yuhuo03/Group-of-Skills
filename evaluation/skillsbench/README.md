@@ -7,7 +7,7 @@ a 180-second tool timeout, and a 900-second agent limit.
 
 ## Setup and inputs
 
-Complete [environment setup](../SETUP.md) and [input preparation](../../DATA.md).
+Complete [environment setup](../README.md#setup) and [input preparation](../../DATA.md).
 Run the entrypoint with `.venv-eval/bin/python`. Vector and Graph of Skills also
 use `.venv-retrieval/bin/python` for upstream retrieval.
 
@@ -42,23 +42,23 @@ WORKSPACE=data/external/workspace
 POOL=data/external/pool.json
 RETRIEVAL_PYTHON="$PWD/.venv-retrieval/bin/python"
 
-.venv-eval/bin/python evaluation/skillsbench/run.py \
+.venv-eval/bin/python evaluation/skillsbench/goskills_benchmark.py \
   --method goskills-d --task "$TASK" --skills-root "$SKILLS" \
   --pool "$POOL" --upstream "$UPSTREAM" --output runs/sb-goskills-TASK
 
-.venv-eval/bin/python evaluation/skillsbench/run.py \
+.venv-eval/bin/python evaluation/skillsbench/goskills_benchmark.py \
   --method noskills --task "$TASK" --output runs/sb-noskills-TASK
 
-.venv-eval/bin/python evaluation/skillsbench/run.py \
+.venv-eval/bin/python evaluation/skillsbench/goskills_benchmark.py \
   --method vanilla --task "$TASK" --skills-root "$SKILLS" \
   --upstream "$UPSTREAM" --output runs/sb-vanilla-TASK
 
-.venv-eval/bin/python evaluation/skillsbench/run.py \
+.venv-eval/bin/python evaluation/skillsbench/goskills_benchmark.py \
   --method vector --task "$TASK" --skills-root "$SKILLS" \
   --workspace "$WORKSPACE" --upstream "$UPSTREAM" \
   --retrieval-python "$RETRIEVAL_PYTHON" --output runs/sb-vector-TASK
 
-.venv-eval/bin/python evaluation/skillsbench/run.py \
+.venv-eval/bin/python evaluation/skillsbench/goskills_benchmark.py \
   --method native-gos --task "$TASK" --skills-root "$SKILLS" \
   --workspace "$WORKSPACE" --upstream "$UPSTREAM" \
   --retrieval-python "$RETRIEVAL_PYTHON" --output runs/sb-graph-TASK
@@ -69,7 +69,7 @@ calling Docker or APIs. Use a fresh `--output` directory for each trial.
 Append `--prepare-only` to
 write a local task pack, method guide, and trial configuration for inspection.
 To run a trial, use a new output path and append `--execute` to the raw-task
-command. Provider variables are described in [SETUP.md](../SETUP.md).
+command. Provider variables are described in [provider setup](../README.md#4-configure-providers).
 Execution starts Docker and makes model API requests.
 
 ## Task preparation

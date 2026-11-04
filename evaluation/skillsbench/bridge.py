@@ -1,6 +1,6 @@
 """Pure parser for the standalone SkillsBench retrieval transport."""
 import shlex
-from .skillsbench_pack import COMMANDS
+from goskills_eval.skillsbench.task_pack import COMMANDS
 
 
 def parse_query_command(command,method):

@@ -85,4 +85,4 @@ def validate_inputs(task, output, method, skills_root=None, *, pool=None, worksp
 
 
 # Public compatibility import; shared by SkillsBench with binary=False.
-from .assessment import assess_trial
+from goskills_eval.assessment import assess_trial
