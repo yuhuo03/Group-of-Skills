@@ -1,7 +1,7 @@
 <h1 align="center">Group of Skills (GoSkills)</h1>
 
 <p align="center">
-  <strong>Group-Structured Skill Retrieval for Agent Skill Libraries</strong>
+  <strong>[NeurIPS '26] Group-Structured Skill Retrieval for Agent Skill Libraries</strong>
 </p>
 
 <p align="center">
