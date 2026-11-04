@@ -1,0 +1,4 @@
+interface:
+  display_name: "GoSkills Retriever"
+  short_description: "Retrieve skill groups for the current task"
+  default_prompt: "Use $goskills-retriever to retrieve relevant skill groups from my configured pool for this task."

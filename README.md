@@ -239,6 +239,22 @@ output path. Pools and saved bundles are not overwritten. See
 
 ## Agent Integration
 
+### Agent skill
+
+[skills/goskills-retriever](skills/goskills-retriever/SKILL.md) provides agent
+instructions for querying a prepared GoSkills pool. Copy that folder into your
+agent's skill directory. For a first Codex installation, run from the repository root:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R skills/goskills-retriever ~/.codex/skills/
+```
+
+For Claude Code, use `~/.claude/skills/` instead. Supply the agent with the Python
+interpreter where GoSkills is installed, the pool path, and the matching source
+library path. In Codex, invoke `$goskills-retriever` with your task. The skill
+wraps the existing retrieval CLI; it does not include or download the skill library.
+
 ### Python / CLI
 
 An agent can call the retrieval CLI or use the same core through Python:
@@ -409,6 +425,7 @@ Group-of-Skills/
 │   └── requirements/            #   Separate evaluation dependency sets
 ├── goskills/                    # Group construction, retrieval and CLI
 ├── scripts/                     # Asset preparation and evaluation utilities
+├── skills/                      # Agent-facing GoSkills retrieval skill
 ├── tests/                       # Offline tests
 ├── .env.example                 # Provider configuration template
 ├── pyproject.toml               # Package definition
@@ -422,6 +439,7 @@ Group-of-Skills/
 |----------|----------------|
 | [DATA.md](DATA.md) | Skill library, benchmark inputs and workspace preparation |
 | [goskills/README.md](goskills/README.md) | Group construction, retrieval and graph schema |
+| [skills/goskills-retriever/SKILL.md](skills/goskills-retriever/SKILL.md) | Agent instructions for GoSkills retrieval |
 | [evaluation/SETUP.md](evaluation/SETUP.md) | Evaluation dependencies and configuration |
 | [evaluation/README.md](evaluation/README.md) | Three benchmarks and five methods |
 | [evaluation/skillsbench/README.md](evaluation/skillsbench/README.md) | SkillsBench |
