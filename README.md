@@ -26,11 +26,11 @@
 
 ## 🔥 Updates
 
-- **[2026-11-04]** Code uploaded to [GitHub](https://github.com/yuhuo03/Group-of-Skills).
 - **[2026-11-04]** Added **GPT-5.4 results on SkillsBench, ALFWorld, and Terminal-Bench 2**, with five-method evaluation scripts — see [Results](#results) and [Evaluation](#evaluation).
 - **[2026-11-04]** Prepared the [camera-ready artifacts](docs/ARTIFACTS.md), including **1,545 selected trial traces**, per-task metrics, and checksums. Public download pending.
 - **[2026-09-25]** Paper available on [OpenReview](https://openreview.net/forum?id=MmJBYf16Bn).
 - **[2026-09-24]** 🎉 **Group of Skills is accepted to NeurIPS 2026 (Poster)!**
+- **[2026-05-06]** Initial code release on [GitHub](https://github.com/yuhuo03/Group-of-Skills).
 
 ---
 
