@@ -58,7 +58,10 @@ export GOS_EMBEDDING_DIM=1536
 ```
 
 The launchers read these shell variables; they do not automatically load
-`.env`. Vector Skills and Graph of Skills need the same embedding model and
+`.env`; load a local file with `set -a; . ./.env; set +a` first.
+`GOS_LLM_MODEL` configures upstream graph construction, not the benchmark agent.
+These evaluation runners retain their recorded GPT-5.4 model settings.
+Vector Skills and Graph of Skills need the same embedding model and
 dimension as their workspace. GoSkills uses lexical retrieval and needs no
 embedding service.
 

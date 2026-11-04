@@ -104,6 +104,19 @@ Core build/query needs no API key. For benchmark runs, configure the shell
 variables below and follow [the evaluation setup](evaluation/SETUP.md) to install
 the separate terminal and retrieval environments.
 
+To use a local configuration file:
+
+```bash
+cp .env.example .env
+# Edit .env: set your API key and a graph-construction model.
+set -a
+. ./.env
+set +a
+```
+
+`GOS_LLM_MODEL` selects the upstream graph-construction model. GoSkills group
+construction and retrieval do not require a language model.
+
 <details>
 <summary><strong>Provider: OpenAI (direct)</strong></summary>
 

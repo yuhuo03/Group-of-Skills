@@ -79,12 +79,14 @@ command below calls embedding/graph-construction APIs and incurs cost.** It is
 separate from local group construction.
 Configure `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` in your shell first.
 The same route must support chat and `text-embedding-3-small` embeddings.
+Replace `YOUR_MODEL_NAME` below with the chat model you choose for graph
+construction. If it is already set by your loaded `.env`, skip that export line.
 
 ```bash
 export GOS_EMBEDDING_MODEL=openai/text-embedding-3-small
 export GOS_EMBEDDING_DIM=1536
 export GOS_ENABLE_QUERY_REWRITE=false
-export GOS_LLM_MODEL=openai/gpt-5.4
+export GOS_LLM_MODEL=openai/YOUR_MODEL_NAME
 .venv-retrieval/bin/gos index data/external/skills_2000 --workspace data/external/workspace
 
 export GOSKILLS_OFFICIAL_ROOT="$PWD/data/external/graph-of-skills"
