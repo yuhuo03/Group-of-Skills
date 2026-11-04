@@ -113,7 +113,7 @@ class SkillsBenchPackTests(unittest.TestCase):
      td=Path(self.cfg['trials_dir'])/self.cfg['trial_name'];(td/'agent').mkdir(parents=True);(td/'verifier').mkdir()
      (td/'result.json').write_text(json.dumps({'verifier_result':{'rewards':{'reward':0.5}},'agent_execution':{'started_at':'2026-01-01T00:00:00Z','finished_at':'2026-01-01T00:00:10Z'}}))
      (td/'agent/agent_receipt.json').write_text(json.dumps({'method':'noskills','api_calls':1,'actual_models':['gpt-5.4-2026-03-05'],'transport_fatal':False,'finish_status':'completed','token_usage':{'input':120,'output':30,'cached':10}}))
-     (td/'agent/api_calls.json').write_text(json.dumps([{'response':{'model':'gpt-5.4-2026-03-05'}}]))
+     (td/'agent/api_calls.json').write_text(json.dumps([{'response':{'model':'gpt-5.4-2026-03-05','usage':{'prompt_tokens':120,'completion_tokens':30,'prompt_tokens_details':{'cached_tokens':10}}}}]))
      (td/'agent/trajectory.json').write_text('{}')
      (td/'verifier/ctrf.json').write_text(json.dumps({'results':{'tests':[{'status':'passed'},{'status':'failed'}],'summary':{'tests':2}}}))
    configmod=types.ModuleType('harbor.models.trial.config');configmod.TrialConfig=types.SimpleNamespace(model_validate=lambda x:x)

@@ -187,7 +187,7 @@ class TB2FiveTests(unittest.TestCase):
         result={'agent_execution':{'started_at':'2026-01-01T00:00:00+00:00','finished_at':'2026-01-01T00:00:02+00:00'},'verifier_result':{'rewards':{'reward':0}}}
         receipt={'method':'noskills','api_calls':1,'actual_models':['gpt-5.4-2026-03-05'],'transport_fatal':False,'finish_status':'completed','token_usage':{'input':10,'output':2,'cached':3}}
         (td/'result.json').write_text(json.dumps(result));(td/'agent/agent_receipt.json').write_text(json.dumps(receipt))
-        (td/'agent/api_calls.json').write_text(json.dumps([{'response':{'model':'gpt-5.4-2026-03-05'}}]))
+        (td/'agent/api_calls.json').write_text(json.dumps([{'response':{'model':'gpt-5.4-2026-03-05','usage':{'prompt_tokens':10,'completion_tokens':2,'prompt_tokens_details':{'cached_tokens':3}}}}]))
         (td/'agent/trajectory.json').write_text('{}')
         (td/'verifier/ctrf.json').write_text(json.dumps({'results':{'tests':[{'status':'failed'}],'summary':{'tests':1}}}))
         return result
