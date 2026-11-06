@@ -321,6 +321,16 @@ See [Method](goskills/README.md) for exact policy fields and validation rules.
 > **Note:** Vector and Graph of Skills must use the same embedding model and
 > dimension at retrieval time as at index construction.
 
+## Results
+
+<p align="center">
+  <a href="assets/benchmark_rewards.pdf">
+    <img src="assets/benchmark_rewards.png" alt="GoSkills and Graph of Skills across SkillsBench, ALFWorld, and Terminal-Bench 2" width="900">
+  </a>
+</p>
+
+<p align="center"><a href="assets/benchmark_rewards.pdf">Download figure (PDF)</a></p>
+
 ## Evaluation
 
 **Docs:** Start with [evaluation/README.md](evaluation/README.md) for the five
