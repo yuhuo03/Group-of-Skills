@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://openreview.net/forum?id=MmJBYf16Bn"><img src="https://img.shields.io/badge/NeurIPS_2026-Poster-8b0000" alt="NeurIPS 2026 Poster"></a>
-  <a href="https://openreview.net/forum?id=MmJBYf16Bn"><img src="https://img.shields.io/badge/OpenReview-Paper-b31b1b" alt="OpenReview Paper"></a>
+  <a href="https://arxiv.org/abs/2605.06978"><img src="https://img.shields.io/badge/arXiv-2605.06978-b31b1b?logo=arxiv&amp;logoColor=white" alt="arXiv 2605.06978"></a>
   <a href="https://huggingface.co/datasets/yuhuo03/group-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Data-yellow" alt="Hugging Face Data"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT License"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10--3.12-3776ab?logo=python&amp;logoColor=white" alt="Python 3.10–3.12"></a>
