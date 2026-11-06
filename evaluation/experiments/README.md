@@ -2,9 +2,8 @@
 
 `run.py` plans or executes the three benchmarks with all five methods. Configure
 `configs/local.json` from `configs/local.example.json`; paths are relative to the
-configuration file. `configs/task_ids.json` selects the 86 SkillsBench tasks,
-134 ALFWorld episodes, and 89 Terminal-Bench 2 tasks. `alfworld_games.json` maps
-episode IDs to dataset paths and expected file hashes.
+configuration file. `configs/task_ids.json` defines the selected tasks for all
+three benchmarks. `alfworld_games.json` maps episode IDs to dataset paths and expected file hashes.
 
 From the repository root, after [setup](../README.md#setup):
 
@@ -31,6 +30,11 @@ Planning checks all catalogue-listed assets before any job is dispatched; resume
 refuses changes to those inputs.
 
 ## Library-size experiments
+
+Published 200/500/1,000/2,000-skill libraries and matching workspaces are available
+on [Hugging Face](https://huggingface.co/datasets/yuhuo03/group-of-skills-data).
+Use [the download script](../../DATA.md#1-skill-libraries-and-prebuilt-workspaces)
+for these inputs. The following subset workflow is optional for custom libraries.
 
 The preparation follows the GoS skillset pattern: retain an explicit set of base
 skills and fill larger sets in lexicographic order. All subsets share the same

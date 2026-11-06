@@ -42,7 +42,7 @@ uv venv --python 3.12 --seed .venv-eval
 
 ### 2. Install the retrieval environment
 
-Follow [DATA.md, step 1](../DATA.md#1-pinned-graph-of-skills-code-and-the-2000-skill-library)
+Follow [the Graph of Skills dependency setup](../DATA.md#graph-of-skills-dependency)
 to obtain the pinned Graph of Skills checkout and install `.venv-retrieval`
 with `evaluation/alfworld/requirements.txt`. If already
 installed, reuse it.

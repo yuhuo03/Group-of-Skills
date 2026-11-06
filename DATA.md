@@ -4,12 +4,47 @@ Run these commands from the repository root in the Python 3.12 environment
 described in [README](README.md). All destinations are new folders.
 External datasets, skill documents and images retain their original licenses.
 
-## 1. Pinned Graph of Skills code and the 2,000-skill library
+## 1. Skill libraries and prebuilt workspaces
 
-Create each checkout/environment once. If you already downloaded the skill library
-in README Step 1, reuse `data/external/skills_2000` and skip the final download command
-below. Its `DOWNLOAD_RECEIPT.json` must record the same `archive_sha256` shown here;
-the downloader deliberately refuses to overwrite an existing directory.
+The [GoSkills dataset on Hugging Face](https://huggingface.co/datasets/yuhuo03/group-of-skills-data)
+provides matching skill libraries and workspaces at **200, 500, 1,000 and 2,000**
+skills. Download all four, or select the sizes you need:
+
+```bash
+python scripts/download_data.py --sizes 200 500 1000 2000
+```
+
+To download only the 2,000-skill pair instead:
+
+```bash
+python scripts/download_data.py --sizes 2000
+```
+
+Run one of these alternatives. Downloads are pinned to a dataset revision and
+verified by SHA256 before extraction. The script uses only Python's standard
+library and makes no model requests. `--dry-run` previews the URLs and destinations;
+`--assets skills` or `--assets workspaces` selects one asset type. `--output PATH`
+changes the parent directory (default: `data/external`). It refuses existing
+destinations. Reuse completed downloads; an interrupted directory without a
+`DOWNLOAD_RECEIPT.json` is incomplete.
+
+| Size | Library directory | Workspace directory | GoSkills pool within workspace |
+|------|-------------------|---------------------|--------------------------------|
+| 200 | `skills_200/` | `goskills_workspace_skills_200_v1/` | `pool.json` |
+| 500 | `skills_500/` | `goskills_workspace_skills_500_v1/` | `pool.json` |
+| 1,000 | `skills_1000/` | `goskills_workspace_skills_1000_v1/` | `pool.json` |
+| 2,000 | `skills_2000/` | `goskills_workspace_skills_2000_v1/` | `compiled-pool/` |
+
+Directories above are relative to the selected output parent. Each workspace
+contains `graph_workspace/` with its graph storage and 1,536-dimensional vector
+index. The [README quick start](README.md#quick-start) shows local GoSkills queries
+for JSON and compiled pools. These are retrieval inputs; benchmark task data is
+obtained separately below.
+
+### Graph of Skills dependency
+
+For the Vector / Graph of Skills baselines, ALFWorld, or custom index construction,
+install the pinned upstream checkout and retrieval environment once:
 
 ```bash
 mkdir -p data/external
@@ -20,16 +55,7 @@ uv venv --python 3.12 --seed .venv-retrieval
 .venv-retrieval/bin/python -m pip install -r evaluation/alfworld/requirements.txt \
   -e ".[alfworld]" -e data/external/graph-of-skills
 .venv-retrieval/bin/python -m pip check
-
-python scripts/fetch_asset.py \
-  --url https://huggingface.co/datasets/DLPenn/graph-of-skills-data/resolve/83a8c59f6d09b849e57a50ed2577e253995d257e/skills_2000.tar.gz \
-  --sha256 9a616f600488341263f4e931c8387140eb06349a957d498d98a5f5be90109a89 \
-  --output data/external/skills_2000 --execute
 ```
-
-`fetch_asset.py` downloads a public archive, verifies its SHA256, rejects unsafe
-archive entries and writes a download receipt. This makes no model requests.
-Without `--execute` it only prints a download plan.
 
 Keep the upstream checkout clean. Put data, credentials, outputs and virtual
 environments outside it. Vanilla uses its skill exposure implementation; Vector
@@ -39,7 +65,7 @@ original episode runner and prompts.
 ## 2. Benchmark data
 
 For new SkillsBench runs, use this fixed upstream task snapshot rather than the
-moving default branch. It contains all 86 selected task IDs in the native
+moving default branch. It contains the configured SkillsBench task IDs in the native
 `task.toml` layout:
 
 ```bash
@@ -48,7 +74,7 @@ git -C data/external/skillsbench checkout --detach 7c3d1091c6dd777d5cd2ec9240502
 git -C data/external/skillsbench sparse-checkout set tasks
 ```
 
-The task list in `evaluation/experiments/configs/task_ids.json` selects 86 SkillsBench tasks.
+The task list in `evaluation/experiments/configs/task_ids.json` defines the selected SkillsBench tasks.
 The historical task files were frozen separately and are not proven identical to
 this upstream snapshot; use the original frozen task data to reproduce historical
 scores. A matching task ID alone is not an input-version guarantee. Preparation
@@ -87,8 +113,10 @@ planner check those bytes. Keep the downloaded `logic/` and
 
 ## 3. Build a directed index and GoSkills group pool
 
-Create one shared index from the library for new experiments. **The `gos index`
-command below calls embedding/graph-construction APIs and incurs cost.** It is
+The prebuilt pools above can be queried directly without this step. For a custom
+library or a new five-method campaign, create one shared index from the library.
+**The `gos index` command below calls embedding/graph-construction APIs and incurs
+cost.** It is
 separate from local group construction.
 Configure `OPENAI_API_KEY` and optional `OPENAI_BASE_URL` in your shell first.
 The same route must support chat and `text-embedding-3-small` embeddings.
@@ -113,7 +141,7 @@ python -m goskills_eval.workspace bind --workspace data/external/workspace \
 
 Alternatively, supply a trusted matching workspace with a valid construction
 report and its exact skill library, then run only export/build. Do not use the
-older undirected `*_v1` downloadable graph as a substitute for this typed directed
+older undirected upstream graph as a substitute for this typed directed
 index. Export validates graph direction, vector storage, node/source identities,
 source bytes and provider-failure evidence. Do not edit receipts to bypass a
 failed check. Native index files deserialize upstream data; use trusted inputs.
@@ -166,8 +194,8 @@ not the caller's working directory. Customize them for existing assets. The doct
 is read-only: it reports missing packages/data, commit/game hash mismatches and
 credential presence without calling APIs or Docker.
 
-`evaluation/experiments/configs/task_ids.json` fixes membership: 86 SkillsBench, 134 ALFWorld and 89 TB2
-tasks per method. An optional `tasks` list in each benchmark section selects a
+`evaluation/experiments/configs/task_ids.json` fixes task membership for each
+benchmark and method. An optional `tasks` list in each benchmark section selects a
 deliberate subset for a new run; summaries retain the planned denominator.
 Native task verifiers can download their own dependencies. TB2 also supports
 explicit, hash-bound public dependency assets through `tb2.verifier_assets`; see
@@ -175,14 +203,18 @@ explicit, hash-bound public dependency assets through `tb2.verifier_assets`; see
 These dependency inputs are separate from the skill library and are not included
 in this code repository.
 
-## 5. Additional library sizes
+## 5. Library-size experiments
 
-The [experiment guide](evaluation/experiments/README.md#library-size-experiments)
-provides deterministic nested subset preparation and a checked scale matrix.
-It accepts explicit sizes and required members, preserves full skill directories,
-and requires a matching workspace and pool for each library. Prepared subsets
-are new experiment assets until original paper membership is supplied; no
-historical 100/200/500/1000-skill packages are implied by the entrypoint.
+Use the published 200/500/1,000/2,000 library-workspace pairs from Step 1 for local
+retrieval at different scales. Configure `skills_root` and `pool` with the matching
+paths in the table above. The five-method campaign additionally requires the
+verified native export and workspace identity described in Step 3; a downloaded
+graph directory alone does not replace that binding.
+
+For custom subsets and checked multi-size campaigns, see the
+[experiment guide](evaluation/experiments/README.md#library-size-experiments).
+Its optional subset builder preserves complete skill directories and accepts
+explicit required members. Use a matching workspace and pool for each size.
 
 ## Attribution
 

@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://huggingface.co/datasets/DLPenn/graph-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Skill_Library-yellow" alt="Skill library"></a>
+  <a href="https://huggingface.co/datasets/yuhuo03/group-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Skill_Library-yellow" alt="Skill library"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10--3.12-3776ab?logo=python&logoColor=white" alt="Python"></a>
 </p>
 
@@ -149,93 +149,72 @@ Skills, the same embedding model used to construct the workspace.
 
 ## Quick Start
 
-**Goal:** install the package, obtain the skill library and a compatible graph,
-build a group pool, then retrieve an execution contract from the shell.
+### Step 1: Download skill libraries and prebuilt workspaces
 
-**Read next:** [DATA.md](DATA.md) for pinned assets and index construction;
-[`.env.example`](.env.example) for provider variables. After retrieval works,
-use [evaluation/README.md](evaluation/README.md) for the benchmark runners.
-
-### Step 0: Install (once per machine)
-
-Complete [Installation](#installation) above, then set up the evaluation
-environments and external inputs using [the evaluation setup](evaluation/README.md#setup)
-and [DATA.md](DATA.md).
-
-### Step 1: Download skill libraries
-
-The experimental **2,000-skill library** is hosted on
-[HuggingFace](https://huggingface.co/datasets/DLPenn/graph-of-skills-data), not in git.
-Download and verify the pinned archive:
+After [Installation](#installation), download the **200, 500, 1,000 and 2,000-skill**
+libraries and matching GoSkills workspaces from
+[Hugging Face](https://huggingface.co/datasets/yuhuo03/group-of-skills-data):
 
 ```bash
-python scripts/fetch_asset.py \
-  --url https://huggingface.co/datasets/DLPenn/graph-of-skills-data/resolve/83a8c59f6d09b849e57a50ed2577e253995d257e/skills_2000.tar.gz \
-  --sha256 9a616f600488341263f4e931c8387140eb06349a957d498d98a5f5be90109a89 \
-  --output data/external/skills_2000 --execute
+python scripts/download_data.py --sizes 200 500 1000 2000
 ```
 
-### Step 2: Workspace directory layout (recommended for benchmarks)
-
-Use the same source library, directed workspace, and group pool across the
-corresponding retrieval methods. The example configuration expects:
-
-| Asset | Recommended path |
-|-------|------------------|
-| Skill library | `data/external/skills_2000/` |
-| Pinned Graph of Skills checkout | `data/external/graph-of-skills/` |
-| Typed directed workspace | `data/external/workspace/` |
-| Exported source graph | `data/external/native-graph.json` |
-| GoSkills group pool | `data/external/pool.json` |
-
-### Step 3: Build a workspace and group pool
-
-Follow [DATA.md](DATA.md) to construct a typed
-directed GoS workspace and export its source graph. Index construction calls APIs;
-building the GoSkills group pool from an exported graph is local. If DATA.md
-already created `pool.json`, reuse it and skip this command:
+Or choose one size instead:
 
 ```bash
-python -m goskills build \
-  --graph data/external/native-graph.json \
-  --output data/external/pool.json
+python scripts/download_data.py --sizes 200
 ```
 
-> **Compatibility note:** use a typed directed source graph from the pinned GoS
-> checkout. Older undirected `*_v1` workspaces cannot substitute for it. See
-> [DATA.md](DATA.md) for the exact commit and export requirements.
+The script downloads both the library and workspace for each selected size,
+verifies their checksums, and extracts them into `data/external/`. It makes no
+model API calls. Use `--dry-run` to preview, `--assets skills` or
+`--assets workspaces` to download only one asset type, and `--output PATH` to
+choose another destination. Existing directories are preserved; reuse completed
+downloads instead of running the same command again.
 
-### Step 4: Retrieve
+| Size | Skill library | GoSkills pool |
+|------|---------------|---------------|
+| 200 | `data/external/skills_200/` | `data/external/goskills_workspace_skills_200_v1/pool.json` |
+| 500 | `data/external/skills_500/` | `data/external/goskills_workspace_skills_500_v1/pool.json` |
+| 1,000 | `data/external/skills_1000/` | `data/external/goskills_workspace_skills_1000_v1/pool.json` |
+| 2,000 | `data/external/skills_2000/` | `data/external/goskills_workspace_skills_2000_v1/compiled-pool/` |
 
-Query the group pool prepared above:
+Each workspace also contains its graph and vector index in `graph_workspace/`.
+Always pair a workspace with the skill library of the same size.
+
+### Step 2: Retrieve
+
+Query the downloaded 200-skill pool locally:
 
 ```bash
 QUERY_DIR=$(mktemp -d)
-python -m goskills query --pool data/external/pool.json \
-  --query "Parse STL and produce JSON with unit tests." \
+python -m goskills query \
+  --pool data/external/goskills_workspace_skills_200_v1/pool.json \
+  --source-root data/external/skills_200 \
+  --query "Convert a CSV table to JSON and validate the output schema." \
   --output-json "$QUERY_DIR/answer.json"
+python -m goskills validate-bundle "$QUERY_DIR/answer.json"
 ```
 
-Use a fresh output path for each saved query. The default output is the bounded
-execution contract.
-
-### Step 5: Inspect or extend
+For 500 or 1,000 skills, replace `200` in both paths. The 2,000-skill workspace
+uses a compiled pool; query it with:
 
 ```bash
-python -m goskills validate-bundle "$QUERY_DIR/answer.json"
-python -m goskills query --pool data/external/pool.json \
-  --query "Parse STL and produce JSON with unit tests." --json
+python -m goskills_eval.retrieval \
+  --pool data/external/goskills_workspace_skills_2000_v1/compiled-pool \
+  --source-root data/external/skills_2000 \
+  --query "Convert a CSV table to JSON and validate the output schema."
 ```
 
-The JSON bundle contains selected groups, skill payloads, source spans, selection
-traces, and coverage debt. To extend the source graph, build a new pool at a new
-output path. Pools and saved bundles are not overwritten. See
-[Agent Integration](#agent-integration) for the Python API.
+Both commands return a bounded execution contract without calling an API.
+The saved JSON bundle contains selected groups, skill payloads, source spans,
+selection traces, and coverage debt. Use a fresh output path for each saved query.
 
-### Step 6: What to run next
+### Step 3: Extend or evaluate
 
-- **End-to-end sanity check** (one task): see the **Minimal Verification** collapsible in [Evaluation](#evaluation).
-- **Paper benchmarks** (all three benchmarks and five methods): [evaluation/README.md](evaluation/README.md).
+- **Build a custom workspace:** [DATA.md](DATA.md#3-build-a-directed-index-and-goskills-group-pool) documents graph indexing, export, and local group construction.
+- **Integrate an agent:** see [Agent Integration](#agent-integration) for the Python and CLI interfaces.
+- **Run benchmarks:** follow [evaluation/README.md](evaluation/README.md) to prepare benchmark inputs and the five evaluation methods. Downloading skill data does not launch an experiment.
 
 ## Agent Integration
 
@@ -317,6 +296,7 @@ for task preparation and container integration.
 | `goskills query` | Retrieve a bounded skill bundle and execution contract |
 | `goskills validate-bundle` | Validate bundle integrity, context budgets, and coverage debt |
 | `goskills-query` | Agent-facing retrieval inside the SkillsBench bash adapter |
+| `python scripts/download_data.py` | Download skill libraries and matching workspaces from Hugging Face |
 | `.venv-eval/bin/python scripts/run_benchmark.py` | Plan or execute benchmark/method combinations |
 | `.venv-eval/bin/python scripts/summarize_runs.py` | Aggregate per-trial scores, tokens, and runtime |
 
@@ -348,13 +328,13 @@ methods and benchmark entrypoints. The complete environment setup is in
 [the evaluation setup guide](evaluation/README.md#setup); task and index preparation
 are in [DATA.md](DATA.md).
 
-We evaluate GoSkills on three benchmarks:
+The runners support three benchmarks:
 
-| Benchmark | Type | Tasks |
-|-----------|------|-------|
-| **ALFWorld** | Interactive household tasks | 134 episodes |
-| **SkillsBench** | Dockerized coding tasks | 86 tasks |
-| **Terminal-Bench 2** | Dockerized terminal tasks | 89 tasks |
+| Benchmark | Type |
+|-----------|------|
+| **ALFWorld** | Interactive household tasks |
+| **SkillsBench** | Dockerized coding tasks |
+| **Terminal-Bench 2** | Dockerized terminal tasks |
 
 All support `noskills`, `vanilla`, `vector`, `native-gos`, and `goskills-d`.
 After preparing the inputs, configure and run the shared launcher:
