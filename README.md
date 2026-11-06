@@ -69,13 +69,15 @@ use, and visible requirement cues not covered by the presented skill text. See
 If you find this work useful, please cite:
 
 ```bibtex
-@software{zeng2026goskills,
-  title   = {Group of Skills: Group-Structured Skill Retrieval for Agent Skill Libraries},
-  author  = {Zeng, Kun and Huo, Yu and Zhang, Siyu and Ye, Zi and Zhuo, Yuecheng and
-             Liu, Haoyue and Lu, Yuquan and Wen, Junhao and Tang, Xiaoying},
-  year    = {2026},
-  version = {0.2.0rc2},
-  url     = {https://github.com/yuhuo03/Group-of-Skills}
+@misc{zeng2026goskills,
+  title         = {Group of Skills: Group-Structured Skill Retrieval for Agent Skill Libraries},
+  author        = {Zeng, Kun and Huo, Yu and Zhang, Siyu and Ye, Zi and Zhuo, Yuecheng and
+                   Liu, Haoyue and Lu, Yuquan and Wen, Junhao and Tang, Xiaoying},
+  year          = {2026},
+  eprint        = {2605.06978},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2605.06978}
 }
 ```
 
