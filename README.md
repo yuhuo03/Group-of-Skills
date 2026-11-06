@@ -17,18 +17,20 @@
 </p>
 
 <p align="center">
-  <a href="https://huggingface.co/datasets/yuhuo03/group-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Skill_Library-yellow" alt="Skill library"></a>
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10--3.12-3776ab?logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://openreview.net/forum?id=MmJBYf16Bn"><img src="https://img.shields.io/badge/NeurIPS_2026-Poster-8b0000" alt="NeurIPS 2026 Poster"></a>
+  <a href="https://openreview.net/forum?id=MmJBYf16Bn"><img src="https://img.shields.io/badge/OpenReview-Paper-b31b1b" alt="OpenReview Paper"></a>
+  <a href="https://huggingface.co/datasets/yuhuo03/group-of-skills-data"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Data-yellow" alt="Hugging Face Data"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT License"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10--3.12-3776ab?logo=python&amp;logoColor=white" alt="Python 3.10–3.12"></a>
 </p>
 
 ---
 
 ## 🔥 Updates
 
-- **[2026-11-04]** Released the **GPT-5.4 implementation** and five-method evaluation scripts for SkillsBench, ALFWorld, and Terminal-Bench 2 — see [Evaluation](#evaluation).
-- **[2026-09-25]** Paper available on [OpenReview](https://openreview.net/forum?id=MmJBYf16Bn).
+- **[2026-11-07]** Skill libraries and prebuilt workspaces at **200, 500, 1,000 and 2,000 skills** released on [HuggingFace](https://huggingface.co/datasets/yuhuo03/group-of-skills-data).
 - **[2026-09-24]** 🎉 **Group of Skills is accepted to NeurIPS 2026 (Poster)!**
-- **[2026-05-06]** Initial code release on [GitHub](https://github.com/yuhuo03/Group-of-Skills).
+- **[2026-05-06]** Code open-sourced on [GitHub](https://github.com/yuhuo03/Group-of-Skills).
 
 ---
 
