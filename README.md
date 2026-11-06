@@ -331,8 +331,6 @@ See [Method](goskills/README.md) for exact policy fields and validation rules.
   </a>
 </p>
 
-<p align="center"><a href="assets/benchmark_rewards.pdf">Download figure (PDF)</a></p>
-
 ## Evaluation
 
 **Docs:** Start with [evaluation/README.md](evaluation/README.md) for the five
