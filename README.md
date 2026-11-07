@@ -8,9 +8,9 @@
   <strong>Kun Zeng</strong><sup>*</sup> &middot;
   <a href="https://github.com/yuhuo03"><strong>Yu Huo</strong></a><sup>*</sup> &middot;
   <strong>Siyu Zhang</strong> &middot;
-  <strong>Zi Ye</strong> &middot;
-  <strong>Yuecheng Zhuo</strong> &middot;
   <strong>Haoyue Liu</strong> &middot;
+  <strong>Yuecheng Zhuo</strong> &middot;
+  <strong>Zi Ye</strong> &middot;
   <strong>Yuquan Lu</strong> &middot;
   <strong>Junhao Wen</strong> &middot;
   <strong>Xiaoying Tang</strong><sup>†</sup>
@@ -71,8 +71,8 @@ If you find this work useful, please cite:
 ```bibtex
 @misc{zeng2026goskills,
   title         = {Group of Skills: Group-Structured Skill Retrieval for Agent Skill Libraries},
-  author        = {Zeng, Kun and Huo, Yu and Zhang, Siyu and Ye, Zi and Zhuo, Yuecheng and
-                   Liu, Haoyue and Lu, Yuquan and Wen, Junhao and Tang, Xiaoying},
+  author        = {Zeng, Kun and Huo, Yu and Zhang, Siyu and Liu, Haoyue and Zhuo, Yuecheng and
+                   Ye, Zi and Lu, Yuquan and Wen, Junhao and Tang, Xiaoying},
   year          = {2026},
   eprint        = {2605.06978},
   archivePrefix = {arXiv},
